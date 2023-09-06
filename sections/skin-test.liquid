@@ -3,207 +3,214 @@
 {% assign mf = page.metafields.custom.questionnaire.value %}
 {% assign current_country = localization.country.iso_code %}
 
-<div class="qtnr__page_container {% if localization.language.iso_code == 'ar' %}qtnr__page_container__arabic{% endif %}">
+<div class="qtnr__page_container {% if localization.language.iso_code == 'ar' %}qtnr__page_container__arabic{% endif %}" data-market-handle="{{ localization.market.handle }}">
   <div class="qtnr__page_header">
     <button class="qtnr__page_nav_back hidden">
       {% render 'svg-arrow-left' %}
     </button>
+    {% comment %}
     <div class="qtnr__page_logo__contianer">
       <a href="/">
         <img class="qtnr__page_logo" src="{{ section.settings.logo | img_url: 'master' }}" loading="lazy">
       </a>
     </div>
+    {% endcomment %}
+    <div class="qtnr__progress_bar"></div>
   </div>
-  <div class="qtnr__progress_bar"></div>
   <div class="qtnr__main_container">
     {% for q in mf.questions.value %}
-      {% assign market_restrictions = q.market_restriction.value %}
-      {% if market_restrictions == null
-        or market_restrictions.size == 0
-        or market_restrictions contains current_country
+      {% assign market_scope = q.market_scope.value %}
+      {% assign market_restriction = q.market_restriction.value %}
+      {% if market_scope == NIL
+        or market_scope == nil
+        or market_scope == null
+        or market_scope.countries.value contains current_country
       %}
-        <div
-          class="qtnr__question {% if q.question_id != 'pigmenttationType' %}q_slide_further_right{% else %}q_slide_left{% endif %}"
-          data-question-id="{{ q.question_id }}"
-          data-question-index="{{ forloop.index }}"
-          data-question-multiple-max-selection="{% if q.multiple_max_selection %}{{ q.multiple_max_selection }}{% else %}0{% endif %}"
-          {% comment %}
-          {% unless forloop.index == 1 %}
-            hidden
-          {% endunless %}
-          {% endcomment %}
-          data-question-default-answer="{% if q.type == "disclaimer" and q.default_answer %}{{ q.default_answer.value.value }}{% endif %}"
-          data-question-popup-details="{{ q.popup_details | escape }}"
-        >
-          <p class="qtnr__question__main">{{ q.question }}</p>
-          {% if q.description %}
-            <p class="qtnr__question__desc">{{ q.description }}</p>
-          {% endif %}
-          {% if q.multiple_max_selection %}
-            <div class="qtnr__answer__choice_counter">
-              <span class="qtnr__answer__choice_selection">0</span> / <span>{{ q.multiple_max_selection }} {{ section.settings.multiple_selected_text }}</span>
-            </div>
-          {% endif %}
-          <div class="qtnr__answer {% if q.type == "creamLabel" %}qtnr__answer__creamLabel{% endif %}">
-            {% if q.type == 'single' or q.type == 'multiple' %}
-              {% for c in q.choices.value %}
-                <div
-                  class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }} {% if forloop.length <= 4  %}qtnr__answer__choice__oneliner{% else %}qtnr__answer__choice__twoliner{% endif %} qtnr__answer__choice__white_bg"
-                  data-question-index="{{ forloop.index }}"
-                  data-question-type="{{ q.type }}"
-                  data-answer-id="{{ c.answer_id }}"
-                  data-answer-value="{{ c.value }}"
-                  data-answer-text="{{ c.answer }}"
-                  data-answer-type="{{ c.data_type }}"
-                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
-                  data-answer-isnota="{{ c.is_nota }}"
-                  data-answer-icon="{% if c.icon %}true{% else %}false{% endif %}"
-                  data-answer-image="{% if c.image %}true{% else %}false{% endif %}"
-                >
-                  {% if c.image %}
-                    <div class="qtnr__answer__choice__img">
-                      <img src="{{ c.image | image_url }}" loading="lazy">
-                    </div>
-                  {% elsif c.icon %}
-                    <div class="qtnr__answer__choice__icon">
-                      <img src="{{ c.icon | image_url }}" loading="lazy">
-                    </div>
-                  {% endif %}
-                  <div class="qtnr__answer__choice__text">
-                    {% if q.type == "multiple" %}
-                      <div class="qtnr__answer__choice__checkbox qtnr__answer__choice__checkbox__unchecked"></div>
-                    {% endif %}
-                    <div class="qtnr__answer__choice__main">{{ c.answer }}</div>
-                    {% if c.description %}
-                      <div class="qtnr__answer__choice__desc">{{ c.description }}</div>
-                    {% endif %}
-                  </div>
-                </div>
-              {% endfor %}
-            {% elsif q.type == 'creamLabel' %}
-              <div
-                class="qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
-                data-question-index="{{ forloop.index }}"
-                data-question-type="{{ q.type }}"
-                data-answer-id=""
-                data-answer-value=""
-                data-answer-type=""
-                data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
-              >
-                {% if q.image %}
-                  <div class="qtnr__answer__choice__img">
-                    <img src="{{ q.image | image_url }}" loading="lazy">
-                    <label
-                      class="qtnr__answer__creamLabel__label qtnr__answer__creamLabel__{{ q.question_id }}"
-                    ></label>
-                    <input type="text" placeholder="{{ q.input_placeholder }}">
-                  </div>
-                {% endif %}
-              </div>
-            {% elsif q.type == 'boolean' %}
-              {% for c in q.choices.value %}
-                <div
-                  class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
-                  data-question-index="{{ forloop.index }}"
-                  data-question-type="{{ q.type }}"
-                  data-answer-value="{{ c.value }}"
-                  data-answer-text="{{ c.answer }}"
-                  data-answer-type="{{ c.data_type }}"
-                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
-                >
-                  <div class="qtnr__answer__choice__boolean">
-                    {% comment %}
-                      <div class="choice__boolean__outer_circle">
-                        <div class="choice__boolean__inner_circle"></div>
-                      </div>
-                    {% endcomment %}
-                    <p>{{ c.answer }}</p>
-                  </div>
-                </div>
-              {% endfor %}
-            {% elsif q.type == 'input' %}
-              <div
-                class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
-                data-question-id="{{ q.question_id }}"
-                data-question-index="{{ forloop.index }}"
-                data-question-type="{{ q.type }}"
-                data-question-regex="{{ q.regex }}"
-                data-answer-type="{{ c.data_type }}"
-                data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
-              >
-                <input
-                  type="text"
-                  placeholder="{{ q.input_placeholder }}"
-                  maxlength="{% if q.question_id == 'phoneNumber' %}15{% elsif q.question_id == 'age' %}2{% else %}200{% endif %}"
-                  style="{% if q.question_id == "phoneNumber" and localization.country.iso_code == 'IN' %}background: url('{{ localization.country | image_url }}') no-repeat scroll 5px center;text-indent:30px;background-size:30px;{% endif %}"
-                >
-                <p class="qtnr__error_msg hidden">{{ q.regex_error_message }}</p>
-              </div>
-            {% elsif q.type == 'faceScan' %}
-              <div
-                class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
-                data-question-index="{{ forloop.index }}"
-                data-question-type="{{ q.type }}"
-                data-answer-type=""
-                data-answer-leads-to=""
-              >
-                {% if localization.language.iso_code == 'en' or localization.language.iso_code == 'de' %}
-                  <iframe
-                    id="faceScanFrame"
-                    src="https://metrics-staging-1.web.app/{{ localization.language.iso_code }}/session_id/21"
-                    onload="faceScanFrameLoaded( this )"
-                    style="width: 100%; height: 1024px; border: none;"
-                    allow="camera *;microphone *"
-                  ></iframe>
-                {% elsif localization.language.iso_code == 'ar' %}
-                  <iframe
-                    id="faceScanFrame"
-                    src="https://metrics-staging-1.web.app/{{ localization.language.iso_code }}-{{ localization.country.iso_code | downcase }}/session_id/21"
-                    onload="faceScanFrameLoaded( this )"
-                    style="width: 100%; height: 1024px; border: none;"
-                    allow="camera *;microphone *"
-                  ></iframe>
-                {% endif %}
-              </div>
-            {% elsif q.type == 'disclaimer' %}
-              {% for c in q.choices.value %}
-                <div
-                  class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
-                  data-question-index="{{ forloop.index }}"
-                  data-question-type="{{ q.type }}"
-                  data-answer-value="{{ c.value }}"
-                  data-answer-text="{{ c.answer }}"
-                  data-answer-type="{{ c.data_type }}"
-                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
-                >
-                  <div class="qtnr__answer__choice__main hidden">{{ c.answer }}</div>
-                </div>
-              {% endfor %}
-            {% elsif q.type == 'endScreen' %}
-              <div
-                class="qtnr__endscreen qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__single"
-                data-question-index="{{ forloop.index }}"
-                data-question-type="{{ q.type }}"
-              >
-                <button class="qtnr__endscreen__pdp_btn">VIEW RESULT</button>
+        {% unless market_restriction.countries.value contains current_country %}
+          <div
+            class="qtnr__question {% if q.question_id != mf.starting_question.value.question_id %}q_slide_further_right{% else %}q_slide_left{% endif %}"
+            data-question-id="{{ q.question_id }}"
+            data-question-index="{{ forloop.index }}"
+            data-question-multiple-max-selection="{% if q.multiple_max_selection %}{{ q.multiple_max_selection }}{% else %}0{% endif %}"
+            {% comment %}
+            {% unless forloop.index == 1 %}
+              hidden
+            {% endunless %}
+            {% endcomment %}
+            data-question-default-answer="{% if q.type == "disclaimer" and q.default_answer %}{{ q.default_answer.value.value }}{% endif %}"
+            data-question-popup-details="{{ q.popup_details | escape }}"
+            data-question-market-scope="{{ market_scope.countries.value }}"
+          >
+            <p class="qtnr__question__main">{{ q.question }}</p>
+            {% if q.description %}
+              <p class="qtnr__question__desc">{{ q.description }}</p>
+            {% endif %}
+            {% if q.multiple_max_selection %}
+              <div class="qtnr__answer__choice_counter">
+                <span class="qtnr__answer__choice_selection">0</span> / <span>{{ q.multiple_max_selection }} {{ section.settings.multiple_selected_text }}</span>
               </div>
             {% endif %}
-          </div>
-          {% if q.popup_details %}
-          <button class="qtnr__popup_details__btn">{% render "svg-question" %}</button>
-          {% endif %}
-          {% unless q.type == 'endScreen' %}
-            <div class="qtnr__navigation {% if q.question_id == 'faceScan' %}hidden{% endif %}">
-              {% comment %}
-                <div class="qtnr__navigation__prev">{{ section.settings.back_button_text }}</div>
-              {% endcomment %}
-              <div class="qtnr__navigation__next {% if q.type != "faceScan" and q.type != "disclaimer" %}qtnr__navigation__disabled{% endif %}">
-                {{ section.settings.next_button_text }}
-                {% render 'svg-chevron-right' %}
-              </div>
+            <div class="qtnr__answer {% if q.type == "creamLabel" %}qtnr__answer__creamLabel{% endif %}">
+              {% if q.type == 'single' or q.type == 'multiple' %}
+                {% for c in q.choices.value %}
+                  <div
+                    class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }} {% if forloop.length <= 4  %}qtnr__answer__choice__oneliner{% else %}qtnr__answer__choice__twoliner{% endif %} qtnr__answer__choice__white_bg"
+                    data-question-index="{{ forloop.index }}"
+                    data-question-type="{{ q.type }}"
+                    data-answer-id="{{ c.answer_id }}"
+                    data-answer-value="{{ c.value }}"
+                    data-answer-text="{{ c.answer }}"
+                    data-answer-type="{{ c.data_type }}"
+                    data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                    data-answer-isnota="{{ c.is_nota }}"
+                    data-answer-icon="{% if c.icon %}true{% else %}false{% endif %}"
+                    data-answer-image="{% if c.image %}true{% else %}false{% endif %}"
+                  >
+                    {% if c.image %}
+                      <div class="qtnr__answer__choice__img">
+                        <img src="{{ c.image | image_url }}" loading="lazy">
+                      </div>
+                    {% elsif c.icon %}
+                      <div class="qtnr__answer__choice__icon">
+                        <img src="{{ c.icon | image_url }}" loading="lazy">
+                      </div>
+                    {% endif %}
+                    <div class="qtnr__answer__choice__text">
+                      {% if q.type == "multiple" %}
+                        <div class="qtnr__answer__choice__checkbox qtnr__answer__choice__checkbox__unchecked"></div>
+                      {% endif %}
+                      <div class="qtnr__answer__choice__main">{{ c.answer }}</div>
+                      {% if c.description %}
+                        <div class="qtnr__answer__choice__desc">{{ c.description }}</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+              {% elsif q.type == 'creamLabel' %}
+                <div
+                  class="qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                  data-question-index="{{ forloop.index }}"
+                  data-question-type="{{ q.type }}"
+                  data-answer-id=""
+                  data-answer-value=""
+                  data-answer-type=""
+                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                >
+                  {% if q.image %}
+                    <div class="qtnr__answer__choice__img">
+                      <img src="{{ q.image | image_url }}" loading="lazy">
+                      <label
+                        class="qtnr__answer__creamLabel__label qtnr__answer__creamLabel__{{ q.question_id }}"
+                      ></label>
+                      <input type="text" placeholder="{{ q.input_placeholder }}">
+                    </div>
+                  {% endif %}
+                </div>
+              {% elsif q.type == 'boolean' %}
+                {% for c in q.choices.value %}
+                  <div
+                    class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                    data-question-index="{{ forloop.index }}"
+                    data-question-type="{{ q.type }}"
+                    data-answer-value="{{ c.value }}"
+                    data-answer-text="{{ c.answer }}"
+                    data-answer-type="{{ c.data_type }}"
+                    data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                  >
+                    <div class="qtnr__answer__choice__boolean">
+                      {% comment %}
+                        <div class="choice__boolean__outer_circle">
+                          <div class="choice__boolean__inner_circle"></div>
+                        </div>
+                      {% endcomment %}
+                      <p>{{ c.answer }}</p>
+                    </div>
+                  </div>
+                {% endfor %}
+              {% elsif q.type == 'input' %}
+                <div
+                  class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
+                  data-question-id="{{ q.question_id }}"
+                  data-question-index="{{ forloop.index }}"
+                  data-question-type="{{ q.type }}"
+                  data-question-regex="{{ q.regex }}"
+                  data-answer-type="{{ c.data_type }}"
+                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                >
+                  <input
+                    type="text"
+                    placeholder="{{ q.input_placeholder }}"
+                    maxlength="{% if q.question_id == 'phoneNumber' %}15{% elsif q.question_id == 'age' %}2{% else %}200{% endif %}"
+                    style="{% if q.question_id == "phoneNumber" and localization.country.iso_code == 'IN' %}background: url('{{ localization.country | image_url }}') no-repeat scroll 5px center;text-indent:30px;background-size:30px;{% endif %}"
+                  >
+                  <p class="qtnr__error_msg hidden">{{ q.regex_error_message }}</p>
+                </div>
+              {% elsif q.type == 'faceScan' %}
+                <div
+                  class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
+                  data-question-index="{{ forloop.index }}"
+                  data-question-type="{{ q.type }}"
+                  data-answer-type=""
+                  data-answer-leads-to=""
+                >
+                  {% if localization.language.iso_code == 'en' or localization.language.iso_code == 'de' %}
+                    <iframe
+                      id="faceScanFrame"
+                      src="https://metrics-staging-1.web.app/{{ localization.language.iso_code }}/session_id/21"
+                      onload="faceScanFrameLoaded( this )"
+                      style="width: 100%; height: 1024px; border: none;"
+                      allow="camera *;microphone *"
+                    ></iframe>
+                  {% elsif localization.language.iso_code == 'ar' %}
+                    <iframe
+                      id="faceScanFrame"
+                      src="https://metrics-staging-1.web.app/{{ localization.language.iso_code }}-{{ localization.country.iso_code | downcase }}/session_id/21"
+                      onload="faceScanFrameLoaded( this )"
+                      style="width: 100%; height: 1024px; border: none;"
+                      allow="camera *;microphone *"
+                    ></iframe>
+                  {% endif %}
+                </div>
+              {% elsif q.type == 'disclaimer' %}
+                {% for c in q.choices.value %}
+                  <div
+                    class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                    data-question-index="{{ forloop.index }}"
+                    data-question-type="{{ q.type }}"
+                    data-answer-value="{{ c.value }}"
+                    data-answer-text="{{ c.answer }}"
+                    data-answer-type="{{ c.data_type }}"
+                    data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                  >
+                    <div class="qtnr__answer__choice__main hidden">{{ c.answer }}</div>
+                  </div>
+                {% endfor %}
+              {% elsif q.type == 'endScreen' %}
+                <div
+                  class="qtnr__endscreen qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__single"
+                  data-question-index="{{ forloop.index }}"
+                  data-question-type="{{ q.type }}"
+                >
+                  <button class="qtnr__endscreen__pdp_btn">VIEW RESULT</button>
+                </div>
+              {% endif %}
             </div>
-          {% endunless %}
-        </div>
+            {% if q.popup_details %}
+            <button class="qtnr__popup_details__btn">{% render "svg-question" %}</button>
+            {% endif %}
+            {% unless q.type == 'endScreen' %}
+              <div class="qtnr__navigation {% if q.question_id == 'faceScan' %}hidden{% endif %}">
+                {% comment %}
+                  <div class="qtnr__navigation__prev">{{ section.settings.back_button_text }}</div>
+                {% endcomment %}
+                <div class="qtnr__navigation__next {% if q.type != "faceScan" and q.type != "disclaimer" %}qtnr__navigation__disabled{% endif %}">
+                  {{ section.settings.next_button_text }}
+                  {% render 'svg-chevron-right' %}
+                </div>
+              </div>
+            {% endunless %}
+          </div>
+        {% endunless %}
       {% endif %}
     {% endfor %}
   </div>
@@ -258,8 +265,9 @@
   var storeLocale = {{ localization.language.iso_code | json }};
   var storeCountry = {{ localization.country.iso_code | json }};
   var qtnrSize = {{ mf.questions.value | json }};
-  var previousQuestion = "pigmenttationType";
-  var currentQuestion = "pigmenttationType";
+  var firstQuestion = {{ mf.starting_question.value.question_id | json }};
+  var previousQuestion = {{ mf.starting_question.value.question_id | json }};
+  var currentQuestion = {{ mf.starting_question.value.question_id | json }};
   var testJourney = [];
   var phonePrefixes = {
     "IN": "+91"
@@ -367,12 +375,12 @@
           frameIsLoaded = true;
         }
         
-        console.log("SSSSRRRRRRCCCCC", e.src)
       }
 
       if (frameIsLoaded) {
-        console.log("AWDAWDADA", faceScanEl)
-        faceScanElPrevSibling.insertAfter(faceScanEl)
+        if (faceScanElPrevSibling) {
+          faceScanElPrevSibling.insertAfter(faceScanEl);
+        }
       } else {
         faceScanEl.remove()
       }
@@ -403,6 +411,7 @@
     let progress = 1;
 
     function progressBar(answerEl, direction) {
+      let questionEls = document.querySelectorAll(".qtnr__question");
       let progressBarEl = document.querySelector(".qtnr__progress_bar");
       if (direction === "forward") {
         let questionEl = answerEl.closest(`.qtnr__question`);
@@ -418,7 +427,7 @@
         if (questionEl) {
           if (leadsTo) {
             for (let i = 0; i < progress; i++) {
-              let width = 100 / (qtnrSize.length - 1);
+              let width = 100 / (questionEls.length - 2);
               let progressEl = document.createElement("div");
               progressEl.setAttribute("data-question-id", questionEl.getAttribute("data-question-id"));
               progressEl.setAttribute("data-leads-to", leadsTo);
@@ -428,7 +437,7 @@
               progressBarEl.appendChild(progressEl);
             }
           } else {
-            let width = 100 / (qtnrSize.length - 1);
+            let width = 100 / (questionEls.length - 2);
             let progressEl = document.createElement("div");
             progressEl.classList.add("qtnr__progress");
             progressEl.style.width = `${width}%`;
@@ -591,7 +600,7 @@
           if (testJourney.length > 0) {
             previousQuestion = testJourney[testJourney.length - 1];
           } else {
-            previousQuestion = "pigmenttationType";
+            previousQuestion = qtnrSize[0].question_id;
           }
         }
       }
