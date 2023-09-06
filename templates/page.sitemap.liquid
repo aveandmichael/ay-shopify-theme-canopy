@@ -1,0 +1,57 @@
+<div class="container container--narrow">
+  <header class="page__header page__header--centered">
+    <h1 class="page__title heading h1">{{ page.title }}</h1>
+  </header>
+
+  <div class="page__content rte">
+   
+{%- comment -%} Start of HTML SiteMap code {%- endcomment -%}
+<div class="row">
+    <div class="col-md-6">
+        <h2>Collections</h2>
+        <ul>
+            {% for c in collections %}
+                <li>
+                    <a href="{{ c.url }}">{{ c.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <h2>Products</h2>
+        <ul>
+  
+            {% paginate collections.all.products by 1000 %}
+                {% for product in collections.all.products %}
+                    <li>
+                        <a href="{{ product.url }}">{{ product.title }}</a>
+                    </li>
+                {% endfor %}
+            {% endpaginate %}
+  
+        </ul>
+    </div>
+  <h2>Blog</h2>
+   <ul>
+      {% assign blog_handles = "blog" | split: "," %}
+ 
+         {% for handle in blog_handles %}
+ 
+         {% for article in blogs[handle].articles %}
+            <li>
+               <a href="{{ article.url }}">{{ article.title }}</a>
+            </li>
+            {% endfor %}
+ 
+      {% endfor %}
+  </ul>
+   
+</div>
+{%- comment -%}
+    End of HTML SiteMap code
+{%- endcomment -%}
+
+
+    
+  </div>
+</div>

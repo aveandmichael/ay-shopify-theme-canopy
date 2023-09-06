@@ -1,0 +1,1 @@
+{% comment %}ly_static_code_begin{% endcomment %}{% capture json_vendors %}[LANGIFY_VENDOR_LIST_BEGIN]{{ shop.vendors | json }}[LANGIFY_VENDOR_LIST_END]{% endcapture %}<div style="display:none;">{{ json_vendors | replace: ",]", "]" }}</div>{% comment %}ly_static_code_end{% endcomment %}

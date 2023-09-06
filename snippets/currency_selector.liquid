@@ -1,0 +1,56 @@
+{% if localization.available_countries.size > 1 %} 
+  <localization-form>
+    {% form 'localization' %}
+      <div class="disclosure" data-disclosure-locale>
+        <button id="CurrencyBtn" type="button" class="disclosure__toggle" aria-expanded="false" aria-controls="CountryList">
+          {% render 'currency_flag_options', country: localization.country %} {{ localization.country.name }}
+      
+          <span class="disclosure__toggle-arrow" role="presentation">{% render 'svg-chevron-down' %}</span>
+        </button>
+        <ul id="CountryList" role="list" class="disclosure-list" hidden data-disclosure-list data-lang="{{ localization.language.iso_code }}" {% if localization.language.iso_code == "ar" %}style="right: -200px;"{% endif %}>
+          <input class="desktop-only" id="CountryList_input" type="text" placeholder="Type your country" />
+          {% for country in localization.available_countries %}
+            {% if country.iso_code == 'AT' or country.iso_code == 'DE' or country.iso_code == 'CH' %}
+              <li class="disclosure-list__item" name="{{ country.name }}" tabindex="-1">
+                {% comment %}
+                <a class="disclosure-list__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-disclosure-option>
+                  {% render 'currency_flag_options', country: country %} {{ country.name }}
+                </a>
+              {% endcomment %}
+                {% render 'currency_flag_options', country: country %} {{ country.name }}
+                <span>
+                  <a class="disclosure-list__option en_de__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-preferred_locale="DE" data-disclosure-option>
+                    DE
+                  </a>
+                  <span> / </span>
+                  <a class="disclosure-list__option en_de__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-preferred_locale="EN" data-disclosure-option>
+                    EN
+                  </a>
+                </span>
+              </li>
+            {% elsif country.iso_code == 'US' %}
+              <li class="disclosure-list__item" name="{{ country.name }}" tabindex="-1">
+                  <a class="disclosure-list__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-disclosure-option>
+                    {% render 'currency_flag_options', country: country %} {{ country.name }}
+                  </a>
+              </li>
+            {% endif %}
+          {% endfor %}
+          <div id="CountryList_divider"></div>
+          {% for country in localization.available_countries %}
+            {% if country.iso_code != 'AT' and country.iso_code != 'DE' and country.iso_code != 'CH' and country.iso_code != 'US' and country.iso_code != 'AE' %}
+              <li class="disclosure-list__item" name="{{ country.name }}" tabindex="-1">
+                <a class="disclosure-list__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-disclosure-option>
+                  {% render 'currency_flag_options', country: country %} {{ country.name }}
+                </a>
+              </li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+
+        <input type="hidden" name="locale_code" value="{{ form.country.iso_code | downcase }}">
+        <input type="hidden" name="country_code" value="{{ country.iso_code }}">
+      </div>
+    {% endform %}
+  </localization-form>
+{% endif %}

@@ -1,0 +1,277 @@
+
+{% assign nav_image_size = '400x' %}
+{% assign domain = 'https://aveandyou.com/' %}
+<nav class="main-nav cf desktop align-{{ section.settings.nav_alignment }}"
+     data-col-limit="{{ section.settings.nav_col_limit_int }}"
+     aria-label="{{ 'layout.desktop_navigation.menu_aria_label' | t | escape }}">
+  {%- if section.settings.logo_location == 'links' and section.settings.header_layout == 'left' -%}
+    <div class="logo-item logo-item-left">{{ logo_html }}</div>
+  {%- endif -%}
+  <ul>
+    {% assign halfway_index = linklists[section.settings.menu_linklist].links.size | divided_by: 2 |  plus: 1 %}
+
+    {%- for link in linklists[section.settings.menu_linklist].links -%}
+      {%- assign has_mega_drop_down = true -%}
+      {%- if link.links != blank -%}
+        {%- for child_link in link.links -%}
+          {%- if child_link.links == blank -%}
+            {%- assign has_mega_drop_down = false -%}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- else -%}
+    	  {%- assign has_mega_drop_down = false -%}
+      {%- endif -%}
+
+      {%- if section.settings.logo_location == 'links' and section.settings.header_layout == 'center' and forloop.index == halfway_index -%}
+        <li class="logo-item logo-item-center">{{ logo_html }}</li>
+      {%- endif -%}
+
+      <li class="nav-item{% if forloop.first %} first{% elsif forloop.last %} last{% endif %}{% if link.active %} active{% endif %}{% if link.links != blank %} dropdown {% if has_mega_drop_down %}drop-uber{% else %}drop-norm{% endif %}{% endif %}" {% if link.handle contains 'consultation' %}{% unless request.host contains 'bling.fashion' %}style="display:none!important;"{% endunless %}{% endif %}>
+        
+        {% if link.handle == 'skin-test' %}
+          {% if localization.country.iso_code == 'DE' %}
+            {% if localization.language.iso_code == 'de' %}
+              {% assign link_url = '/de/pages/ave-you-skin-test-de' %}
+            {% else %}
+              {% assign link_url = 'pages/ave-you-skin-test-en' | prepend: domain %}
+            {% endif %}
+          {% elsif localization.country.iso_code == 'AT' or localization.country.iso_code == 'CH' %}
+            {% assign lang = localization.language.iso_code | append: '-' %}
+            {% assign country_code = localization.country.iso_code | downcase | append: '/' %}
+            {% assign subfolder = lang | prepend: domain | append: country_code %}
+            {% if localization.language.iso_code == 'de' %}
+              {% assign link_url = 'pages/ave-you-skin-test-de' | prepend: subfolder %}
+            {% else %}
+              {% assign link_url = 'pages/ave-you-skin-test-en' | prepend: subfolder %}
+            {% endif %}
+          {% else %}
+            {% assign lang = localization.language.iso_code | append: '-' %}
+            {% assign country_code = localization.country.iso_code | downcase | append: '/' %}
+            {% assign subfolder = lang | prepend: domain | append: country_code %}
+            {% assign link_url = 'pages/ave-you-skin-test-en' | prepend: subfolder %}
+          {% endif %}
+        {% else %}
+          {% assign link_url = link.url %}
+        {% endif %}
+      
+        <a class="nav-item-link{% if featured_links contains link.title %} nav-item-link--featured{% endif %}" href="{{ link_url }}" {% if link.links != blank %}aria-haspopup="true" aria-expanded="false"{% endif %}>
+          <span class="nav-item-link-title">{{ link.title }}</span>
+          {% if link.links != blank %}{% render 'svg-chevron-down' %}{% endif %}
+        </a>
+
+        {% if has_mega_drop_down %}
+          <div class="sub-nav">
+            {%- assign image_column_count = 0 -%}
+            {%- capture images_column_html -%}
+              {%- for block in section.blocks -%}
+                {%- if block.settings.dropdown_link_title == link.title -%}
+                {%- assign image_column_count = image_column_count | plus: 1 -%}
+                <ul class="sub-nav-list sub-nav-image-list">
+                  <li class="sub-nav-item">
+                    <a class="sub-nav-item-link" href="{{ block.settings.link_url }}">
+                      <div class="sub-nav-item-image">{% render 'responsive-image', image: block.settings.image %}</div>
+                      <div class="sub-nav-item-image-title">{{ block.settings.text }}</div>
+                    </a>
+                  </li>
+                </ul>
+                {%- endif -%}
+              {%- endfor -%}
+            {%- endcapture -%}
+
+            <div class="container sub-nav-links-column sub-nav-links-column--count-{{ link.links.size }} sub-nav-links-column--beside-{{ image_column_count }}-images {% if images_column_html != blank %}sub-nav-links-column--beside-images{% endif %}">
+              <div class="sub-nav-links-column-grid-wrapper">
+                {% for child_link in link.links %}
+                <ul class="sub-nav-list">
+                  <li class="sub-nav-item">
+                    <a href="{{ child_link.url }}"><span class="sub-nav-item-title">{{ child_link.title }}</span></a>
+                  </li>
+                  {% for child_child_link in child_link.links %}
+                  <li class="sub-nav-item{% if child_child_link.active %} active{% endif %}">
+                    <a class="sub-nav-item-link" href="{{ child_child_link.url }}"{% if child_child_link.type == 'collection_link' %}{% if child_child_link.object.image %} data-img="{{ child_child_link.object.image | img_url: nav_image_size }}"{% else %} data-img="{{ child_child_link.object.products.first.featured_media.preview_image | img_url: nav_image_size }}"{% endif %}{% endif %}{% if child_child_link.type == 'product_link' and child_child_link.object.featured_media.preview_image %} data-img="{{ child_child_link.object.featured_media.preview_image | img_url: nav_image_size }}"{% endif %}>
+                      <span class="sub-nav-item-link-title">{{ child_child_link.title }}</span>
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+                {% endfor %}
+              </div>
+            </div>
+
+            {% if images_column_html != blank %}
+              <div class="sub-nav-images-column sub-nav-images-column--count-{{ image_column_count }}">{{ images_column_html }}</div>
+            {% endif %}
+          </div>
+
+        {% elsif link.links != blank %}
+
+          {% comment %} Normal dropdown {% endcomment %}
+
+          <div class="sub-nav">
+            <div class="sub-nav-inner">
+              <ul class="sub-nav-list">
+                {% for child_link in link.links %}
+                                    
+                  {% if child_link.handle == 'take-the-test' %}
+                    {% if localization.country.iso_code == 'DE' %}
+                      {% if localization.language.iso_code == 'de' %}
+                        {% assign child_link_url = '/de/pages/ave-you-skin-test-de' %}
+                      {% else %}
+                        {% assign child_link_url = 'pages/ave-you-skin-test-en' | prepend: domain %}
+                      {% endif %}
+                    {% elsif localization.country.iso_code == 'AT' or localization.country.iso_code == 'CH' %}
+                      {% assign lang = localization.language.iso_code | append: '-' %}
+                      {% assign country_code = localization.country.iso_code | downcase | append: '/' %}
+                      {% assign subfolder = lang | prepend: domain | append: country_code %}
+                      {% if localization.language.iso_code == 'de' %}
+                        {% assign child_link_url = 'pages/ave-you-skin-test-de' | prepend: subfolder %}
+                      {% else %}
+                        {% assign child_link_url = 'pages/ave-you-skin-test-en' | prepend: subfolder %}
+                      {% endif %}
+                    {% else %}
+                      {% assign lang = localization.language.iso_code | append: '-' %}
+                      {% assign country_code = localization.country.iso_code | downcase | append: '/' %}
+                      {% assign subfolder = lang | prepend: domain | append: country_code %}
+                      {% assign child_link_url = 'pages/ave-you-skin-test-en' | prepend: subfolder %}
+                    {% endif %}
+                  {% else %}
+                    {% assign child_link_url = child_link.url %}
+                  {% endif %}
+
+                <li class="sub-nav-item{% if child_link.active %} active{% endif %}{% if child_link.links != blank %} has-dropdown{% endif %}">
+                  <a class="sub-nav-item-link" href="{{ child_link_url }}"{% if child_link.type == 'collection_link' %}{% if child_link.object.image %} data-img="{{ child_link.object.image | img_url: nav_image_size }}"{% else %} data-img="{{ child_link.object.products.first.featured_media.preview_image | img_url: nav_image_size }}"{% endif %}{% endif %}{% if child_link.type == 'product_link' and child_link.object.featured_media.preview_image %} data-img="{{ child_link.object.featured_media.preview_image | img_url: nav_image_size }}"{% endif %} {% if child_link.links != blank %}aria-haspopup="true" aria-expanded="false"{% endif %}>
+                    <span class="sub-nav-item-link-title">{{ child_link.title }}</span>
+                    {% if child_link.links != blank %}{% render 'svg-chevron-down' %}{% endif %}
+                  </a>
+
+                  {% if child_link.links != blank %}
+                  <ul class="sub-sub-nav-list">
+                    {% for child_child_link in child_link.links %}
+                    <li class="sub-nav-item{% if child_child_link.active %} active{% endif %}">
+                      <a class="sub-nav-item-link" href="{{ child_child_link.url }}"{% if child_child_link.type == 'collection_link' %}{% if child_child_link.object.image %} data-img="{{ child_child_link.object.image | img_url: nav_image_size }}"{% else %} data-img="{{ child_child_link.object.products.first.featured_media.preview_image | img_url: nav_image_size }}"{% endif %}{% endif %}{% if child_child_link.type == 'product_link' and child_child_link.object.featured_media.preview_image %} data-img="{{ child_child_link.object.featured_media.preview_image | img_url: nav_image_size }}"{% endif %}>
+                        {{ child_child_link.title }}
+                      </a>
+                    </li>
+                    {% endfor %}
+                  </ul>
+                  {% endif %}
+                </li>
+
+                {% endfor %}
+              </ul>
+
+              {%- for block in section.blocks -%}
+                {%- if block.settings.dropdown_link_title == link.title -%}
+                <ul class="sub-nav-list sub-nav-image">
+                  <li class="sub-nav-item">
+                    <a class="sub-nav-item-link" href="{{ block.settings.link_url }}">
+                      <div class="sub-nav-item-image">{% render 'responsive-image', image: block.settings.image %}</div>
+                      <div class="sub-nav-item-image-title">{{ block.settings.text }}</div>
+                    </a>
+                  </li>
+                </ul>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {% endif %}
+      </li>
+    {%- endfor -%}
+    <li class="reordrrLink CP noShowPDPRedorder" onclick="openReorderPopUp()" >{{ 'layout.header.reorder' | t  }}</li>
+    
+    <span class="ly-custom-768" style="display:none"></span>
+    
+    <div class="toolbar-right {% if align_search_left %}search-left{% endif %}">
+              {% if align_search_center %}
+                <div class="toolbar-links">
+                  {{ search_form }}
+                </div>
+              {% endif %}
+
+              <div class="toolbar-icons">
+                {% assign show_search_icon = false %}
+                {% if section.settings.search_bar != "none" %}
+                  {% if section.settings.search_bar != "input" %}
+                    {% assign show_search_icon = true %}
+                  {% endif %}
+                {% endif %}
+
+                {% if section.settings.search_bar == "icon" %}
+                  <div class="hidden-search-container">
+										<div class="hidden-search-container__veil"></div>
+                    <a href="{{ routes.search_url }}" data-show-search-form id="SearchIcon" class="toolbar-search toolbar-search--{{ section.settings.search_bar }}" aria-label="{{ 'layout.header.search' | t | escape }}">
+                      {% render 'svg-search' %}
+                    </a>
+                    <div id="PredictiveSearchContainer" class="toolbar-search__custom__dropdown" hidden>
+                      <predictive-search>
+                        <form action="{{ routes.search_url }}" method="get" role="search">
+                          <input
+                            id="Search"
+                            type="search"
+                            name="q"
+                            value="{{ search.terms | escape }}"
+                            placeholder="Search..."
+                            role="combobox"
+                            aria-expanded="false"
+                            aria-owns="predictive-search-results"
+                            aria-controls="predictive-search-results"
+                            aria-haspopup="listbox"
+                            aria-autocomplete="list"
+                          >
+                          <input name="options[prefix]" type="hidden" value="last">
+                      
+                          <div id="predictive-search" tabindex="-1" hidden></div>
+                        </form>
+                      </predictive-search>
+                    </div>
+                    {{ search_form }}
+                  </div>
+                {% elsif show_search_icon %}
+                  <div class="hidden-search-container hidden-search-container--mob-only">
+                    <a href="{{ routes.search_url }}" data-show-search-form id="SearchIcon" class="toolbar-search mobile-only toolbar-search--{{ section.settings.search_bar }}" aria-label="{{ 'layout.header.search' | t | escape }}">
+                      {% render 'svg-search' %}
+                    </a>
+                    {{ search_form }}
+                  </div>
+                {% endif %}
+
+                {% if shop.customer_accounts_enabled %}
+                  <a href="{{ routes.account_url }}" class="toolbar-account" aria-label="{{ 'layout.customer.account' | t | escape }}">
+                    {% render 'svg-account' %}
+                  </a>
+                {% endif %}
+
+                <span class="toolbar-cart">
+								<a class="current-cart {% if template != 'cart' %}toggle-cart-summary{% endif %}"
+                   href="{{ routes.cart_url }}" title="{{ 'products.product.go_to_cart' | t }}">
+									{% comment %}<span class="beside-svg money-summary"><span class="theme-money">{% render 'price', price: cart.total_price %}</span></span>{% endcomment %}
+									<span class="current-cart-icon current-cart-icon--{{ section.settings.cart_icon }}">
+										{% if section.settings.cart_icon == "basket2" %}
+                      {% render 'svg-cart-2' %}
+                    {% elsif section.settings.cart_icon == "cart" %}
+                      {% render 'svg-cart-trolley' %}
+                    {% else %}
+                      {% render 'svg-cart' %}
+                    {% endif %}
+
+                    {% if cart.item_count > 0 %}
+                      <span class="current-cart-count">
+												<span class="inner-count">
+													{{ cart.item_count }}
+												</span>
+											</span>
+                    {% endif %}
+									</span>
+								</a>
+							</span>
+              </div>
+            </div>
+  
+  </ul>
+  
+         
+
+  {% if section.settings.header_layout == 'left' and section.settings.logo_location == 'links' and section.settings.nav_alignment == 'center' %}
+    {% comment %}A placeholder div to make flex align stuff correctly{% endcomment %}
+    <div id="logo-spacer"></div>
+  {% endif %}
+</nav>

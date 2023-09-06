@@ -1,0 +1,24 @@
+{% comment %}
+  View Order Data Layer
+{% endcomment %}
+
+<script type="text/javascript">
+  window.dataLayer = window.dataLayer || [];
+
+  window.appStart = function(){
+    var template_name = {{ template.name | json }};
+    console.log(template_name);
+
+    if (template_name === "order") {
+      window.eventHandle = function(){
+        dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+        dataLayer.push({
+          event: "view_order",
+        });
+      };
+      console.log("TEMPLATE NAME", template_name);
+      eventHandle();
+    }
+  }
+  appStart();
+</script>

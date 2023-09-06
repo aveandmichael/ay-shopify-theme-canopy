@@ -1,0 +1,2261 @@
+{% comment %}ly_liquid_scripts_begin{% endcomment %}{% capture ly_liquid_content %}{% comment %}ly_liquid_scripts_end{% endcomment %}<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}"{% comment %}ly_dir_replace_for_[]_begin{% endcomment %}{%- assign language_code = '_' | append: request.locale.iso_code -%}{%- if '_ar_ha_he_fa_ks_ku_ps_ur_yi' contains language_code -%} dir="rtl" {%- endif -%}{% comment %}ly_dir_replace_end{% endcomment %}>
+<head>
+  {% render 'elevar-head' %}
+  {% render 'elevar-head-listener' %}
+  {% render 'pagefly-head' %}
+  <!-- Canopy 4.0.1 -->
+  <link rel="preload" href="{{ 'styles.css' | asset_url }}" as="style">
+  <link rel="preload" href="{{ 'prefetch.js' | asset_url }}" as="script">
+  {% render 'head-tag' %}
+  <meta name="theme-color" content="{{ settings.feature_col }}">
+  <meta name="facebook-domain-verification" content="ei8eb5jrgfuga7p58j4xau6yzegr36" />
+  {{ 'prefetch.js' | asset_url | script_tag }}
+  <!-- Google Tag Manager -->
+  <script type="text/lazyload">
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-TRNWGS8');
+  </script>
+  <!-- End Google Tag Manager -->
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-782223480"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-782223480');
+  </script>
+  <!-- Google Optimize anti-flicker snippet  -->
+  <style>.async-hide { opacity: 0 !important} </style>
+  <script type="text/javascript">
+    (function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
+	h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
+	(a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
+	})(window,document.documentElement,'async-hide','dataLayer',4000,
+	{'GTM-TRNWGS8':true});
+  </script>
+  <!-- Google Optimize (async) --> 
+  <script async data-src="https://www.googleoptimize.com/optimize.js?id=GTM-TRNWGS8"></script>
+  {% comment %}
+  <!-- Google Optimize alternative container --> 
+  <script src="https://www.googleoptimize.com/optimize.js?id=GTM-WLM2B8G"></script>
+  {% endcomment %}
+  <title>
+    {{ page_title }}{% if current_tags %} – {{ 'general.meta.tagged' | t }} "{{ current_tags | join: ', ' }}"{% endif %}{% if current_page != 1 %} – {{ 'general.meta.page' | t: page: current_page }}{% endif %}{% unless page_title contains shop.name %} – {{ shop.name }}{% endunless %}
+  </title>
+  {% render 'social-meta-tags' %}
+  {{ 'styles.css' | asset_url | stylesheet_tag }}
+
+  {% comment %}
+    Global-E Currency Selector Styles
+  {% endcomment %}
+  {{ 'currency_selector.css' | asset_url | stylesheet_tag }}
+  
+  <script>
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+    window.theme = window.theme || {};
+    theme.money_format = {{ shop.money_format | json }};
+    theme.customerIsLoggedIn = {% if shop.customer_accounts_enabled and customer %}true{% else %}false{% endif %};
+    theme.shippingCalcMoneyFormat = {{ shop.money_with_currency_format | json }};
+
+    theme.strings = {
+      previous: {{ 'general.accessibility_labels.previous' | t | json }},
+      next: {{ 'general.accessibility_labels.next' | t | json }},
+      close: {{ 'general.accessibility_labels.close' | t | json }},
+      addressError: {{ 'map.errors.address_error' | t | json }},
+      addressNoResults: {{ 'map.errors.address_no_results' | t | json }},
+      addressQueryLimit: {{ 'map.errors.address_query_limit_html' | t | json }},
+      authError: {{ 'map.errors.auth_error' | t | json }},
+      shippingCalcSubmitButton: {{ 'cart.shipping_calculator.submit' | t | json }},
+      shippingCalcSubmitButtonDisabled: {{ 'cart.shipping_calculator.loading' | t | json }},
+      infiniteScrollCollectionLoading: {{ 'collections.infinite_scroll.loading' | t | json }},
+      infiniteScrollCollectionFinishedMsg : {{ 'collections.infinite_scroll.no_more' | t | json }},
+      infiniteScrollBlogLoading: {{ 'blogs.infinite_scroll.loading' | t | json }},
+      infiniteScrollBlogFinishedMsg : {{ 'blogs.infinite_scroll.no_more' | t | json }},
+      blogsShowTags: {{ 'blogs.general.show_tags' | t | json }},
+      priceNonExistent: {{ 'products.variant.non_existent' | t | json }},
+      buttonDefault: {{ 'products.grid.add_to_cart' | t | json }},
+      buttonNoStock: {{ 'products.variant.out_of_stock' | t | json }},
+      buttonNoVariant: {{ 'products.variant.non_existent' | t | json }},
+      unitPriceSeparator: {{ 'products.product.unit_price_separator' | t | json }},
+      onlyXLeft: {{ 'products.labels.only_x_left' | t: quantity: "[[ quantity ]]" | json }},
+      productAddingToCart: {{ 'products.product.adding_to_cart' | t | json }},
+      productAddedToCart: {{ 'products.product.added_to_cart_btn' | t | json }},
+      quickbuyAdded: {{ 'products.general.quick_buy_added' | t | json }},
+      cartSummary: {{ 'layout.cart_summary.cart' | t | json }},
+      cartContinue: {{ 'cart.general.continue' | t | json }},
+      colorBoxPrevious: {{ 'products.gallery.previous' | t | json }},
+      colorBoxNext: {{ 'products.gallery.next' | t | json }},
+      colorBoxClose: {{ 'products.gallery.close' | t | json }},
+      imageSlider: {{ 'general.slider.images' | t | json }},
+      confirmEmptyCart: {{ 'layout.cart_summary.confirm_empty_cart' | t | json }},
+      inYourCart: {{ 'products.grid.item_is_in_cart' | t | json }},
+      removeFromCart: {{ 'products.grid.remove_from_cart' | t | json }},
+      clearAll: {{ 'collections.filtering.clear_all' | t | json }},
+      layout_live_search_see_all: {{ 'layout.live_search.see_all' | t | json }},
+      general_quick_search_pages: {{ 'general.quick_search.pages' | t | json }},
+      general_quick_search_no_results: {{ 'general.quick_search.no_results' | t | json }},
+      products_labels_sold_out: {{ 'products.labels.sold_out' | t | json }},
+      products_labels_sale: {{ 'products.labels.sale' | t | json }},
+      maximumQuantity: {{ 'cart.general.quantity_too_high' | t: quantity: "[quantity]" | json }},
+      fullDetails: {{ 'products.general.full_details' | t | json }},
+      cartConfirmRemove: {{ 'cart.general.confirm_remove' | t | json }}
+    };
+
+    theme.routes = {
+      root_url: '{{ routes.root_url }}',
+      account_url: '{{ routes.account_url }}',
+      account_login_url: '{{ routes.account_login_url }}',
+      account_logout_url: '{{ routes.account_logout_url }}',
+      account_recover_url: '{{ routes.account_recover_url }}',
+      account_register_url: '{{ routes.account_register_url }}',
+      account_addresses_url: '{{ routes.account_addresses_url }}',
+      collections_url: '{{ routes.collections_url }}',
+      all_products_collection_url: '{{ routes.all_products_collection_url }}',
+      search_url: '{{ routes.search_url }}',
+      cart_url: '{{ routes.cart_url }}',
+      cart_add_url: '{{ routes.cart_add_url }}',
+      cart_change_url: '{{ routes.cart_change_url }}',
+      cart_clear_url: '{{ routes.cart_clear_url }}'
+    };
+
+    theme.scripts = {
+      masonry: {{ 'masonry.v3.2.2.min.js' | asset_url | json }},
+      jqueryInfiniteScroll: {{ 'jquery.infinitescroll.2.1.0.min.js' | asset_url | json }},
+      underscore: {{ '//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.6.0/underscore-min.js' | json }},
+      shopifyCommon: {{ 'shopify_common.js' | shopify_asset_url | json }},
+      jqueryCart: {{ 'shipping-calculator.v1.0.min.js' | asset_url | json }}
+    };
+
+    theme.settings = {
+      cartType: {{ settings.cart_type | json }},
+      openCartDrawerOnMob: {{ settings.open_drawer_on_mobile | json }},
+      quickBuyType: {{ settings.prod_quick_buy_type | json }},
+      superscriptDecimals: {{ settings.superscript_decimals | json }}
+    }
+  </script>
+
+  {% include 'sca.freegifts' %}
+  {% assign scripttags = content_for_header | split: 'var urls = ["' %}
+  {% if scripttags.size > 1 %}
+    {% assign scripttags = scripttags[1] %}
+    {% assign scripttags = scripttags | split: '"];' %}
+    {% if scripttags.size > 1 %}
+      {% assign scripttags = scripttags[0] %}
+      {% assign scripttags = scripttags | split: '","' %}
+    {% endif %}
+  {% endif %}
+
+  {% assign fg_script_url = "" %}
+    {% for url in scripttags %}
+      {% if url contains "secomapp.com\/freegifts\/app\/"%}
+        {% assign fg_script_url = url %}
+      
+      {% endif %}
+    {% endfor %}
+
+  {% if fg_script_url !="" %}
+    {% assign content_for_header = content_for_header | remove: fg_script_url %}
+  {% endif %}
+  {% if fg_script_url !="" %}    
+    <!--[if (gt IE 9)|!(IE)]><!--><script src="{{ fg_script_url |remove:"\" }}"></script><!--<![endif]-->
+    <!--[if lte IE 9]><script src="{{ fg_script_url |remove:"\" }}"></script><![endif]-->
+  {% endif %}
+  
+  {{ content_for_header }}
+
+  <script>
+    Shopify.money_format = {{ shop.money_format | json }};
+  </script>
+  
+  <!-- Begin eTrusted bootstrap tag -->
+	<script src="https://integrations.etrusted.com/applications/widget.js/v2" async defer></script>
+  <!-- End eTrusted bootstrap tag -->
+
+  {% render 'shogun-head' %}
+
+  {% include 'GTM-product-datalayer' %}
+{% render "geo" %}
+{{ 'wiremo-styles.css' | asset_url | stylesheet_tag }}
+{% comment %}}
+ {% render "wiremo-installed" %}
+{% endcomment %}
+ 
+{% render 'digismoothie-giftbox' %}
+  
+    <script
+    src="https://together-commerce.s3.eu-central-1.amazonaws.com/together_analytics.js">
+    </script>
+<script type="text/javascript" src="https://cdn.sales.partner.stylight.net/v1/st.min.js"></script>
+  
+
+
+  
+  {% include "globale-js.liquid" %}
+{% include 'sm-red' %}{% comment %}ly_dir_styles_begin{% endcomment %}{%- assign language_code = '_' | append: request.locale.iso_code -%}{%- if '_ar_ha_he_fa_ks_ku_ps_ur_yi' contains language_code -%}{{- 'ly-rtl.css' | asset_url | stylesheet_tag -}}{%- endif -%}{% comment %}ly_dir_styles_end{% endcomment %}</head>
+
+
+{%- assign homepage_divider_col_opacity = settings.homepage_divider_col | color_extract: 'alpha' -%}
+<body class="template-{{ template.name }} {% if template.suffix != blank %}template-sfx-{{ template.suffix }}{% endif %} {% if template.directory != blank %}template-dir-{{ template.directory }}{% endif %}"
+      data-cc-animate-timeout="80">
+  {% render 'elevar-body-end' %}
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRNWGS8" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+{% if settings.animations_enabled_desktop %}
+  <script>
+    document.body.classList.add("cc-animate-enabled");
+  </script>
+{% endif %}
+  
+<a class="skip-link visually-hidden" href="#content">{{ 'general.accessibility_labels.skip_to_content' | t }}</a>
+
+{% section 'cart-drawer' %}
+
+<div id="page-wrap">
+  <div id="page-wrap-inner">
+    <a id="page-overlay" href="#" aria-controls="mobile-nav" aria-label="{{ 'layout.header.close_mobile_nav_aria_label' | t | escape }}"></a>
+
+    <div id="page-wrap-content">
+      {% section 'announcement-bar' %}
+      {% section 'header' %}
+
+      <main id="content">
+        <div id="redorerLayouver" class="redorerLayouver DN"></div>
+        <div id="reorderPopup" class="container reorderPopup DN">
+          <div class="body">
+            <div class="content-rdr no-label">
+              <div class="title">Reorder</div>
+              <div class="description-rdr">Please enter the email address you used for your last order. We will then send you a personal link which you can use to directly reorder your skin care products.</div>
+       <!--       <form novalidate="" class="form valid pristine">-->
+                <div class="fieldsrdr">
+                  <div class="fieldrdr email first last valid">
+                    <input id="emailRedorder" class="input-text" required="" type="email" name="email" autocomplete="off" placeholder="Enter the email of your last order.">
+                    <div class="errorMessageReorder">
+                      <span class="errReorderMessage DN">Error message</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="buttons">
+                  <button type="submit" class="buttonrdr primary" onclick="sendReorderMail()">Reorder</button>
+                </div>
+          <!--    </form>-->
+            </div>
+          </div>
+          <div type="button" class="closerdr CP" onclick="closeRedorderPopUp()"></div>
+        </div>
+
+  <div id="skinTestPopup" class="container reorderPopup taketheTestPopup  DN">
+          <div class="body">
+            <div class="content-rdr no-label">
+              <div class="title">Skin test result</div>
+              <div class="description-rdr">Please enter the email address you used for your Skin test. We will then send you a personal link which you can use to directly see your personalized day and night cream.</div>
+          <!--    <form novalidate="" class="form valid pristine">-->
+                <div class="fieldsrdr">
+                  <div class="fieldrdr email first last valid">
+                    <input id="emailSkinTest" class="input-text" required="" type="email" name="email" autocomplete="off" placeholder="Enter the email of your Skin test.">
+                    <div class="errorMessageReorder">
+                      <span class="errReorderMessage DN">Error message</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="buttons">
+                  <button type="submit" class="buttonrdr primary" onclick="sendSkinTestMail()">View Result</button>
+                </div>
+           <!-- </form>-->
+            </div>
+          </div>
+          <div type="button" class="closerdr CP" onclick="closeRedorderPopUp()"></div>
+        </div>
+        {{ content_for_layout }}
+      </main>
+    </div><!-- /#page-wrap-content -->
+
+    {% section 'footer' %}
+  </div>
+</div><!-- /#page-wrap -->
+
+{% section 'popup' %}
+
+<script>
+  class ImageLazyLoaderInstance {
+    constructor() {
+      this.intersectionObserver = null;
+      this.bindObservers();
+      this.loadLazyImages();
+    }
+
+    static debounce(func, timeout = 300) {
+      let timer;
+      return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+          func.apply(this, args);
+        }, timeout);
+      };
+    }
+
+    loadLazyImage(img) {
+      const imgLazySrc = img.getAttribute('data-lazy-src'),
+        imgLazyBg = img.getAttribute('data-lazy-bg');
+
+      if(!imgLazySrc && !imgLazyBg) {
+        console.warn('CC', 'Unable to load lazy image, no URL specified', img);
+        return;
+      }
+
+      const imageLoadHandler = (newSrc) => {
+        if(imgLazySrc) {
+          img.setAttribute('src', newSrc);
+        } else {
+          img.style.backgroundImage = `url('${newSrc}')`;
+        }
+
+        // When images are lazy loaded, add a class to any text shadow containers
+        const closestTextShadow = img.closest('.has-tint--shadow');
+        if (closestTextShadow) {
+          closestTextShadow.classList.add('has-tint--shadow-in');
+        }
+
+        // Remove lazy placeholder
+        if (img.parentElement.classList.contains('lazyload--placeholder')) {
+          img.parentElement.classList.remove('lazyload--placeholder');
+        }
+
+        img.setAttribute('data-lazy-loaded', true);
+      }
+
+      // Find the closest parent with a width
+      let imgWidth = img.clientWidth;
+      if (imgWidth === 0) {
+        let getWidth = function (imgParent) {
+          return imgParent.clientWidth > 0 ? imgParent.clientWidth : getWidth(imgParent.parentElement);
+        }
+        imgWidth = getWidth(img.parentElement);
+      }
+
+        // Get the nearest width which is higher than this images width
+      let closestWidth = 2048;
+      for (let num of [80, 120, 180, 220, 300, 360, 460, 540, 720, 900, 1080, 1296, 1512, 1728, 2048]) {
+        if (num > imgWidth) {
+          closestWidth = num;
+          break;
+        }
+      }
+
+      // Load the image
+      if(imgLazySrc || imgLazyBg){
+        const imgUrl = imgLazySrc ? imgLazySrc : imgLazyBg,
+          oldSrc = img.getAttribute('src') || img.style.backgroundImage,
+          newSrc = imgUrl.replace('{width}x', closestWidth + (window.devicePixelRatio > 1 || window.innerWidth <= 1024 ? 'x@2x' : 'x'));
+
+        if (!oldSrc || oldSrc !== newSrc) {
+          const tempImage = new Image();
+          tempImage.addEventListener('load', () => imageLoadHandler(newSrc));
+          tempImage.src = newSrc;
+        }
+      }
+    }
+
+    loadLazyImages(recheckImages) {
+      let selectorSuffix = recheckImages ? '' : ':not([data-lazy-loaded="true"])';
+
+      // If image lazy loading is supported
+      if ('loading' in HTMLImageElement.prototype) {
+        document.querySelectorAll(`[data-lazy-src]${selectorSuffix}`).forEach(this.loadLazyImage);
+        if(this.intersectionObserver) {
+          document.querySelectorAll(`[data-lazy-bg]${selectorSuffix}`).forEach(imgBg => {
+            this.intersectionObserver.observe(imgBg);
+          });
+        }
+      } else if (this.intersectionObserver) {
+        document.querySelectorAll(`[data-lazy-src]${selectorSuffix},[data-lazy-bg]${selectorSuffix}`).forEach(img => {
+          this.intersectionObserver.observe(img);
+        });
+      } else {
+        // Lazy loading and intersection observer not supported, fallback!!
+        document.querySelectorAll(`[data-lazy-src]${selectorSuffix},[data-lazy-bg]${selectorSuffix}`).forEach(this.loadLazyImage);
+      }
+    }
+
+    bindObservers() {
+      // Observe scrolling where needed
+      if ('IntersectionObserver' in window) {
+        this.intersectionObserver = new IntersectionObserver(
+          (entries, observer) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                const img = entry.target;
+                observer.unobserve(img);
+                this.loadLazyImage(img);
+              }
+            });
+          }, {
+            // Start lazy loading when within 200px of the image
+            rootMargin: '0px 0px 400px 0px',
+            threshold: 0.01
+          }
+        );
+      }
+
+      // Observe window resize events
+      window.addEventListener('resize', ImageLazyLoaderInstance.debounce(() => this.loadLazyImages(true)));
+
+      window.addEventListener("load", () => {
+        // Observe DOM changes
+        const observer = new MutationObserver(ImageLazyLoaderInstance.debounce(() => {
+          this.loadLazyImages();
+
+          // Broadcast an event for future usage
+          document.documentElement.dispatchEvent(
+            new CustomEvent('theme:body-dom-change', {bubbles: true, cancelable: false})
+          );
+        }, 10));
+
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true
+        });
+      });
+    }
+  }
+
+  window.theme = window.theme || {};
+  theme.imageLazyLoader = new ImageLazyLoaderInstance();
+
+  /* Check for full width sections */
+  theme.assessFullWidthSections = function() {
+    document.querySelectorAll('.has-alt-bg').forEach(elem => elem.classList.remove('last-alt-bg'));
+    document.querySelectorAll('.has-full-width-section').forEach(elem => elem.classList.remove('last-full-width-section'));
+    document.querySelectorAll('#content .shopify-section > .use-alt-bg').forEach(elem => elem.parentElement.classList.add('has-alt-bg'));
+    document.querySelectorAll('#content .shopify-section > .full-width-section').forEach(elem => {
+      const section = elem.parentElement;
+      section.classList.add('has-full-width-section');
+      if (section.parentElement.lastElementChild === section) {
+        section.classList.add('last-full-width-section');
+      }
+    });
+  };
+  theme.assessFullWidthSections();
+</script>
+  
+ 
+
+  
+<script src="{{ 'vendor.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'theme.min.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'custom.js' | asset_url }}" defer="defer"></script>
+{% comment %}
+<script src="{{ 'currency_selector.min.js' | asset_url }}" defer="defer"></script>
+{% endcomment %}
+
+
+
+
+  
+
+{% render 'body-end-tag' %}
+{{ 'instant.js' | asset_url | script_tag }}
+  
+  
+ 
+  {% include 'js-translations' %}
+  <script src="https://www.dwin1.com/24768.js" type="text/javascript" defer="defer"></script>
+
+
+  
+  <!-- CRITEO START -->
+{% render 'criteo-tracking' %}
+<!-- CRITEO END -->
+
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TRNWGS8"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+{% comment %}
+{% render 'spurit_ufp2_theme_snippet' %}
+{% render 'special-offers' %}
+{% endcomment %}
+  
+
+
+  {% if fg_script_url !="" %}    
+    <script src="{{ fg_script_url |remove:'\' }}"></script>    
+  {% endif %}
+  
+<!-- langify-v2-scripts-begin -->{% comment %}ly_liquid_scripts_begin{% endcomment %}{% endcapture %}{% render 'ly-liquid-scripts' content: ly_liquid_content %}{% comment %}ly_liquid_scripts_end{% endcomment %}{% comment %}ly_core_scripts_begin{% endcomment %}{% render 'ly-core-scripts' %}{% comment %}ly_core_scripts_end{% endcomment %}{% comment %}ly_switcher_factory_begin{% endcomment %}{% render 'ly-switcher-factory' %}{% comment %}ly_switcher_factory_end{% endcomment %}<!-- langify-v2-scripts-end --></body>
+
+   <style>
+    
+    [id^="quiz-kit-results-wrapper"],
+#quiz-kit-result-advanced-wrapper {
+display: none;
+};
+
+  </style>
+
+<style>
+  @media screen and (min-width: 768px) {
+.slideshow .image-overlay .inner:not(.container) div.line-3 {
+    flex-direction: row !important;
+}
+}
+</style>
+
+    <style>
+
+    #quiz-kit-question-47662 #noteEmail {
+   bottom:40px;
+ }
+
+  #quiz-kit-question-47814 #noteEmail {
+   bottom:40px;
+ }
+
+
+@media only screen and (max-width: 768px){
+ #quiz-kit-question-47662 #noteEmail {
+   bottom:0px;
+ }
+  #quiz-kit-question-47814 #noteEmail {
+   bottom:0px;
+ }
+
+}
+
+
+    </style>
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+  
+  <script>
+    function frameLoaded() {
+    	window.addEventListener( "message", ( event ) => {
+    		const { data } = event;
+            if( data.label == 'skin_id' ) {
+              //skinId = data.request.id;
+            }
+            if( data.label == 'results' ) {
+              var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+              getItem["q7"]["faceScan"] = data.request;
+              localStorage.setItem('quiz_answers3',JSON.stringify(getItem) );
+              $( 'button:contains(Skip)' ).text( 'Next' );
+              $( 'button:contains(Überspringen)' ).text( 'Nächste' );
+            }
+    	} );
+    }
+    let skinId = "";
+    let accessToken = "";
+     
+    function routineListBackEd(val){
+      var actualVal = val.toLowerCase();
+      var backEdVal = "";
+      if(actualVal == "cleanser." || actualVal == "reiniger." ){
+        backEdVal = "Cleanser"
+      } else if(actualVal == "face mask." || actualVal == "gesichtsmaske."){
+        backEdVal = "Face Mask"
+      }else if(actualVal == "serum." || actualVal == "serum."){
+        backEdVal = "Serum"
+      }else if(actualVal == "toner." || actualVal == "toner."){
+        backEdVal = "Toner"
+      }else if(actualVal == "day cream." || actualVal == "tagescreme."){
+        backEdVal = "DayCream"
+      }else if(actualVal == "make-up remover." || actualVal == "make-up entferner."){
+        backEdVal = "MakeUpRemover"
+      }else if(actualVal == "other." || actualVal == "anderes."){
+        backEdVal = "Other"
+      }else if(actualVal == "eye cream." || actualVal == "augencreme."){
+        backEdVal = "Eye Cream"
+      }else if(actualVal == "face oil." || actualVal == "gesichtsöl."){
+        backEdVal = "Face Oil"
+      }else if(actualVal == "sunscreen." || actualVal == "sonnenschutz."){
+        backEdVal = "Sun Cream"
+      }else if(actualVal == "night cream." || actualVal == "nachtcreme."){
+        backEdVal = "NightCream"
+      }
+      return backEdVal;
+    }
+    
+    
+    function skinImprovementListBackEd(val){
+      var actualVal = val.toLowerCase();
+      var backEdVal = "";
+      console.log(actualVal);
+      if(actualVal == "increase hydration." || actualVal == "mehr feuchtigkeit."){
+        backEdVal = "MehrFeuchtigkeit"
+      } else if(actualVal == "reduce pigmentation spots." || actualVal == "weniger pigmentflecken."){
+        backEdVal = "WenigerPigmentflecken"
+      } else if(actualVal == "reduce redness." || actualVal == "weniger rötungen."){
+        backEdVal = "Reddening"
+      } else if(actualVal == "increase skin glow."  || actualVal == "strahlender teint."){
+        backEdVal = "StrahlendererTeint"
+      } else if(actualVal == "protection from display light, e.g., from your phone or laptop." || actualVal == "schutz vor display-licht, z.b. vom smartphone oder laptop."){
+        backEdVal = "BlueLightProtection"
+      } else if(actualVal == "protection from pollution, e.g. harmful particles associated with air pollution." || actualVal == "schutz gegen umwelteinflüsse, z.b. feinstaub"){
+        backEdVal = "AntiPollution"
+      } else if(actualVal == "reduce fine lines or wrinkles." || actualVal == "weniger falten."){
+        backEdVal = "Falten"
+      } else if(actualVal == "reduce impurities, e.g., pimples." || actualVal == "weniger unreinheiten, z.b. weniger pickel."){
+        backEdVal = "ReinereHaut"
+      } else if(actualVal == "reduce pigmentation spots." || actualVal == "weniger pigmentflecken."){
+        backEdVal = "WenigerPigmentflecken"
+      } else if (actualVal == "refine pores (smaller pores)." || actualVal == "verfeinerung des porenbildes (kleinere poren)." ){
+        backEdVal = "PorenVerfeinerung"
+      } else {
+        backEdVal = "WenigerAustrocknung"
+      }
+            
+      return backEdVal;
+      
+    } 
+    
+    
+    function weeklySportsBackEd(val){
+       var actualVal = val.toLowerCase();
+      var backEdVal = "";
+      if(actualVal == "water sport." || actualVal == "wassersport."){
+        backEdVal = "WaterSports";
+      } else if(actualVal == "indoor workout." ){
+        backEdVal = "IndoorWorkout";
+      }else if(actualVal == "outdoor workout."){
+        backEdVal = "OutdoorWorkout";
+      }else {
+        backEdVal = "NoSports";
+      }
+      return backEdVal;
+    }
+    
+    function nutritionListBackEd(val){
+       var actualVal = val.toLowerCase();
+      var backEdVal = "";
+      if(actualVal == "alcohol." || actualVal == "alkohol."){
+        backEdVal = "alcohol";
+      } else if(actualVal == "junk food." || actualVal == "fast food."){
+        backEdVal = "junkfood";
+      }else if(actualVal == "coffee." || actualVal == "kaffee."){
+        backEdVal = "coffee";
+      }else {
+        backEdVal = "none";
+      }
+      return backEdVal;
+    }
+    
+    //47630
+    
+  $(document).on('click', '#quiz-kit-question-image-box-47630', function(){
+    console.log($(this).find("h3").text());
+   var pigmentTypeVal = $(this).find("h3").text();
+   var pigmentVal = 0;
+   var objTemp = {};
+   if(pigmentTypeVal === "Typ I" ) {
+     pigmentVal = 0;
+   }else if(pigmentTypeVal === "Typ II") {
+     pigmentVal = 1;
+   }else if(pigmentTypeVal === "Typ III") {
+     pigmentVal = 2;
+   }else if(pigmentTypeVal === "Typ IV") {
+     pigmentVal = 3;
+   }else if(pigmentTypeVal === "Typ V") {
+     pigmentVal = 4;
+   }else if(pigmentTypeVal === "Typ VI") {
+     pigmentVal = 5;
+   }
+    objTemp["q7"] = { "pigmenttationType" :pigmentVal} 
+    objTemp["q7"]["pigmenttationType"] =  pigmentVal;
+    objTemp["q7"]["faceScan"] = null;
+ // localStorage.setItem('quiz_answers1', JSON.stringify(objTemp));
+    localStorage.setItem('quiz_answers3', JSON.stringify(objTemp));
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+     getItem["q7"]["faceScan"] = null;
+    localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  
+});
+ 
+    //47710
+    
+$(document).on('click', '#quiz-kit-question-next-button', function(){
+  
+ if (localStorage.getItem("quiz_answers3") !== "") {
+   var parentCont =  $(this).parent().parent().closest('div');
+   var checkInputType = parentCont.find("h1").attr("id");
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+   if(checkInputType == "quiz-kit-question-title-47635"){
+      getItem["q7"]["age"] =  parentCont.find("input").val();
+   }else if (checkInputType == "quiz-kit-question-title-47631") {
+      getItem["q7"]["firstName"] =  parentCont.find("input").val();
+   } else if (checkInputType == "quiz-kit-question-title-47661") {
+      getItem["q7"]["zipcode"] =  parentCont.find("input").val();
+   } else if (checkInputType == "quiz-kit-question-title-47662") {
+      getItem["q7"]["email"] =  parentCont.find("input").val();
+   }else if (checkInputType == "quiz-kit-question-title-47710") {
+      getItem["q7"]["allergyDisclaimerAck"] =  "1";
+   }else if (checkInputType == "quiz-kit-question-title-47711") {
+      getItem["q7"]["dermatologistAck"] =  "1";
+   } 
+   else if (checkInputType == "quiz-kit-question-title-47645") {
+     var routineNameList = [];
+    $(".active-class").each(function() {
+      var routineName = $(this).text();
+      routineNameList.push(routineListBackEd(routineName));
+    })
+    getItem["q7"]["skincareRegime"] = routineNameList;
+   } 
+   
+   else if (checkInputType == "quiz-kit-question-title-47647") { 
+     var skinImprovementList = [];
+    $(".active-class").each(function() {
+      var skinImprovementName = $(this).text();
+      skinImprovementList.push(skinImprovementListBackEd(skinImprovementName));
+    })
+    getItem["q7"]["skinImprovement"] = skinImprovementList;
+    
+   } else if (checkInputType == "quiz-kit-question-title-47651") {
+     var weeklySportsList = [];
+    $(".active-class").each(function() {
+      var weeklySportsName = $(this).text();
+      weeklySportsList.push(weeklySportsBackEd(weeklySportsName));
+    })
+    getItem["q7"]["weeklySports"] = weeklySportsList;
+   } else if (checkInputType == "quiz-kit-question-title-47655") {
+     var nutritionList = [];
+    $(".active-class").each(function() {
+      var nutritionName = $(this).text();
+      nutritionList.push(nutritionListBackEd(nutritionName));
+    })
+    getItem["q7"]["nutrition"] = nutritionList;
+   } else if(checkInputType == "quiz-kit-question-title-47663") {
+     var productDayName = $(this).find("input").val();
+     getItem["q7"]["scent"] = "NoFragrance";
+  //   getItem["q7"]["product"] = {};
+     getItem["q7"]["product"]= { "name":parentCont.find("input").val()}; 
+     
+   } else if(checkInputType == "quiz-kit-question-title-47664") {
+     var productNightName = $(this).find("input").val();
+     getItem["q7"]["nightCremeScent"] = "NoFragrance";
+  //   getItem["q7"]["nightCremeProduct"] = {};
+     getItem["q7"]["nightCremeProduct"] = { "name":parentCont.find("input").val()};
+   }
+   
+   localStorage.setItem('quiz_answers3',JSON.stringify(getItem) );
+   
+   if (checkInputType == "quiz-kit-question-title-47662") {
+   //   var testData = {"main":false,"email":"francisco+231@aveandyou.com","firstName":"ereg","lastName":"","quiz":{"questionnaireId":"q7","answers":{"lastName":"","pigmentationType":"0","firstName":"ereg","age":"23","gender":"Male","skinSensitivity":"2","skinType":"normal","skinSituationMorning":"Normal","skinSituationEvening":"Normal","visibleVeins":"no","reddening":"1","shavingIrritations":"2","faceScan":null,"skincareRegime":["Cleanser","Toner","Serum"],"skinImprovement":["MehrFeuchtigkeit","WenigerPigmentflecken","Reddening"],"hautUnreinheiten":[],"unreinheitenZonen":[],"wrinkles":0,"lifestyleBegin":"1","urbanEnvironment":"4","smoking":"4","flyingFrequency":"4","weeklySports":["WaterSports","IndoorWorkout","OutdoorWorkout"],"stressLevel":"2","sunExposition":"3","bluelightExposition":"3","nutrition":["alcohol","junkfood","coffee"],"glassWaterIntake":"4","sleep":"8","skinAllergies":"no","allergyDisclaimerAck":"1","dermatologistTreatment":"no","dermatologistAck":"1","richness":"reichhaltiger","countryCode":"DE","zipcode":"10719","email":"francisco+231@aveandyou.com"},"utmParams":{},"locale":"en","isDirectPurchase":false},"isDirectPurchase":false,"creamVersion":"21"}
+    
+     var quizData = {};
+      var getStorageData = JSON.parse(localStorage.getItem('quiz_answers3'));
+      quizData["main"] = false;
+      quizData["email"] = getStorageData["q7"]["email"];
+      quizData["firstName"] = getStorageData["q7"]["firstName"];
+      quizData["lastName"] = "";
+      quizData["quiz"] = {};
+      quizData["quiz"]["questionnaireId"] = "q7";
+      quizData["quiz"]["answers"] = getStorageData["q7"];
+      quizData["quiz"]["utmParams"] =  {};
+      quizData["quiz"]["locale"] =  "de";
+      quizData["quiz"]["isDirectPurchase"] =  false;
+      quizData["isDirectPurchase"] = false;
+      quizData["creamVersion"] = "21";
+      quizData["featureRecMS"] = true;
+     console.log(JSON.stringify(quizData));
+     console.log(quizData);
+      
+      var tries = 0;
+      var saveData = $.ajax({
+      type: 'POST',
+      url: "https://europe-west1-metrics-production-1.cloudfunctions.net/saveAnswersNewMapping",
+      data: quizData,
+      dataType: "text",
+      // beforeSend: function() {
+      //   setTimeout( function(){
+      //     // Disable the next button while sending data
+      //     $( '#quiz-kit-question-next-button' ).prop( 'disabled', true );
+      //     $( '#quiz-kit-question-next-button span' ).html( '<img src="https://cdn.shopify.com/s/files/1/0057/5268/4611/files/Spin-1s-16px.gif?v=1673265860">' );
+      //   }, 500 );
+      // },
+      success: function(resultData) {
+        setTimeout( function(){
+          var restData = JSON.parse(resultData);
+           skinId =  restData.skinId;
+           accessToken =  restData.answerAccessToken;
+           console.log("tokens");
+           console.log(accessToken);
+           console.log(skinId);
+          
+           // Enable the next button after successful sent
+           // $( '#quiz-kit-question-next-button' ).prop( 'disabled', false );
+           // $( '#quiz-kit-question-next-button span' ).html( 'NEXT' );
+        }, 500 );
+      },
+      error: function( data ) {
+        var ajax_ = this;
+        setTimeout( function() {
+          if( tries < 5 ) {
+            console.log( 'retrying...' );
+            tries ++;
+            $.ajax( ajax_ );
+          }
+        }, 3000 );
+      }
+});
+ //saveData.error(function() { alert("Something went wrong"); });
+     
+   }
+     
+      if (checkInputType == "quiz-kit-question-title-47664") {
+        
+          console.log("tok");
+        var quizDataSaveRemaining = {};
+        var getStorageData = JSON.parse(localStorage.getItem('quiz_answers3'));
+        console.log(getStorageData);
+        quizDataSaveRemaining["skinId"] = skinId;
+        quizDataSaveRemaining["answerAccessToken"] = accessToken;
+        console.log("tokens1");
+        quizDataSaveRemaining["scent"] = getStorageData["q7"]["scent"];
+        quizDataSaveRemaining["nightCremeScent"] = getStorageData["q7"]["nightCremeScent"];
+        quizDataSaveRemaining["main"] = true;
+        quizDataSaveRemaining["DirectPurchase"] = false;
+        quizDataSaveRemaining["answers"] = {};
+        console.log("tokens3");
+        quizDataSaveRemaining["answers"]["product"] = {"name":getStorageData["q7"]["product"]["name"]};
+        quizDataSaveRemaining["answers"]["nightCremeProduct"] = {"name":getStorageData["q7"]["nightCremeProduct"]["name"]};
+        quizDataSaveRemaining["creamVersion"] = 21;
+        
+        console.log(quizDataSaveRemaining)
+         var saveDataRemaining = $.ajax({
+         type: 'POST',
+         url: "https://europe-west1-metrics-production-1.cloudfunctions.net/saveRemainingAnswersNewMapping",
+         data: quizDataSaveRemaining,
+         dataType: "text",
+        success: function(resultData) { 
+         console.log(resultData)
+      //   var restData = JSON.parse(resultData);
+         accessToken =  resultData;
+      }
+});
+      }
+      
+      
+}
+ // objTemp["q7"] = { "firstName" : "2" };
+});
+    
+//visible viens 47784
+    
+  
+    
+     $(document).on('click', '#quiz-kit-question-radio-box-47706', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var visibleViens = $(this).text();
+    var visibleViensVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(visibleViens.toLowerCase() === "ja." ) {
+     getItem["q7"]["visibleVeins"] = "yes";
+   }else  {
+     getItem["q7"]["visibleVeins"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+     
+       
+  $(document).on('click', '#quiz-kit-question-radio-box-47658', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinAllergies = $(this).text();
+    var skinAllergiesVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinAllergies.toLowerCase() === "ja." ) {
+     getItem["q7"]["skinAllergies"] = "yes";
+   }else  {
+     getItem["q7"]["skinAllergies"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    }) 
+  
+  //dermatologistTreatment
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47659', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var dermatologistTreatment = $(this).text();
+    var dermatologistTreatmentVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(dermatologistTreatment.toLowerCase() === "ja." ) {
+     getItem["q7"]["dermatologistTreatment"] = "yes";
+   }else  {
+     getItem["q7"]["dermatologistTreatment"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+    //47790
+     $(document).on('click', '#quiz-kit-question-radio-box-47708', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var pregnancy = $(this).text();
+    var pregnancyVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(pregnancy.toLowerCase() === "ja." ) {
+     getItem["q7"]["pregnancy"] = "yes";
+   }else  {
+     getItem["q7"]["pregnancy"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+     
+       $(document).on('click', '#quiz-kit-question-radio-box-47709', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var menopause = $(this).text();
+    var menopauseVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(menopause.toLowerCase() === "ja." ) {
+     getItem["q7"]["menopause"] = "yes";
+   }else  {
+     getItem["q7"]["menopause"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+
+    
+    //47636
+    
+  $(document).on('click', '#quiz-kit-question-radio-box-47636', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var genderType = $(this).text();
+    var genderVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(genderType.toLowerCase() === "männlich." ) {
+     getItem["q7"]["gender"] = "male";
+   }else if(genderType.toLowerCase() === "weiblich.") {
+     getItem["q7"]["gender"] = "female";
+   }else  {
+     getItem["q7"]["gender"] = "Nonbinary";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+  //47712
+   $(document).on('click', '#quiz-kit-question-text-box-47712', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var sensitiveType = $(this).find("h3").text();
+    var sensitiveVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(sensitiveType.toLowerCase() === "unempfindlich." ) {
+     getItem["q7"]["skinSensitivity"] = "0";
+   }else if(sensitiveType.toLowerCase() === "empfindlich.") {
+     getItem["q7"]["skinSensitivity"] = "2";
+   }else  {
+     getItem["q7"]["skinSensitivity"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+   
+   //47640
+   $(document).on('click', '#quiz-kit-question-radio-box-47640', function() {
+      
+      if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinType = $(this).text();
+    var skinVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinType.toLowerCase() === "sehr trocken" ) {
+     getItem["q7"]["skinType"] = "VeryDry";
+   }else if(skinType.toLowerCase() === "trocken") {
+     getItem["q7"]["skinType"] = "Dry";
+   }else if(skinType.toLowerCase() === "mischhaut (trocken und fettig)") {
+     getItem["q7"]["skinType"] = "Mischhaut";
+   }else if(skinType.toLowerCase() === "fettig") {
+     getItem["q7"]["skinType"] = "Oily";
+   }else  {
+     getItem["q7"]["skinType"] = "normal";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+   
+   //47641
+    $(document).on('click', '#quiz-kit-question-radio-box-47641', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinSituationMorning = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinSituationMorning.toLowerCase() === "trocken und spannend." ) {
+     getItem["q7"]["skinSituationMorning"] = "TrockenUndSpannend";
+   }else if(skinSituationMorning.toLowerCase() === "trocken in bestimmten zonen.") {
+     getItem["q7"]["skinSituationMorning"] = "TrockenInBestimmtenZonen";
+   }else if(skinSituationMorning.toLowerCase() === "fettig.") {
+     getItem["q7"]["skinSituationMorning"] = "Fettig";
+   }else if(skinSituationMorning.toLowerCase() === "fettig nur in der t-zone (stirn, nase, kinn).") {
+     getItem["q7"]["skinSituationMorning"] = "FettigTZone";
+   }else if(skinSituationMorning.toLowerCase() === "normal") {
+     getItem["q7"]["skinSituationMorning"] = "Normal";
+   } else  {
+     getItem["q7"]["skinSituationMorning"] = "DontKnow";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+  }
+    })
+  
+    
+   //47642
+  $(document).on('click', '#quiz-kit-question-radio-box-47642', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinSituationEvening = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinSituationEvening.toLowerCase() === "trocken und spannend." ) {
+     getItem["q7"]["skinSituationEvening"] = "TrockenUndSpannend";
+   }else if(skinSituationEvening.toLowerCase() === "trocken in bestimmten zonen.") {
+     getItem["q7"]["skinSituationEvening"] = "TrockenInBestimmtenZonen";
+   }else if(skinSituationEvening.toLowerCase() === "fettig.") {
+     getItem["q7"]["skinSituationEvening"] = "Fettig";
+   }else if(skinSituationEvening.toLowerCase() === "fettig nur in der t-zone (stirn, nase, kinn).") {
+     getItem["q7"]["skinSituationEvening"] = "FettigTZone";
+   }else if(skinSituationEvening.toLowerCase() === "normal.") {
+     getItem["q7"]["skinSituationEvening"] = "Normal";
+   } else  {
+     getItem["q7"]["skinSituationEvening"] = "DontKnow";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+    
+
+   
+     $(document).on('click', '#quiz-kit-question-radio-box-47643', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+     var reddeningType = $(this).text();
+    var reddeningVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(reddeningType.toLowerCase() === "nie." ) {
+     getItem["q7"]["reddening"] = "0";
+   }else if(reddeningType.toLowerCase() === "manchmal.") {
+     getItem["q7"]["reddening"] = "1";
+   }else  {
+     getItem["q7"]["reddening"] = "2";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+  }
+    })
+   
+ 
+  
+    //47644
+  
+   $(document).on('click', '#quiz-kit-question-radio-box-47644', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var shavingIrritations = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(shavingIrritations.toLowerCase() === "niemals." ) {
+     getItem["q7"]["shavingIrritations"] = "0";
+   }else if(shavingIrritations.toLowerCase() === "manchmal." )  {
+     getItem["q7"]["shavingIrritations"] = "1";
+   }else if(shavingIrritations.toLowerCase() === "häufig." )  {
+     getItem["q7"]["shavingIrritations"] = "2";
+   }else   {
+     getItem["q7"]["shavingIrritations"] = "3";
+   } 
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+ })
+   
+   //47648
+    $(document).on('click', '#quiz-kit-question-image-box-47648', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var urbanEnvironment = $(this).find("h3").text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(urbanEnvironment.toLowerCase() === "auf dem land." ) {
+     getItem["q7"]["urbanEnvironment"] = "0";
+   }else if(urbanEnvironment.toLowerCase() === "in einem dorf." )  {
+     getItem["q7"]["urbanEnvironment"] = "1";
+   }else if(urbanEnvironment.toLowerCase() === "in einer kleinstadt." )  {
+     getItem["q7"]["urbanEnvironment"] = "2";
+   }else if (urbanEnvironment.toLowerCase() === "in einer stadt.")  {
+     getItem["q7"]["urbanEnvironment"] = "3";
+   } else {
+     getItem["q7"]["urbanEnvironment"] = "4";
+   }
+     localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+  }
+ })
+   
+    //47649
+     $(document).on('click', '#quiz-kit-question-radio-box-47649', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var smoking = $(this).text();
+  
+  var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(smoking.toLowerCase() === "nie." ) {
+     getItem["q7"]["smoking"] = "0";
+   } else if(smoking.toLowerCase() === "1-2 mal pro woche.") {
+     getItem["q7"]["smoking"] = "1";
+   } else if(smoking.toLowerCase() === "1-2 mal pro tag.") {
+     getItem["q7"]["smoking"] = "2";
+   } else if(smoking.toLowerCase() === "2-10 mal am tag.") {
+     getItem["q7"]["smoking"] = "3";
+   } else  {
+     getItem["q7"]["smoking"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+     
+  $(document).on('click', '#quiz-kit-question-radio-box-47650', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var flyingFrequency = $(this).text();
+  
+  var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(flyingFrequency.toLowerCase() === "nie." ) {
+     getItem["q7"]["flyingFrequency"] = "0";
+   } else if(flyingFrequency.toLowerCase() === "1-2 mal im jahr.") {
+     getItem["q7"]["flyingFrequency"] = "1";
+   } else if(flyingFrequency.toLowerCase() === "4-8 mal im jahr.") {
+     getItem["q7"]["flyingFrequency"] = "2";
+   } else if(flyingFrequency.toLowerCase() === "jeden monat.") {
+     getItem["q7"]["flyingFrequency"] = "3";
+   } else  {
+     getItem["q7"]["flyingFrequency"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+        
+        //47652
+  $(document).on('click', '#quiz-kit-question-radio-box-47652', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+   var stressLevel = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(stressLevel.toLowerCase() === "sehr entspannt." ) {
+     getItem["q7"]["stressLevel"] = "0";
+   } else if(stressLevel.toLowerCase() === "meistens entspannt.") {
+     getItem["q7"]["stressLevel"] = "1";
+   }else if(stressLevel.toLowerCase() === "entspannt.") {
+     getItem["q7"]["stressLevel"] = "2";
+   } else if(stressLevel.toLowerCase() === "manchmal gestresst.") {
+     getItem["q7"]["stressLevel"] = "3";
+   }  else  {
+     getItem["q7"]["stressLevel"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+   $(document).on('click', '#quiz-kit-question-radio-box-47653', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+   var sunExposition = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(sunExposition.toLowerCase() === "gar nicht." ) {
+     getItem["q7"]["sunExposition"] = "0";
+   } else if(sunExposition.toLowerCase() === "1-2 stunden.") {
+     getItem["q7"]["sunExposition"] = "1";
+   } else if(sunExposition.toLowerCase() === "3-4 stunden.") {
+     getItem["q7"]["sunExposition"] = "2";
+   } else if(sunExposition.toLowerCase() === "5-8 stunden.") {
+     getItem["q7"]["sunExposition"] = "3";
+   } else  {
+     getItem["q7"]["sunExposition"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47654', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+   var bluelightExposition = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(bluelightExposition.toLowerCase() === "gar nicht." ) {
+     getItem["q7"]["bluelightExposition"] = "0";
+   } else if(bluelightExposition.toLowerCase() === "1-2 stunden.") {
+     getItem["q7"]["bluelightExposition"] = "1";
+   } else if(bluelightExposition.toLowerCase() === "3-4 stunden.") {
+     getItem["q7"]["bluelightExposition"] = "2";
+   } else if(bluelightExposition.toLowerCase() === "5-8 stunden.") {
+     getItem["q7"]["bluelightExposition"] = "3";
+   } else  {
+     getItem["q7"]["bluelightExposition"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+   
+   //47656
+  
+   $(document).on('click', '#quiz-kit-question-radio-box-47656', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+   var glassWaterIntake = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(glassWaterIntake.toLowerCase() === "2 oder weniger." ) {
+     getItem["q7"]["glassWaterIntake"] = "0";
+   } else if(glassWaterIntake.toLowerCase() === "3-4.") {
+     getItem["q7"]["glassWaterIntake"] = "1";
+   } else if(glassWaterIntake.toLowerCase() === "5-6.") {
+     getItem["q7"]["glassWaterIntake"] = "2";
+   } else if(glassWaterIntake.toLowerCase() === "7-8.") {
+     getItem["q7"]["glassWaterIntake"] = "3";
+   } else  {
+     getItem["q7"]["glassWaterIntake"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+   
+   
+   //47657
+  $(document).on('click', '#quiz-kit-question-radio-box-47657', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+   var sleep = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(sleep.toLowerCase() === "3-4 stunden." ) {
+     getItem["q7"]["sleep"] = "4";
+   } else if(sleep.toLowerCase() === "5-6 stunden.") {
+     getItem["q7"]["sleep"] = "6";
+   } else if(sleep.toLowerCase() === "7-8 stunden.") {
+     getItem["q7"]["sleep"] = "8";
+   }  else  {
+     getItem["q7"]["sleep"] = "9+";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+  //47658
+  $(document).on('click', '#quiz-kit-question-radio-box-47658', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinAllergies = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinAllergies.toLowerCase() === "ja." ) {
+     getItem["q7"]["skinAllergies"] = "yes";
+   }else  {
+     getItem["q7"]["skinAllergies"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+ })
+     
+  //47660
+ $(document).on('click', '#quiz-kit-question-radio-box-47660', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var richness = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(richness.toLowerCase() === "weniger reichhaltig." ) {
+     getItem["q7"]["richness"] = "weniger-reichhaltig";
+   }else if(richness.toLowerCase() === "normal." ) {
+     getItem["q7"]["richness"] = "normal";
+   }else {
+     getItem["q7"]["richness"] = "reichhaltiger";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+ })
+ 
+ 
+  document.addEventListener('quizKitQuestionLoaded', function (e) {
+     setTimeout(function(){
+     $("#quiz-kit-question-wrapper-47663").find("picture").parent().css("position", "relative")
+      var input1 = $("#quiz-kit-question-wrapper-47663").find("input").val();
+       var inputVal = "";
+       if(input1 != ""){
+         inputVal = input1;
+       }
+       
+     $("#quiz-kit-question-wrapper-47663").find("picture").append('<div id="dayCreamName" style="position:absolute; bottom: 77px; left: 134px;font-family:RunWild; font-size:26px;">'+inputVal+'</div>');   
+    $("#quiz-kit-question-wrapper-47663").find("input").attr({ maxLength : 8 });
+       $("#quiz-kit-question-wrapper-47663").find("input").on('input',function(e){
+      
+         $("#quiz-kit-question-wrapper-47663").find("picture").find("#dayCreamName").text($(this).val());
+     });
+       
+    $("#quiz-kit-question-47662").append('<p id="noteEmail" style="position: absolute; font-size: 10px;line-height: 1.5; width: 100%;text-align: center;">*Wir verarbeiten für die Personalisierung und Verbesserung der Algorithmen auch besondere Kategorien personenbezogener Daten. Widerruf für die Zukunft jederzeit per E-Mail möglich.  <a style="text-decoration: underline !important;" href="https://aveandyou.com/pages/privacy-policy" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</a></p>')
+       
+       
+     $("#quiz-kit-question-wrapper-47664").find("picture").parent().css("position", "relative")
+    
+   
+       var input2 = $("#quiz-kit-question-wrapper-47664").find("input").val();
+       var inputVal2 = "";
+       if(input2 != ""){
+         inputVal2 = input2;
+       }
+       $("#quiz-kit-question-wrapper-47635").find("input").attr({ maxLength : 2 });
+        $("#quiz-kit-question-wrapper-47664").find("picture").append('<div id="nightCreamName" style="position:absolute; bottom: 77px; left: 134px;font-family:RunWild; font-size:26px;">'+inputVal2+'</div>');   
+
+       $("#quiz-kit-question-wrapper-47664").find("input").attr({ maxLength : 8 });
+       $("#quiz-kit-question-wrapper-47664").find("input").on('input',function(e){
+         $("#quiz-kit-question-wrapper-47664").find("picture").find("#nightCreamName").text($(this).val());
+     });
+       
+       $("#quiz-kit-question-wrapper-47780").find("button").on("click", function () {
+           const urlSearchParams = new URLSearchParams(window.location.search);
+           const params = Object.fromEntries(urlSearchParams.entries());
+         if (params.hasOwnProperty('skuBundle')) {
+                  var skuBundle= params.skuBundle;
+                  window.location.href = "https://aveandyou.com/products/product-detail?skinid="+skinId+"&token="+accessToken+"&skuBundle="+skuBundle;
+             }else if(params.hasOwnProperty('compaign') && params.compaign.toLowerCase() == "new_funnel") {
+            window.location.href = "https://aveandyou.com/products/your-personalized-formulations-test?skinid="+skinId+"&token="+accessToken;
+         }else{
+         window.location.href = "https://aveandyou.com/products/product-detail?skinid="+skinId+"&token="+accessToken;
+         }
+       })
+
+   $('input').on('keyup keypress', function(e) {
+  var keyCode = e.keyCode || e.which;
+  if (keyCode === 13) { 
+    e.preventDefault();
+    return false;
+  }
+});
+       
+     }, 500);
+
+       setTimeout(function(){
+         $("#quiz-kit-question-47663").find("#quiz-kit-container").css("opacity", "0");
+               }, 100);
+
+               setTimeout(function(){
+                    $("#quiz-kit-question-47663").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+                  }, 1000);
+
+    setTimeout(function(){
+         $("#quiz-kit-question-47664").find("#quiz-kit-container").css("opacity", "0");
+               }, 100);
+
+               setTimeout(function(){
+                    $("#quiz-kit-question-47664").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+                  }, 1000);
+    
+    setTimeout(function(){
+         $("#quiz-kit-question-47780").find("#quiz-kit-container").css("opacity", "0");
+               }, 100);
+
+               setTimeout(function(){
+                    $("#quiz-kit-question-47780").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+                  }, 1000);
+}, false);
+    
+    
+     $(document).on('click', "#quiz-kit-question-radio-box-47651", function() {
+       if ($(this).text().toLowerCase() == "wassersport." || $(this).text().toLowerCase() == "indoor workout." || $(this).text().toLowerCase() == "outdoor workout." ) {
+           $("#quiz-kit-question-radio-buttons-47651").find("button:eq(3)").removeClass("active-class");
+         }else{
+           $("#quiz-kit-question-radio-buttons-47651").find("button:eq(0)").removeClass("active-class");
+           $("#quiz-kit-question-radio-buttons-47651").find("button:eq(1)").removeClass("active-class");
+           $("#quiz-kit-question-radio-buttons-47651").find("button:eq(2)").removeClass("active-class");
+         }
+         
+       });
+    
+     $(document).on('click', "#quiz-kit-question-radio-box-47655", function() {
+       if ($(this).text().toLowerCase() == "nichts dergleichen.") {
+           $("#quiz-kit-question-radio-buttons-47655").find("button:eq(0)").removeClass("active-class");
+           $("#quiz-kit-question-radio-buttons-47655").find("button:eq(1)").removeClass("active-class");
+           $("#quiz-kit-question-radio-buttons-47655").find("button:eq(2)").removeClass("active-class");
+         }else{
+            $("#quiz-kit-question-radio-buttons-47655").find("button:eq(3)").removeClass("active-class");
+         }
+         
+       });
+ 
+    
+    //english script
+    
+    
+       /// skintest with new the template
+    
+  $(document).on('click', '#quiz-kit-question-image-box-47783', function(){
+    console.log($(this).find("h3").text());
+   var pigmentTypeVal = $(this).find("h3").text();
+   var pigmentVal = 0;
+   var objTemp = {};
+  var objTemp = {};
+   if(pigmentTypeVal === "Type I" ) {
+     pigmentVal = 0;
+   }else if(pigmentTypeVal === "Type II") {
+     pigmentVal = 1;
+   }else if(pigmentTypeVal === "Type III") {
+     pigmentVal = 2;
+   }else if(pigmentTypeVal === "Type IV") {
+     pigmentVal = 3;
+   }else if(pigmentTypeVal === "Type V") {
+     pigmentVal = 4;
+   }else if(pigmentTypeVal === "Type VI") {
+     pigmentVal = 5;
+   }
+
+    objTemp["q7"] = { "pigmenttationType" :pigmentVal} 
+    objTemp["q7"]["pigmenttationType"] =  pigmentVal;
+    objTemp["q7"]["faceScan"] = null;
+ // localStorage.setItem('quiz_answers1', JSON.stringify(objTemp));
+    localStorage.setItem('quiz_answers3', JSON.stringify(objTemp));
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+     getItem["q7"]["faceScan"] = null;
+    localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  
+});
+ 
+    
+    
+$(document).on('click', '#quiz-kit-question-next-button', function(){
+  
+ if (localStorage.getItem("quiz_answers3") !== "") {
+   var parentCont =  $(this).parent().parent().closest('div');
+   var checkInputType = parentCont.find("h1").attr("id");
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+   if(checkInputType == "quiz-kit-question-title-47787"){
+      getItem["q7"]["age"] =  parentCont.find("input").val();
+   }else if (checkInputType == "quiz-kit-question-title-47786") {
+      getItem["q7"]["firstName"] =  parentCont.find("input").val();
+   } else if (checkInputType == "quiz-kit-question-title-47813") {
+      getItem["q7"]["zipcode"] =  parentCont.find("input").val();
+   }else if (checkInputType == "quiz-kit-question-title-47814") {
+      getItem["q7"]["email"] =  parentCont.find("input").val();
+   }else if (checkInputType == "quiz-kit-question-title-47809") {
+      getItem["q7"]["allergyDisclaimerAck"] =  "1";
+   } else if (checkInputType == "quiz-kit-question-title-47811") {
+      getItem["q7"]["dermatologistAck"] =  "1";
+   } 
+   
+   else if (checkInputType == "quiz-kit-question-title-47797") {
+     var routineNameList = [];
+    $(".active-class").each(function() {
+      var routineName = $(this).text();
+      routineNameList.push(routineListBackEd(routineName));
+    })
+    getItem["q7"]["skincareRegime"] = routineNameList;
+   } else if (checkInputType == "quiz-kit-question-title-47792") { 
+     var skinImprovementList = [];
+    $(".active-class").each(function() {
+      var skinImprovementName = $(this).text();
+      skinImprovementList.push(skinImprovementListBackEd(skinImprovementName));
+    })
+    getItem["q7"]["skinImprovement"] = skinImprovementList;
+    
+   } else if (checkInputType == "quiz-kit-question-title-47803") {
+     var weeklySportsList = [];
+    $(".active-class").each(function() {
+      var weeklySportsName = $(this).text();
+      weeklySportsList.push(weeklySportsBackEd(weeklySportsName));
+    })
+    getItem["q7"]["weeklySports"] = weeklySportsList;
+   } else if (checkInputType == "quiz-kit-question-title-47804") {
+     var nutritionList = [];
+    $(".active-class").each(function() {
+      var nutritionName = $(this).text();
+      nutritionList.push(nutritionListBackEd(nutritionName));
+    })
+    getItem["q7"]["nutrition"] = nutritionList;
+   } else if(checkInputType == "quiz-kit-question-title-47815") {
+     var productDayName = $(this).find("input").val();
+     getItem["q7"]["scent"] = "NoFragrance";
+  //   getItem["q7"]["product"] = {};
+     getItem["q7"]["product"]= { "name":parentCont.find("input").val()}; 
+     
+   } else if(checkInputType == "quiz-kit-question-title-47816") {
+     var productNightName = $(this).find("input").val();
+      console.log("input2");
+     getItem["q7"]["nightCremeScent"] = "NoFragrance";
+  //   getItem["q7"]["nightCremeProduct"] = {};
+     getItem["q7"]["nightCremeProduct"] = { "name":parentCont.find("input").val()};
+   }
+   
+   localStorage.setItem('quiz_answers3',JSON.stringify(getItem) );
+   
+   if (checkInputType == "quiz-kit-question-title-47814") {
+   //   var testData = {"main":false,"email":"francisco+231@aveandyou.com","firstName":"ereg","lastName":"","quiz":{"questionnaireId":"q7","answers":{"lastName":"","pigmentationType":"0","firstName":"ereg","age":"23","gender":"Male","skinSensitivity":"2","skinType":"normal","skinSituationMorning":"Normal","skinSituationEvening":"Normal","visibleVeins":"no","reddening":"1","shavingIrritations":"2","faceScan":null,"skincareRegime":["Cleanser","Toner","Serum"],"skinImprovement":["MehrFeuchtigkeit","WenigerPigmentflecken","Reddening"],"hautUnreinheiten":[],"unreinheitenZonen":[],"wrinkles":0,"lifestyleBegin":"1","urbanEnvironment":"4","smoking":"4","flyingFrequency":"4","weeklySports":["WaterSports","IndoorWorkout","OutdoorWorkout"],"stressLevel":"2","sunExposition":"3","bluelightExposition":"3","nutrition":["alcohol","junkfood","coffee"],"glassWaterIntake":"4","sleep":"8","skinAllergies":"no","allergyDisclaimerAck":"1","dermatologistTreatment":"no","dermatologistAck":"1","richness":"reichhaltiger","countryCode":"DE","zipcode":"10719","email":"francisco+231@aveandyou.com"},"utmParams":{},"locale":"en","isDirectPurchase":false},"isDirectPurchase":false,"creamVersion":"21"}
+    
+     var quizData = {};
+      var getStorageData = JSON.parse(localStorage.getItem('quiz_answers3'));
+      quizData["main"] = false;
+      quizData["email"] = getStorageData["q7"]["email"];
+      quizData["firstName"] = getStorageData["q7"]["firstName"];
+      quizData["lastName"] = "";
+      quizData["quiz"] = {};
+      quizData["quiz"]["questionnaireId"] = "q7";
+      quizData["quiz"]["answers"] = getStorageData["q7"];
+      quizData["quiz"]["utmParams"] =  {};
+      quizData["quiz"]["locale"] =  "en";
+      quizData["quiz"]["isDirectPurchase"] =  false;
+      quizData["isDirectPurchase"] = false;
+      quizData["creamVersion"] = "21";
+      quizData["featureRecMS"] = true;
+     
+     console.log(JSON.stringify(quizData));
+     
+     console.log(quizData);
+
+      
+      var tries = 0;
+      var saveData = $.ajax({
+      type: 'POST',
+      url: "https://europe-west1-metrics-production-1.cloudfunctions.net/saveAnswersNewMapping",
+      data: quizData,
+      dataType: "text",
+      // beforeSend: function() {
+      //   setTimeout( function(){
+      //     // Disable the next button while sending data
+      //     $( '#quiz-kit-question-next-button' ).prop( 'disabled', true );
+      //     $( '#quiz-kit-question-next-button span' ).html( '<img src="https://cdn.shopify.com/s/files/1/0057/5268/4611/files/Spin-1s-16px.gif?v=1673265860">' );
+      //   }, 3000 );
+      // },
+      success: function(resultData) { 
+        var restData = JSON.parse(resultData);
+         skinId =  restData.skinId;
+         accessToken =  restData.answerAccessToken;
+         console.log("tokens");
+         console.log(accessToken);
+         console.log(skinId)
+
+         // Enable the next button after successful sent
+         // $( '#quiz-kit-question-next-button' ).prop( 'disabled', false );
+         // $( '#quiz-kit-question-next-button span' ).html( 'NEXT' );
+        
+       //  console.log(resultData)
+      },
+      error: function( data ) {
+        var ajax_ = this;
+        setTimeout( function() {
+          if( tries < 5 ) {
+            console.log( 'retrying...' );
+            tries ++;
+            $.ajax( ajax_ );
+          }
+        }, 500 );
+      }
+});
+ //saveData.error(function() { alert("Something went wrong"); });
+     
+   }
+     
+      if (checkInputType == "quiz-kit-question-title-47816") {
+        
+          console.log("tok");
+        var quizDataSaveRemaining = {};
+        var getStorageData = JSON.parse(localStorage.getItem('quiz_answers3'));
+        console.log(getStorageData);
+        quizDataSaveRemaining["skinId"] = skinId;
+        quizDataSaveRemaining["answerAccessToken"] = accessToken;
+        console.log("tokens1");
+        quizDataSaveRemaining["scent"] = getStorageData["q7"]["scent"];
+        quizDataSaveRemaining["nightCremeScent"] = getStorageData["q7"]["nightCremeScent"];
+        quizDataSaveRemaining["main"] = true;
+        quizDataSaveRemaining["DirectPurchasein"] = false;
+        quizDataSaveRemaining["answers"] = {};
+        console.log("tokens3");
+        quizDataSaveRemaining["answers"]["product"] = {"name":getStorageData["q7"]["product"]["name"]};
+        quizDataSaveRemaining["answers"]["nightCremeProduct"] = {"name":getStorageData["q7"]["nightCremeProduct"]["name"]};
+        quizDataSaveRemaining["creamVersion"] = 21;
+        
+        console.log(quizDataSaveRemaining)
+         var saveDataRemaining = $.ajax({
+         type: 'POST',
+         url: "https://europe-west1-metrics-production-1.cloudfunctions.net/saveRemainingAnswersNewMapping",
+         data: quizDataSaveRemaining,
+         dataType: "text",
+        success: function(resultData) { 
+         console.log(resultData)
+      //   var restData = JSON.parse(resultData);
+         accessToken =  resultData;
+      }
+});
+      }
+      
+      
+}
+ // objTemp["q7"] = { "firstName" : "2" };
+});
+    
+    //47790
+     $(document).on('click', '#quiz-kit-question-radio-box-47790', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var pregnancy = $(this).text();
+    var pregnancyVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(pregnancy.toLowerCase() === "yes." ) {
+     getItem["q7"]["pregnancy"] = "yes";
+   }else  {
+     getItem["q7"]["pregnancy"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+     
+       $(document).on('click', '#quiz-kit-question-radio-box-47791', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var menopause = $(this).text();
+    var menopauseVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(menopause.toLowerCase() === "yes." ) {
+     getItem["q7"]["menopause"] = "yes";
+   }else  {
+     getItem["q7"]["menopause"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+
+  $(document).on('click', '#quiz-kit-question-radio-box-47784', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var visibleViens = $(this).text();
+    var visibleViensVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(visibleViens.toLowerCase() === "yes." ) {
+     getItem["q7"]["visibleVeins"] = "yes";
+   }else  {
+     getItem["q7"]["visibleVeins"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47808', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinAllergies = $(this).text();
+    var skinAllergiesVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinAllergies.toLowerCase() === "yes." ) {
+     getItem["q7"]["skinAllergies"] = "yes";
+   }else  {
+     getItem["q7"]["skinAllergies"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+   $(document).on('click', '#quiz-kit-question-radio-box-47810', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var dermatologistTreatment = $(this).text();
+    var dermatologistTreatmentVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(dermatologistTreatment.toLowerCase() === "yes." ) {
+     getItem["q7"]["dermatologistTreatment"] = "yes";
+   }else  { 
+     getItem["q7"]["dermatologistTreatment"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+    
+    
+  $(document).on('click', '#quiz-kit-question-radio-box-47788', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var genderType = $(this).text();
+    var genderVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(genderType.toLowerCase() === "male." ) {
+     getItem["q7"]["gender"] = "male";
+   }else if(genderType.toLowerCase() === "female.") {
+     getItem["q7"]["gender"] = "female";
+   }else  {
+     getItem["q7"]["gender"] = "Nonbinary";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+   $(document).on('click', '#quiz-kit-question-text-box-47794', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var sensitiveType = $(this).find("h3").text();
+    var sensitiveVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(sensitiveType.toLowerCase() === "insensitive." ) {
+     getItem["q7"]["skinSensitivity"] = "0";
+   }else if(sensitiveType.toLowerCase() === "sensitive.") {
+     getItem["q7"]["skinSensitivity"] = "2";
+   }else  {
+     getItem["q7"]["skinSensitivity"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+   
+   
+   $(document).on('click', '#quiz-kit-question-radio-box-47793', function() {
+      
+      if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinType = $(this).text();
+    var skinVal = "";  
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinType.toLowerCase() === "very dry" ) {
+     getItem["q7"]["skinType"] = "VeryDry";
+   }else if(skinType.toLowerCase() === "dry") {
+     getItem["q7"]["skinType"] = "Dry";
+   }else if(skinType.toLowerCase() === "combination (dry and oily)") {
+     getItem["q7"]["skinType"] = "Mischhaut";
+   }else if(skinType.toLowerCase() === "oily") {
+     getItem["q7"]["skinType"] = "Oily";
+   }else  {
+     getItem["q7"]["skinType"] = "normal";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+   
+   
+    $(document).on('click', '#quiz-kit-question-radio-box-47795', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinSituationMorning = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinSituationMorning.toLowerCase() === "dry and stressed." ) {
+     getItem["q7"]["skinSituationMorning"] = "TrockenUndSpannend";
+   }else if(skinSituationMorning.toLowerCase() === "dry in some areas.") {
+     getItem["q7"]["skinSituationMorning"] = "TrockenInBestimmtenZonen";
+   }else if(skinSituationMorning.toLowerCase() === "oily.") {
+     getItem["q7"]["skinSituationMorning"] = "Fettig";
+   }else if(skinSituationMorning.toLowerCase() === "oily in the t-zone (forehead, nose and chin).") {
+     getItem["q7"]["skinSituationMorning"] = "FettigTZone";
+   }else if(skinSituationMorning.toLowerCase() === "normal.") {
+     getItem["q7"]["skinSituationMorning"] = "Normal";
+   } else  {
+     getItem["q7"]["skinSituationMorning"] = "DontKnow";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+  }
+    })
+  
+    
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47796', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinSituationEvening = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinSituationEvening.toLowerCase() === "dry and stressed." ) {
+     getItem["q7"]["skinSituationEvening"] = "TrockenUndSpannend";
+   }else if(skinSituationEvening.toLowerCase() === "dry in some areas.") {
+     getItem["q7"]["skinSituationEvening"] = "TrockenInBestimmtenZonen";
+   }else if(skinSituationEvening.toLowerCase() === "oily.") {
+     getItem["q7"]["skinSituationEvening"] = "Fettig";
+   }else if(skinSituationEvening.toLowerCase() === "oily in the t-zone (forehead, nose and chin).") {
+     getItem["q7"]["skinSituationEvening"] = "FettigTZone";
+   }else if(skinSituationEvening.toLowerCase() === "normal.") {
+     getItem["q7"]["skinSituationEvening"] = "Normal";
+   } else  {
+     getItem["q7"]["skinSituationEvening"] = "DontKnow";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+    
+   //47568
+  
+   $(document).on('click', '#quiz-kit-question-radio-box-47784', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var visibleVeins = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+   if(visibleVeins.toLowerCase() === "yes." ) {
+     getItem["q7"]["visibleVeins"] = "yes";
+   }else  {
+     getItem["q7"]["visibleVeins"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+ })
+   
+   
+    $(document).on('click', '#quiz-kit-question-radio-box-47785', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var reddening = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(reddening.toLowerCase() === "never." ) {
+     getItem["q7"]["reddening"] = "0";
+   }else if(reddening.toLowerCase() === "sometimes." )  {
+     getItem["q7"]["reddening"] = "1";
+   } else {
+     getItem["q7"]["reddening"] = "2";
+   } 
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+ })
+  
+  
+   $(document).on('click', '#quiz-kit-question-radio-box-47789', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var shavingIrritations = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(shavingIrritations.toLowerCase() === "never." ) {
+     getItem["q7"]["shavingIrritations"] = "0";
+   }else if(shavingIrritations.toLowerCase() === "sometimes." )  {
+     getItem["q7"]["shavingIrritations"] = "1";
+   }else if(shavingIrritations.toLowerCase() === "often." )  {
+     getItem["q7"]["shavingIrritations"] = "2";
+   }else   {
+     getItem["q7"]["shavingIrritations"] = "3";
+   } 
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+ })
+   
+    $(document).on('click', '#quiz-kit-question-image-box-47798', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var urbanEnvironment = $(this).find("h3").text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(urbanEnvironment.toLowerCase() === "the countryside." ) {
+     getItem["q7"]["urbanEnvironment"] = "0";
+   }else if(urbanEnvironment.toLowerCase() === "a little village." )  {
+     getItem["q7"]["urbanEnvironment"] = "1";
+   }else if(urbanEnvironment.toLowerCase() === "a small town." )  {
+     getItem["q7"]["urbanEnvironment"] = "2";
+   }else if (urbanEnvironment.toLowerCase() === "a city.")  {
+     getItem["q7"]["urbanEnvironment"] = "3";
+   } else {
+     getItem["q7"]["urbanEnvironment"] = "4";
+   }
+     localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+  }
+ })
+    
+     $(document).on('click', '#quiz-kit-question-radio-box-47799', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var smoking = $(this).text();
+  
+  var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(smoking.toLowerCase() === "not at all." ) {
+     getItem["q7"]["smoking"] = "0";
+   } else if(smoking.toLowerCase() === "1-2 times per week.") {
+     getItem["q7"]["smoking"] = "1";
+   } else if(smoking.toLowerCase() === "1-2 times per day.") {
+     getItem["q7"]["smoking"] = "2";
+   } else if(smoking.toLowerCase() === "2-10 times per day.") {
+     getItem["q7"]["smoking"] = "3";
+   } else  {
+     getItem["q7"]["smoking"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+     
+  $(document).on('click', '#quiz-kit-question-radio-box-47800', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+    var flyingFrequency = $(this).text();
+  
+  var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(flyingFrequency.toLowerCase() === "never." ) {
+     getItem["q7"]["flyingFrequency"] = "0";
+   } else if(flyingFrequency.toLowerCase() === "1-2 times a year.") {
+     getItem["q7"]["flyingFrequency"] = "1";
+   } else if(flyingFrequency.toLowerCase() === "4-8 times a year.") {
+     getItem["q7"]["flyingFrequency"] = "2";
+   } else if(flyingFrequency.toLowerCase() === "every month.") {
+     getItem["q7"]["flyingFrequency"] = "3";
+   } else  {
+     getItem["q7"]["flyingFrequency"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+        
+        
+  $(document).on('click', '#quiz-kit-question-radio-box-47805', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+   var stressLevel = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(stressLevel.toLowerCase() === "very relaxed." ) {
+     getItem["q7"]["stressLevel"] = "0";
+   } else if(stressLevel.toLowerCase() === "mostly relaxed.") {
+     getItem["q7"]["stressLevel"] = "1";
+   }else if(stressLevel.toLowerCase() === "doing fine.") {
+     getItem["q7"]["stressLevel"] = "2";
+   } else if(stressLevel.toLowerCase() === "sometimes stressed out.") {
+     getItem["q7"]["stressLevel"] = "3";
+   } else  {
+     getItem["q7"]["stressLevel"] = "4";
+   } 
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+   $(document).on('click', '#quiz-kit-question-radio-box-47801', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+   var sunExposition = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(sunExposition.toLowerCase() === "never." ) {
+     getItem["q7"]["sunExposition"] = "0";
+   } else if(sunExposition.toLowerCase() === "1-2 hours.") {
+     getItem["q7"]["sunExposition"] = "1";
+   } else if(sunExposition.toLowerCase() === "3-4 hours.") {
+     getItem["q7"]["sunExposition"] = "2";
+   } else if(sunExposition.toLowerCase() === "5-8 hours.") {
+     getItem["q7"]["sunExposition"] = "3";
+   } else  {
+     getItem["q7"]["sunExposition"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47806', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+   var bluelightExposition = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(bluelightExposition.toLowerCase() === "never." ) {
+     getItem["q7"]["bluelightExposition"] = "0";
+   } else if(bluelightExposition.toLowerCase() === "1-2 hours.") {
+     getItem["q7"]["bluelightExposition"] = "1";
+   } else if(bluelightExposition.toLowerCase() === "3-4 hours.") {
+     getItem["q7"]["bluelightExposition"] = "2";
+   } else if(bluelightExposition.toLowerCase() === "5-8 hours.") {
+     getItem["q7"]["bluelightExposition"] = "3";
+   } else  {
+     getItem["q7"]["bluelightExposition"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+   
+   
+  
+   $(document).on('click', '#quiz-kit-question-radio-box-47802', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+   var glassWaterIntake = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(glassWaterIntake.toLowerCase() === "2 or less." ) {
+     getItem["q7"]["glassWaterIntake"] = "0";
+   } else if(glassWaterIntake.toLowerCase() === "3-4.") {
+     getItem["q7"]["glassWaterIntake"] = "1";
+   } else if(glassWaterIntake.toLowerCase() === "5-6.") {
+     getItem["q7"]["glassWaterIntake"] = "2";
+   } else if(glassWaterIntake.toLowerCase() === "7-8.") {
+     getItem["q7"]["glassWaterIntake"] = "3";
+   } else  {
+     getItem["q7"]["glassWaterIntake"] = "4";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+   
+   
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47807', function() {
+   if (localStorage.getItem("quiz_answers3") !== "") {
+   var sleep = $(this).text();
+  
+   var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(sleep.toLowerCase() === "3-4 hours." ) {
+     getItem["q7"]["sleep"] = "4";
+   } else if(sleep.toLowerCase() === "5-6 hours.") {
+     getItem["q7"]["sleep"] = "6";
+   } else if(sleep.toLowerCase() === "7-8 hours.") {
+     getItem["q7"]["sleep"] = "8";
+   }  else  {
+     getItem["q7"]["sleep"] = "9+";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+    })
+  
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47808', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var skinAllergies = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(skinAllergies.toLowerCase() === "yes." ) {
+     getItem["q7"]["skinAllergies"] = "yes";
+   }else  {
+     getItem["q7"]["skinAllergies"] = "no";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+ })
+     
+ $(document).on('click', '#quiz-kit-question-radio-box-47812', function() {
+  if (localStorage.getItem("quiz_answers3") !== "") {
+    var richness = $(this).text();
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+    if(richness.toLowerCase() === "less rich." ) {
+     getItem["q7"]["richness"] = "weniger-reichhaltig";
+   }else if(richness.toLowerCase() === "normal." ) {
+     getItem["q7"]["richness"] = "normal";
+   }else {
+     getItem["q7"]["richness"] = "reichhaltiger";
+   }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  }
+ })
+ 
+  $(document).on('click', "#quiz-kit-question-radio-box-47804", function() {
+       if ($(this).text().toLowerCase() == "nothing.") {
+           $("#quiz-kit-question-radio-buttons-47804").find("button:eq(0)").removeClass("active-class");
+           $("#quiz-kit-question-radio-buttons-47804").find("button:eq(1)").removeClass("active-class");
+           $("#quiz-kit-question-radio-buttons-47804").find("button:eq(2)").removeClass("active-class");
+         }else{
+            $("#quiz-kit-question-radio-buttons-47804").find("button:eq(3)").removeClass("active-class");
+         }
+         
+       });
+    
+     $(document).on('click', "#quiz-kit-question-radio-box-47803", function() {
+       if ($(this).text().toLowerCase() == "i don't workout.") {
+           $("#quiz-kit-question-radio-buttons-47803").find("button:eq(0)").removeClass("active-class");
+           $("#quiz-kit-question-radio-buttons-47803").find("button:eq(1)").removeClass("active-class");
+           $("#quiz-kit-question-radio-buttons-47803").find("button:eq(2)").removeClass("active-class");
+         }else{
+            $("#quiz-kit-question-radio-buttons-47803").find("button:eq(3)").removeClass("active-class");
+         }
+         
+       });
+ 
+ 
+ 
+  document.addEventListener('quizKitQuestionLoaded', function (e) {
+     setTimeout(function(){
+     $("#quiz-kit-question-wrapper-47815").find("picture").parent().css("position", "relative")
+      var input1 = $("#quiz-kit-question-wrapper-47815").find("input").val();
+       var inputVal = "";
+       if(input1 != ""){
+         inputVal = input1;
+       }
+      
+     $("#quiz-kit-question-wrapper-47815").find("picture").append('<div id="dayCreamName2" style="position:absolute; bottom: 77px; left: 134px;font-family:RunWild; font-size:26px;">'+inputVal+'</div>');   
+    $("#quiz-kit-question-wrapper-47815").find("input").attr({ maxLength : 8 });
+       $("#quiz-kit-question-wrapper-47815").find("input").on('input',function(e){
+      
+         $("#quiz-kit-question-wrapper-47815").find("picture").find("#dayCreamName2").text($(this).val());
+     });
+
+       $("#quiz-kit-question-47814").append('<p id="noteEmail" style="position: absolute; font-size: 10px;line-height: 1.5; width: 100%;text-align: center;">*We also process special categories of personal data for the personalization and improvement of algorithms. Revocation for the future is possible at any time by email. <a style="text-decoration: underline !important;" href="https://de.aveandyou.com/pages/privacy-policy" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</a></p>')
+       
+     $("#quiz-kit-question-wrapper-47816").find("picture").parent().css("position", "relative")
+    
+   
+       var input2 = $("#quiz-kit-question-wrapper-47816").find("input").val();
+       var inputVal2 = "";
+       if(input2 != ""){
+         inputVal2 = input2;
+       }
+      $("#quiz-kit-question-wrapper-47787").find("input").attr({ maxLength : 2 });
+        $("#quiz-kit-question-wrapper-47816").find("picture").append('<div id="nightCreamName2" style="position:absolute; bottom: 77px; left: 134px;font-family:RunWild; font-size:26px;">'+inputVal2+'</div>');   
+        $("#quiz-kit-question-wrapper-47816").find("input").attr({ maxLength : 8 });
+       $("#quiz-kit-question-wrapper-47816").find("input").on('input',function(e){
+         $("#quiz-kit-question-wrapper-47816").find("picture").find("#nightCreamName2").text($(this).val());
+     });
+       
+       $("#quiz-kit-question-wrapper-47817").find("button").on("click", function () {
+         const urlSearchParams = new URLSearchParams(window.location.search);
+         const params = Object.fromEntries(urlSearchParams.entries());
+         if (params.hasOwnProperty('skuBundle')) {
+                  var skuBundle= params.skuBundle;
+                  window.location.href = "https://aveandyou.com/en/products/product-detail?skinid="+skinId+"&token="+accessToken+"&skuBundle="+skuBundle;
+             }else if(params.hasOwnProperty('compaign') && params.compaign.toLowerCase() == "new_funnel") {
+            window.location.href = "https://aveandyou.com/en/products/your-personalized-formulations-test?skinid="+skinId+"&token="+accessToken;
+         }else{
+         window.location.href = "https://aveandyou.com/en/products/product-detail?skinid="+skinId+"&token="+accessToken;
+         }
+       })
+
+       $('input').on('keyup keypress', function(e) {
+  var keyCode = e.keyCode || e.which;
+  if (keyCode === 13) { 
+    e.preventDefault();
+    return false;
+  }
+});
+       
+     }, 500);
+
+           setTimeout(function(){
+         $("#quiz-kit-question-47815").find("#quiz-kit-container").css("opacity", "0");
+               }, 100);
+
+               setTimeout(function(){
+                    $("#quiz-kit-question-47815").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+                  }, 1000);
+
+    setTimeout(function(){
+         $("#quiz-kit-question-47816").find("#quiz-kit-container").css("opacity", "0");
+               }, 100);
+
+               setTimeout(function(){
+                    $("#quiz-kit-question-47816").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+                  }, 1000);
+
+    setTimeout(function(){
+         $("#quiz-kit-question-47817").find("#quiz-kit-container").css("opacity", "0");
+               }, 100);
+
+               setTimeout(function(){
+                    $("#quiz-kit-question-47817").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+                  }, 1000);
+}, false);
+  
+  </script>
+
+  
+
+<script type="text/javascript">
+var _learnq = _learnq || [];
+  var classname = document.getElementsByClassName("product-add");
+var addToCart = function() {
+_learnq.push(['track', 'Added to Cart', item]);
+}; for (var i = 0; i < classname.length; i++) {
+classname[i].addEventListener('click', addToCart, false);
+}
+</script>
+
+    <script>
+      
+      
+$(".main-nav").find(".last").find(".sub-nav-list").find("li").first().find("a").removeAttr("href").css("cursor","pointer")
+  $(".main-nav").find(".last").find(".sub-nav-list").find("li").first().find("a").on("click", function () {
+    openTestResultPopUp();
+  });
+
+      setTimeout( function(){
+        $("#mobile-nav").find("#sub-nav-menu-5").find(".sub-nav-list li").first().find("a").removeAttr("href").css("cursor","pointer");
+         $("#mobile-nav").find("#sub-nav-menu-5").find(".sub-nav-list li").first().find("a").on("click", function () {
+    openTestResultPopUp();
+           $(".toggle-mob-nav").click();
+  })
+      }, 1000);
+
+
+
+//  $(".main-nav").find(".last").find(".sub-nav-list").append('<li class="sub-nav-item"> <a class="sub-nav-item-link" onclick="openTestResultPopUp()" data-ly-mutation-count="1">Results & Order </a> </li>');
+  </script>
+
+  {%- comment -%} HIDE RECHARGE SUBCRIPTION OPTION FOR USERS OUTSIDE GERMANY AND AUSTRIA {%- endcomment -%}
+  {% if template.name == 'product' %}
+    <script>
+      function hideRechargeWidget(state) {
+        var rechargeSubWidgetContainer = $('.recharge-subscription-widget');
+        if (rechargeSubWidgetContainer) {
+          if (state) {
+            rechargeSubWidgetContainer.hide()
+            return
+          }
+          rechargeSubWidgetContainer.show()
+        }
+      }
+      function manageSubscriptionOptn() {
+        var subWidgetContainer = $(".recharge-subscription-widget");
+        var subWidgetContainerPersonalised = $('.rc-widget-injection-parent');
+        var pdpRecommendationWidget = $('#pdp_recommendation');
+
+        // 1.A perform hiding when on normal product page
+        if (subWidgetContainer) {
+          var subRadio = subWidgetContainer.find('label.subscription-radio');
+          var subDetails = subWidgetContainer.find('div.rc-subscription-details');
+          if (subRadio) {
+            subRadio.hide();
+          }
+          if (subDetails) {
+            subDetails.hide()
+          }
+          hideRechargeWidget(false)
+        }
+
+        // 1.B perform hiding when on personalised product page
+        if (subWidgetContainerPersonalised) {
+          var subRadioPersonalised = subWidgetContainerPersonalised.find('label.rc_widget__option--subsave');
+          var subRadioDetailsPersonalised = subWidgetContainerPersonalised.find("div.rc_popup");
+          if (subRadioPersonalised) {
+            subRadioPersonalised.hide();
+          }
+          if (subRadioDetailsPersonalised) {
+            subRadioDetailsPersonalised.hide()
+          }
+        }
+        // 1.C perform hiding of subscription option from recommendation widget when on personalised product page
+        if (pdpRecommendationWidget) {
+          var subRadioPersonalised = pdpRecommendationWidget.find('label.rc_widget__option--subsave');
+          var subRadioDetailsPersonalised = pdpRecommendationWidget.find("div.rc_popup");
+          if (subRadioPersonalised) {
+            subRadioPersonalised.hide();
+          }
+          if (subRadioDetailsPersonalised) {
+            subRadioDetailsPersonalised.hide()
+          }
+        }
+
+        // call the function again after 100 milliseconds
+        setTimeout( manageSubscriptionOptn, 100 );
+      }
+      // initially hide Recharge widget when DOM is ready
+      $(document).ready(() => {
+        hideRechargeWidget(true)
+      })
+      // perform main function on page load
+      $(window).on("load", () => {
+        $.getJSON('https://apiip.net/api/check?accessKey=b9372a73-cc79-4ac6-b56f-c9dbc660b5ec&output=json&fields=countryCode', function(result) {
+          if (result && (result.countryCode === "DE")) {
+            console.log("RECHARGE SUBSCRIPTION ALLOWED", result.countryCode)
+            hideRechargeWidget(false)
+          } else {
+            console.log("RECHARGE HIDDEN SUBSCRIPTION NOT ALLOWED", result.countryCode)
+            manageSubscriptionOptn()
+          }
+        })
+      })
+    </script>
+  {% endif %}
+  
+  {%- comment -%} HIDE DROPDOWN FROM FREE GIFT OFFERS FOR SALES MOTIVATOR APP {%- endcomment -%}
+  <script>
+    function hideSalesMotivatorFreeGiftDropdown(state) {
+      var freeGiftContainer = $('#gift_container');
+      var freeGiftOfferContainer = undefined;
+      var freeGiftOfferDropdown = undefined;
+      if (freeGiftContainer) {
+        freeGiftOfferContainer = freeGiftContainer.find('.giftsToOffer');
+        if (freeGiftOfferContainer) {
+          freeGiftOfferDropdown = freeGiftOfferContainer.find('.item-variants');
+          freeGiftOfferDropdown.hide();
+        }
+      }
+      setTimeout( hideSalesMotivatorFreeGiftDropdown, 100 );
+    }
+    $(document).ready(() => {
+      hideSalesMotivatorFreeGiftDropdown();
+    })
+    $(window).on("load", () => {
+      hideSalesMotivatorFreeGiftDropdown();
+    })
+  </script>
+
+  <script>
+    function skinTestPageRedirect() {
+      // check if using international locale EN
+      var isIntl = window.location.href.indexOf(".com/en-") > -1
+
+      // if (window.location.href.indexOf("pages/ave-you-skin-test-en") > -1) {
+      //   if (!isIntl) {
+      //     window.location.replace("ave-you-skin-test-de")
+      //   }
+      // } else if (window.location.href.indexOf("pages/ave-you-skin-test-de") > -1) {
+      //   if (isIntl) {
+      //     window.location.replace("ave-you-skin-test-en")
+      //   }
+      // }
+      if (window.location.href.indexOf("pages/ave-you-skin-test-de") > -1) {
+        if (isIntl) {
+          window.location.replace("ave-you-skin-test-en")
+        }
+      }
+    }
+    $(document).ready(() => {
+      skinTestPageRedirect()
+    })
+    $(window).on("load", () => {
+      skinTestPageRedirect()
+    })
+  </script>
+  
+  <style>
+    .jdgm-rev-widg__summary-inner .jdgm-link {
+      display: none !important;
+    }
+  </style>
+  {{ 'footer.js' | asset_url | script_tag | replace: 'src', 'defer src' }}
+</html>

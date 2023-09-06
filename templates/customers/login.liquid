@@ -1,0 +1,306 @@
+<div class="grid">
+  <div
+    class="grid__cell hide__mobile"
+    style="background: url({{ 'log_in_serum.webp' | file_url }}); background-repeat: no-repeat; background-size: cover; background-position: center;"
+  >
+    <div class="spacer" style="height: 70vh;"></div>
+  </div>
+
+  <div class="grid__cell">
+    <div class="section container valign-middle talign-middle" data-cc-animate>
+      <div style="height: 50px;"></div>
+      <div class="small-form-column">
+        <div id="login">
+          <h2 class="page-title" style="font-size: 20px; text-transform: none; font-weight: 500;">
+            <!-- {{ 'customer.login.title' | t }} -->
+            {{ 'custom_translations.login_page.welcome' | t }}
+          </h2>
+          <p>{{ 'custom_translations.login_page.welcome_text' | t }}</p>
+
+          {% form 'customer_login' %}
+            {% assign login_form = form %}
+            {% if form.errors %}
+              <div class="notification errors">
+                {{ form.errors | default_errors }}
+              </div>
+            {% endif %}
+
+            <div class="input-row">
+              <!-- <label for="customer_email" class="label">{{ 'customer.login.email' | t }}</label> -->
+              <input
+                type="email"
+                value=""
+                placeholder="{{ 'customer.login.email' | t }}"
+                name="customer[email]"
+                id="customer_email"
+                class="text"
+              >
+            </div>
+
+            {% if form.password_needed %}
+              <div class="input-row">
+                <!-- <label for="customer_password" class="label">{{ 'customer.login.password' | t }}</label> -->
+                <input
+                  type="password"
+                  value=""
+                  placeholder="{{ 'customer.login.password' | t }}"
+                  name="customer[password]"
+                  id="customer_password"
+                  class="text"
+                  size="16"
+                >
+              </div>
+            {% endif %}
+
+            <div style="height: 30px;"></div>
+
+            <div class="input-row">
+              <!-- <input class="btn" type="submit" value="{{ 'customer.login.sign_in' | t }}" /> -->
+              <input class="btn btn-submit" type="submit" value="Log in">
+            </div>
+          {% endform %}
+
+          {% if login_form %}
+            <p>
+              {{ 'custom_translations.login_page.disclaimer_text_part_1' | t -}}
+              <br>
+              <a href="/en/pages/terms-of-use"
+                ><b>{{ 'custom_translations.login_page.disclaimer_text_tos' | t }}</b></a
+              >
+              &
+              <a href="/en/pages/privacy-policy"
+                ><b>{{ 'custom_translations.login_page.disclaimer_text_pp' | t }}</b></a
+              >
+            </p>
+
+            <div style="height: 100px;"></div>
+            {% if login_form.password_needed %}
+              <p>
+                <a class="standard-link" href="#" onclick="showRecoverPasswordForm();return false;">
+                  {{- 'customer.login.forgot_password' | t -}}
+                </a>
+              </p>
+            {% endif %}
+
+            <a class="standard-link" href="{{ routes.account_register_url }}">
+              {{- 'customer.login.create_new_account' | t -}}
+            </a>
+          {% endif %}
+        </div>
+
+        <div id="recover-password" style="display:none;">
+          <h2 class="page-title">{{ 'customer.login.reset_password' | t }}</h2>
+          <p class="note">{{ 'customer.login.reset_password_subtext' | t }}</p>
+
+          {% form 'recover_customer_password' %}
+            {% if form.posted_successfully? %}
+              <script>
+                document.addEventListener("DOMContentLoaded", function(event) { showRecoverPasswordForm(); });
+              </script>
+              <div class="notification errors">
+                {{ 'customer.login.reset_sent' | t }}
+              </div>
+            {% endif %}
+            {% if form.errors %}
+              <script>
+                document.addEventListener("DOMContentLoaded", function(event) { showRecoverPasswordForm(); });
+              </script>
+              <div class="notification errors">
+                {{ form.errors | default_errors }}
+              </div>
+            {% endif %}
+            <div class="input-row">
+              <label for="recover-email" class="label">{{ 'customer.login.email' | t }}</label>
+              <input type="email" value="" size="30" name="email" id="recover-email" class="text">
+            </div>
+            <div class="input-row">
+              <input class="btn btn-submit" type="submit" value="{{ 'customer.login.submit_recover' | t }}">
+              <div style="margin: 10px 0px;">
+                {{ 'customer.general.or' | t }}
+              </div>
+
+              <span class="note"
+                ><a class="standard-link" href="#" onclick="hideRecoverPasswordForm();return false;">
+                  {{- 'customer.login.cancel' | t -}}
+                </a></span
+              >
+            </div>
+          {% endform %}
+        </div>
+
+        {% if shop.checkout.guest_login %}
+          <div id="guest">
+            <h2>{{ 'customer.login.guest_title' | t }}</h2>
+            {% form 'guest_login' %}
+              <input class="btn btn-submit" type="submit" value="{{ 'customer.login.guest_continue' | t }}">
+            {% endform %}
+          </div>
+        {% endif %}
+      </div>
+      <div style="height: 50px;"></div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  function showRecoverPasswordForm() {
+    document.getElementById('recover-password').style.display = 'block';
+    document.getElementById('login').style.display='none';
+  }
+
+  function hideRecoverPasswordForm() {
+    document.getElementById('recover-password').style.display = 'none';
+    document.getElementById('login').style.display = 'block';
+  }
+
+  if (window.location.hash == '#recover') { showRecoverPasswordForm() }
+</script>
+
+<style>
+    .btn-submit {
+      border-radius: 0px !important;
+      border: solid 1px #333 !important;
+      background: transparent !important;
+      color: #333 !important;
+    }
+    .btn-submit:hover {
+      background: #333 !important;
+      color: #fff !important;
+    }
+    .grid {
+      border-top: solid 1px #333;
+      border-bottom: solid 1px #333;
+    }
+    .grid__cell:first-child {
+        border-right: solid 1px #333;
+    }
+    .standard-link {
+      border-bottom: none;
+    }
+    .grid *{
+      font-size: 16px;
+    }
+    input[type="text"]::placeholder,
+    input[type="email"]::placeholder,
+    input[type="password"]::placeholder {
+      color: #ababab;
+      font-size: 14px;
+      font-weight: 400;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"] {
+      background: #f4f3ef;
+      border: none;
+      width: 320px;
+    }
+    .talign-middle *{
+      text-align: center;
+    }
+    /*
+    .valign-middle {
+      margin-top: 50% !important;
+      -ms-transform: translateY(-50%);
+      transform: translateY(-50%);
+    }*/
+
+    .grid {
+      display: flex;
+  	flex-flow: row wrap;
+  	justify-content: center;
+  	margin: 0;
+    }
+    .grid__cell {
+  	flex: 1;
+  	border: 0px solid gray;
+  	padding: 0px;
+  	&:first-child { margin-left: 0; }
+  	&:last-child { margin-right: 0; }
+
+  }
+
+
+  @media screen and (max-width: 980px) {
+    .hide__mobile {
+      display: none;
+    }
+    .grid .grid_cell {
+      flex-basis: 40%;
+  		&:nth-last-child(2) {
+  			margin-right: 0;
+  		}
+  		&:last-child {
+  			flex-basis: 100%;
+  			margin: 0;
+  		}
+  	}
+  }
+
+  @media screen and (max-width: 680px) {
+  	.grid .grid_cell {
+  		flex-basis: 100%;
+  	}
+  }
+</style>
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  window.addEventListener("DOMContentLoaded", async (event) => {
+    let normalLoginBtnEl = document.querySelector("form#customer_login .btn-submit");
+    let fbLoginBtnEl = document.querySelector("#zify-sticky-social a.cl-facebook");
+    let glLoginBtnEl = document.querySelector("#zify-sticky-social a.cl-google");
+
+    if (normalLoginBtnEl) {
+      normalLoginBtnEl.addEventListener("click", () => {
+        window.appStart = function(){
+            window.eventHandle = function(){
+              dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+              dataLayer.push({
+                event: "login_clicked"
+              });
+            };
+            eventHandle();
+        }
+        appStart();
+      })
+    }
+  });
+
+  window.addEventListener("load", async (event) => {
+    let fbLoginBtnEl = document.querySelector("#zify-sticky-social a.cl-facebook");
+    let glLoginBtnEl = document.querySelector("#zify-sticky-social a.cl-google");
+
+    console.log(fbLoginBtnEl)
+
+    if (fbLoginBtnEl) {
+      fbLoginBtnEl.addEventListener("click", () => {
+        window.appStart = function(){
+            window.eventHandle = function(){
+              dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+              dataLayer.push({
+                event: "login_clicked_facebook"
+              });
+            };
+            eventHandle();
+        }
+        appStart();
+      })
+    }
+
+    if (glLoginBtnEl) {
+      glLoginBtnEl.addEventListener("click", () => {
+        window.appStart = function(){
+            window.eventHandle = function(){
+              dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+              dataLayer.push({
+                event: "login_clicked_google"
+              });
+            };
+            eventHandle();
+        }
+        appStart();
+      })
+    }
+  });
+</script>

@@ -1,0 +1,1316 @@
+<script>
+  window.addEventListener("DOMContentLoaded", async (event) => {
+
+    const apiHost = "https://europe-west1-metrics-staging-1.cloudfunctions.net"
+    //const apiHost = "https://localhost:5001/metrics-staging-1/europe-west1";
+    const urlParams = new URLSearchParams(window.location.search);
+    const skinid = urlParams.get('skinid');
+    const token = urlParams.get('token');
+    var pdpLoadingIndicator = document.querySelector('.pdp-loading_indicator');
+    var pdpContainer = document.querySelector('.pdp-container');
+    var dayCreamVariantsParent = document.querySelector('.pdp-main_product__variants__day');
+    var nightCreamVariantsParent = document.querySelector('.pdp-main_product__variants__night');
+    let popSlide = document.querySelector('.pdp-more_result');
+    var cartItems = [];
+    const mainProduct = {{ product | json }};
+    const mainProductVariants = {{ product.variants | json }};
+    const recommendationsSource = {{ recommendations.products | json }};
+    const siteLocale = {{ localization.language.iso_code | json }};
+    var dayCreamId = null;
+    var nightCreamId = null;
+    var firstName = null;
+    var skinType = null;
+    var skinGoals = null;
+    var dayCreamIncis = [];
+    var nightCreamIncis = [];
+    var recommendations = [];
+    var productCount = 0;
+    var skinTypeTranslation = {
+      "VeryDry": {
+        en: "Very Dry",
+        de: "Sehr Trocken"
+      },
+      "Dry": {
+        en: "Dry",
+        de: "Trocken"
+      },
+      "Mischhaut": {
+        en: "Combination (Dry & Oily)",
+        de: "Mischhaut"
+      },
+      "Oily": {
+        en: "Oily",
+        de: "Fettig"
+      },
+      "normal": {
+        en: "Normal",
+        de: "Normal"
+      }
+    }
+    var skinGoalsTranslation = {
+      "MehrFeuchtigkeit": {
+        en: "Increase Hydration",
+        de: "Mehr Feuchtigkeit"
+      },
+      "WenigerAustrocknung": {
+        en: "Reduce Dry Areas",
+        de: "Weniger trockene Stellen"
+      },
+      "Reddening": {
+        en: "Reduce Redness",
+        de: "Weniger Rötungen"
+      },
+      "Falten": {
+        en: "Reduce Wrinkles",
+        de: "Weniger Falten"
+      },
+      "BlueLightProtection": {
+        en: "Blue Light Protection",
+        de: "Schutz vor Display-Licht"
+      },
+      "WenigerPigmentflecken": {
+        en: "Reduce Pigmentation",
+        de: "Weniger Pigmentflecken"
+      },
+      "ReinereHaut": {
+        en: "Reduce Pimples",
+        de: "Reinere Haut"
+      },
+      "StrahlendererTeint": {
+        en: "Skin Glow",
+        de: "Strahlender Teint"
+      },
+      "PorenVerfeinerung": {
+        en: "Refine Pores",
+        de: "Verfeinerung des Porenbildes"
+      },
+      "AntiPollution": {
+        en: "Anti Pollution",
+        de: "Schutz gegen Umwelteinflüsse"
+      }
+    }
+    var lifeStyle = null;
+    var lifestyleAllData = [
+      {
+        "title": "My skin type is",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/sk.svg?v=14728403771609218710",
+        "type": "skintype",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "Dry",
+            "description": "Your skin is dry, but fear not! We have an easy solution for you: our day and night creams contain ingredients to soothe and soften your skin, keeping it moisturized at all times."
+          },
+          {
+            "id": 2,
+            "type": "VeryDry",
+            "description": "Your skin is dry, but fear not! We have an easy solution for you: our day and night creams contain ingredients to soothe and soften your skin, keeping it moisturized at all times."
+          },
+          {
+            "id": 3,
+            "type": "Oily",
+            "description": "Sebum is secreted by your skin as a natural moisturizer. But excess sebum can clog your pores and cause acne. Luckily your personalized cream is tailored for your skin to find its perfect balance."
+          },
+          {
+            "id": 4,
+            "type": "Mischhaut",
+            "description": "With combination skin it can be difficult to find the right product tackling both your dry and oily areas at the same time. Luckily your personalized cream contains ingredients to  soothe your dry areas, and keep you oily areas balanced."
+          }, {
+            "id": 5,
+            "type": "normal",
+            "description": "With combination skin it can be difficult to find the right product tackling both your dry and oily areas at the same time. Luckily your personalized cream contains ingredients to  soothe your dry areas, and keep you oily areas balanced."
+          }
+        ]
+      },
+      {
+        "title": "My skin tends to show redness",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/redness.svg?v=16201943310377837805",
+        "type": "reddening",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "0",
+            "description": "Your skin doesn't have redness, which means that it's moisturized and hydrated. Keep up the good work!"
+          }, {
+            "id": 2,
+            "type": "1",
+            "description": "Sometimes, your skin shows redness due to lifestyle and environmental factors, e.g. climate changes. Ensure that your skin stays hydrated and protected."
+          }, {
+            "id": 3,
+            "type": "2",
+            "description": "To prevent redness we only use hypoallergenic fragrances. If you often have redness, a dermatologist could help you find the cause. Ensure that your skin stays hydrated and protected."
+          }
+        ]
+      },
+      {
+        "title": "Your travel habits",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/plane.svg?v=3308805964373302485",
+        "type": "flyingFrequency",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "0",
+            "description": "Amazing - Your skin is safe from the low humidity and recycled air of air travel! Not to mention the great contribution you're making to protecting the environment."
+          },
+          {
+            "id": 2,
+            "type": "1",
+            "description": "You only fly a few times a year, so your skin is relatively safe from the low humidity and recycled air on planes. Make sure to take care of your skin before, during, and after the flight by using moisturizer and you should be fine!"
+          },
+          {
+            "id": 3,
+            "type": "2",
+            "description": "You fly 4-8 times a year, which is good news for your skin as it doesn't get exposed too often to the low humidity and recycled air on planes. Make sure that you're taking care of your skin before, during, and after your flight by applying a good amount of moisturizer."
+          },
+          {
+            "id": 4,
+            "type": "3",
+            "description": "Wow, you fly every month! It is important that you keep your skin hyrdated so that it is best protected from the low humidity and recycled air on planes. Your AVE & YOU cream will contain the right amount of Hyaluronic acid to compensate for the dehydration of your skin during your flights."
+          }, {
+            "id": 5,
+            "type": "4",
+            "description": "Wow, you are a busy bee! Your skin is exposed a lot to the low humidity and recycled air on planes. The resulting dehydration and stress your skin experiences during air travel is best compensated by applying a good amount of moisturizer to your skin before, during, and after flight.  Your AVE & YOU cream will contain a high level of Hyaluronic acid that helps your skin to compensate for moisture loss and have a calming effect on stressed skin."
+          }
+        ]
+      },
+      {
+        "title": "Your daily sun exposure",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/sun.svg?v=12683879583288890766",
+        "type": "sunExposition",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "0",
+            "description": "You are keeping away from direct sunlight. That is great news for your skin, because long exposure can cause a variety of issues, including premature aging, wrinkles and sunburn. Continue to stay in the shade and don't forget to use sun protection according to your skin type!"
+          },
+          {
+            "id": 2,
+            "type": "1",
+            "description": "You are exposed to sunlight 2-4 hours a day. Make sure that you are well protected, as prolonged exposure to the sun can damage your skin and cause premature aging. Your AVE & YOU cream will ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"
+          },
+          {
+            "id": 3,
+            "type": "2",
+            "description": "You spend a lot of time in the sun. This may have negative effects on your skin (e.g. premature aging, wrinkles, dark spots, loss of elasticity). Try to stay more in the shade and don't forget to use sun protection according to your skin type! Your AVE & YOU cream will also ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"
+          },
+          {
+            "id": 4,
+            "type": "3",
+            "description": "You spend a lot of time in the sun. This may have negative effects on your skin (e.g. premature aging, wrinkles, dark spots, loss of elasticity). Try to stay more in the shade and don't forget to use sun protection according to your skin type! Your AVE & YOU cream will also ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"
+          }, {
+            "id": 5,
+            "type": "4",
+            "description": "You spend a lot of time in the sun. This may have negative effects on your skin (e.g. premature aging, wrinkles, dark spots, loss of elasticity). Try to stay more in the shade and don't forget to use sun protection according to your skin type! Your AVE & YOU cream will also ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"
+          }
+        ]
+      }, {
+        "title": "Your daily water intake",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/water.svg?v=16637081063602910020",
+        "type": "glassWaterIntake",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "0",
+            "description": "The amount of water you drink during the day is below average. Drinking water can help to prevent premature aging, as well as impurities and helps to keep a good complexion. You should try to increase your water intake while we make sure that your cream is giving your skin the right level of hydration."
+          },
+          {
+            "id": 2,
+            "type": "1",
+            "description": "The amount of water you drink during the day is below average. Drinking water can help to prevent premature aging, as well as impurities and helps to keep a good complexion. You should try to increase your water intake while we make sure that your cream is giving your skin the right level of hydration."
+          },
+          {
+            "id": 3,
+            "type": "2",
+            "description": "Your daily water intake is right about average, but we recommend to drink a little more water to improve the health of your skin. Drinking water can help to prevent premature aging, as well as impurities and helps to keep a good complexion. We will make sure that your formula is supporting the right level of hydration of your skin."
+          },
+          {
+            "id": 4,
+            "type": "3",
+            "description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }, {
+            "id": 5,
+            "type": "4",
+            "description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }, {
+            "id": 5,
+            "type": "6",
+            "description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }, {
+            "id": 5,
+            "type": "8",
+            "description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }, {
+            "id": 5,
+            "type": "9+",
+            "description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }
+        ]
+      }, {
+        "title": "Your stress level",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/meditate.svg?v=4086451458156057167",
+        "type": "stressLevel",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "0",
+            "description": "Great, most of the time you feel relaxed and this should also be visible in your skin! Stress hormones can slow down the collagen synthesis, which influences the elasticity of the skin and can lead to premature aging. So being relaxes is great for your skin!"
+          },
+          {
+            "id": 2,
+            "type": "1",
+            "description": "Great, most of the time you feel relaxed and this should also be visible in your skin! Stress hormones can slow down the collagen synthesis, which influences the elasticity of the skin and can lead to premature aging. So being relaxed is great for your skin! Make sure you keep taking a break from time to time and let your body rest."
+          },
+          {
+            "id": 3,
+            "type": "2",
+            "description": "Great, most of the time you feel relaxed and this should also be visible in your skin! Stress hormones can slow down the collagen synthesis, which influences the elasticity of the skin and can lead to premature aging. So being relaxed is great for your skin! Make sure you keep taking a break from time to time and let your body rest."
+          },
+          {
+            "id": 4,
+            "type": "3",
+            "description": "You are under stress and this can have negative effects on your skin. Try to take a break from time to time and let your body rest. Stress hormones can slow down the collagen synthesis, which influences the elasticity of your skin and can lead to premature aging. Your AVE & YOU cream contains the right level of active ingredients which strengthen the elasticity of your skin and counteract premature skin aging."
+          }, {
+            "id": 5,
+            "type": "4",
+            "description": "You are under stress and this can have negative effects on your skin. Try to take a break from time to time and let your body rest. Stress hormones can slow down the collagen synthesis, which influences the elasticity of your skin and can lead to premature aging. Your AVE & YOU cream contains the right level of active ingredients which strengthen the elasticity of your skin and counteract premature skin aging."
+          }
+        ]
+      }, {
+        "title": "Your smoking habits",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/cigarette.svg?v=14965223516095436119",
+        "type": "smoking",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "0",
+            "description": "You never smoke. That is great news for your skin! Smoking can cause a dull complexion and premature aging, so keep up the great work!"
+          },
+          {
+            "id": 2,
+            "type": "1",
+            "description": "Your smoking habits can have negative effects on your skin, such as a dull complexion and premature aging. Good skincare can help to maintain a fresh complexion and reduce premature aging. Your AVE & YOU cream will contain active ingredients such as vitamin C and Hyaluronic acid which aim to counterbalance the effects of smoking on your skin."
+          },
+          {
+            "id": 3,
+            "type": "2",
+            "description": "Your smoking habits can have negative effects on your skin, such as a dull complexion and premature aging. Good skincare can help to maintain a fresh complexion and prevent premature aging. Your AVE & YOU cream will contain active ingredients such as Vitamin C and Hyaluronic Acid which aim to counterbalance the effects that smoking has on your skin."
+          },
+          {
+            "id": 4,
+            "type": "3",
+            "description": "Smoking causes a deterioration of collagen in the skin, which can lead to sagging skin and wrinkles. You can slow down these signs of aging by having a good skincare routine. Your AVE & YOU cream will contain a high level of active ingredients such as Vitamin C and Hyaluronic Acid which aim to counterbalance the effects of smoking on your skin."
+          }, {
+            "id": 5,
+            "type": "4",
+            "description": "Smoking causes a deterioration of collagen in the skin, which can lead to sagging skin and wrinkles. You can slow down these signs of aging by having a good skincare routine. Your AVE & YOU cream will contain a high level of active ingredients such as Vitamin C and Hyaluronic Acid which aim to counterbalance the effects of smoking on your skin."
+          }
+        ]
+      }, {
+        "title": "Your blue light exposure",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/Blue_light.svg?v=4139393738149125852",
+        "type": "bluelightExposition",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "0",
+            "description": "You spend a few hours a day in front of a screen. If this time increases we recommend a blue light protection filter in your skincare."
+          },
+          {
+            "id": 2,
+            "type": "1",
+            "description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          },
+          {
+            "id": 3,
+            "type": "2",
+            "description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          },
+          {
+            "id": 4,
+            "type": "3",
+            "description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }, {
+            "id": 4,
+            "type": "4",
+            "description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }
+        ]
+      }, {
+        "title": "Your blue light exposure",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/Blue_light.svg?v=4139393738149125852",
+        "type": "bluelightExposition",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "0",
+            "description": "You spend a few hours a day in front of a screen. If this time increases we recommend a blue light protection filter in your skincare."
+          }, {
+            "id": 2,
+            "type": "1",
+            "description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }, {
+            "id": 3,
+            "type": "2",
+            "description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }, {
+            "id": 4,
+            "type": "3",
+            "description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }
+        ]
+      }, {
+        "title": "Your environment",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/location-village.svg?v=10120292450964336639",
+        "type": "urbanEnvironment",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "0",
+            "description": "You live rather rural. Great, your skin shouldn't have any problems with air pollution!"
+          },
+          {
+            "id": 2,
+            "type": "1",
+            "description": "You live rather rural. Great, your skin shouldn't have any problems with air pollution!"
+          },
+          {
+            "id": 3,
+            "type": "2",
+            "description": "You live in a small town. Dirt particles in the air will be limited but nevertheless can stress your skin. With an Anti- Pollution Filter in your skincare you are on the safe side. It helps to protect your skin."
+          },
+          {
+            "id": 4,
+            "type": "3",
+            "description": "You live in a city. Dirt particles in the air can stress your skin. With an Anti- Pollution Filter in your skincare you are on the safe side. It helps to protect your skin."
+          }, {
+            "id": 5,
+            "type": "4",
+            "description": "You live in a big city. Dirt particles in the air can stress your skin. With an Anti- Pollution Filter in your skincare you are on the safe side. It helps to protect your skin."
+          }
+        ]
+      }, {
+        "title": "Your sleeping patterns",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/Sleep.svg?v=16607544554478506459",
+        "type": "sleep",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "4",
+            "description": "Your're not sleeping a lot. Getting sufficient rest is important for your skin and body to regenerate and skin is prone to looking older if you're consistently missing sleep. Try to get at least 7 hours of rest every night. We understand only too well that sometimes there just aren't enough hours in the day. Hence our night cream ingredients DNA Night Boost and Teloplex help to compensate for a lack of sleep and support your skin's regeneration overnight."
+          }, {
+            "id": 2,
+            "type": "6",
+            "description": "You sleep less than average. Getting sufficient rest is important for your skin and body to regenerate and skin is prone to looking older if you're consistently missing sleep. Try to get at least 7 hours of rest every night. We understand only too well that sometimes there just aren't enough hours in the day. Hence our night cream ingredients DNA Night Boost and Teloplex help to compensate for a lack of sleep and support your skin's regeneration overnight."
+          }, {
+            "id": 3,
+            "type": "8",
+            "description": "Great! Your skin gets enough time to regenerate and repair itself. Keep up your great sleeping habit! Our night cream ingredients DNA Night Boost and Teloplex support your skin's regeneration overnight."
+          }, {
+            "id": 4,
+            "type": "9+",
+            "description": "Great! Your skin gets enough time to regenerate and repair itself. Keep up your great sleeping habit! Our night cream ingredients DNA Night Boost and Teloplex support your skin's regeneration overnight."
+          }
+        ]
+      }, {
+        "title": "Your diet",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/Nutrition.svg?v=1593229808194931899",
+        "type": "nutrition",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "alcohol",
+            "description": "Cheers! You drink a glass now and then and to be honest, life is too short to do without these pleasures! However, alcohol leads to dehydration. Wrinkles and pores can become more visible and your skin may lose it's natural plumpness and healthy glow. Your AVE & YOU cream will contain a high level of active ingredients aiming to counterbalance any potential deficits."
+          },
+          {
+            "id": 2,
+            "type": "junkfood",
+            "description": "Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it."
+          },
+          {
+            "id": 3,
+            "type": "coffee",
+            "description": "Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."
+          },
+          {
+            "id": 4,
+            "type": "alcohol,junkfood",
+            "description": "Cheers! You drink a glass now and then and to be honest, life's too short to do without these pleasures! However, alcohol leads to dehydration and can make wrinkles and pores more visible. Furthermore, your skin may lose its natural plumpness and healthy glow. Your AVE & YOU cream will contain a high level of active ingredients aiming to counterbalance any potential deficits. Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it."
+          }, {
+            "id": 5,
+            "type": "alcohol,coffee",
+            "description": "Cheers! You drink a glass now and then and to be honest, life's too short to do without these pleasures! However, alcohol leads to dehydration and can make wrinkles and pores more visible. Furthermore, your skin may lose its natural plumpness and healthy glow. Your AVE & YOU cream will contain a high level of active ingredients aiming to counterbalance any potential deficits. Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."
+          }, {
+            "id": 6,
+            "type": "coffee,junkfood",
+            "description": "Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it. Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."
+          }, {
+            "id": 7,
+            "type": "alcohol,coffee,junkfood",
+            "description": "Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it. Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."
+          }, {
+            "id": 8,
+            "type": "none",
+            "description": "You eat healthy, which is a fantastic start for great skin! While your personalized cream does not need to counter balance any nutrition insufficiencies our personalized AVE & YOU cream will nevertheless keep your skin in balance and improve its overall appearance."
+          }
+        ]
+      }, {
+        "title": "Your exercise habits",
+        "img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/fitness.svg?v=16840573649037471049",
+        "type": "weeklySports",
+        "skinType": [
+          {
+            "id": 1,
+            "type": "IndoorWorkout",
+            "description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs."
+          },
+          {
+            "id": 2,
+            "type": "OutdoorWorkout",
+            "description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores.Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs."
+          },
+          {
+            "id": 3,
+            "type": "WaterSports",
+            "description": "You spend a lot of time in the water. Chlorine and sea salt residues can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin. We will make sure your formula provides."
+          },
+          {
+            "id": 4,
+            "type": "IndoorWorkout,OutdoorWorkout",
+            "description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs."
+          }, {
+            "id": 5,
+            "type": "IndoorWorkout,WaterSports",
+            "description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs. You spend a lot of time in the water. Chlorine and sea salt residue can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin - we will make sure that your day and night cream formulas do just that."
+          }, {
+            "id": 6,
+            "type": "OutdoorWorkout,WaterSports",
+            "description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs. You spend a lot of time in the water. Chlorine and sea salt residue can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin - we will make sure that your day and night cream formulas do just that."
+          }, {
+            "id": 7,
+            "type": "IndoorWorkout,OutdoorWorkout,WaterSports",
+            "description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs. You spend a lot of time in the water. Chlorine and sea salt residue can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin - we will make sure that your day and night cream formulas do just that."
+          }, {
+            "id": 8,
+            "type": "NoSports",
+            "description": "You are not exercising and your skin is missing out. Working out increases blood flow to your skin and helps nourish and oxygenate the cells. But don't worry, your AVE & YOU cream will contain the right level of active ingredients to keep your skin looking healthy and balanced."
+          }
+        ]
+      }
+    ]
+
+// === FUNCTION STARTS ===
+// =======================
+
+    // FUNCTION: show proper price based on selected variant option
+    const handlePricePresentation = (selector, price) => {
+      let el = document.querySelector(selector);
+      if (el) {
+        el.innerText = theme.formatMoney(price, theme.money_format)
+      }
+    }
+
+    // FUNCTION: handle quantity selector
+    const handleQtySelector = async (el) => {
+      let controlForm = el.closest('.pdp-main_product__form');
+      let qtyTemp = 1;
+
+      // handle qty for personalized creams
+      if (el.parentElement.classList.contains('qty_for_personalized')) {
+        if (el.classList.contains('pdp-main_product__qty__dec')) {
+          if (el.nextElementSibling.value > 0) {
+            el.nextElementSibling.value = parseInt(el.nextElementSibling.value) - 1;
+            let selectedVariant = controlForm.querySelector('.variant_option.selected');
+            if (selectedVariant) {
+              console.log(selectedVariant.getAttribute('data-variant-id'));
+              await Promise.all(cartItems.filter(async (i) => {
+                if (i.id === selectedVariant.getAttribute('data-variant-id')) {
+                  i.quantity = parseInt(el.nextElementSibling.value);
+                  qtyTemp = parseInt(el.nextElementSibling.value)
+                }
+              }));
+              console.log(cartItems)
+            }
+          }
+        } else if (el.classList.contains('pdp-main_product__qty__inc')) {
+          el.previousElementSibling.value = parseInt(el.previousElementSibling.value) + 1;
+          let selectedVariant = controlForm.querySelector('.variant_option.selected');
+          if (selectedVariant) {
+            console.log(selectedVariant.getAttribute('data-variant-id'));
+            await Promise.all(cartItems.filter(async (i) => {
+              if (i.id === selectedVariant.getAttribute('data-variant-id')) {
+                i.quantity = parseInt(el.previousElementSibling.value);
+                qtyTemp = parseInt(el.previousElementSibling.value);
+              }
+            }));
+            console.log(cartItems)
+          }
+        }
+      }
+               
+      // handle changing of price text
+      if (el.parentElement.classList.contains('qty_for_personalized__day') || el.parentElement.classList.contains('qty_for_personalized__night')) {
+        let tempPrice = el.closest('.pdp-main_product__form').closest('.pdp-main_product__details').querySelector('.pdp-main_product__price'); 
+        if (tempPrice) {
+          let current_price = parseFloat(tempPrice.getAttribute('data-variant-price') * qtyTemp);
+          tempPrice.innerText = theme.formatMoney(current_price, theme.money_format);
+        }
+      } else {
+        let tempPrice = el.closest('.pdp-main_product__qty').closest('.pdp-main_product__form').closest('.pdp-recommendations__details').querySelector('.recommendations_price');
+        if (tempPrice) {
+          let current_price = parseFloat(tempPrice.getAttribute('data-variant-price') * qtyTemp);
+          tempPrice.innerText = theme.formatMoney(current_price, theme.money_format);
+        }
+      }
+    }
+
+// FUNCTION: handle click selector for -+ qty
+    const handleQtyIncDecClickEvent = () => {
+      let qtyControls = document.querySelectorAll('.pdp-main_product__control');
+      let price = 0
+      if (qtyControls) {
+        qtyControls.forEach((el) => {
+          el.addEventListener('click', () => {
+            handleQtySelector(el);
+          });
+        });
+      }
+    }
+
+// FUNCTION: load quiz data from server
+    const loadQuizData = async () => {
+      let response = await fetch(`${apiHost}/getDataForOrder/${skinid}`);
+      const data = await response.json();
+      pdpLoadingIndicator.classList.add('hidden');
+      pdpContainer.classList.remove('hidden');
+      return data;
+    }
+
+// FUNCTION: load ingredients data
+    const loadInciData = async (reqData) => {
+      let response = await fetch(`${apiHost}/getCreamIngredients`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(reqData)
+      });
+      const data = await response.json();
+      return data;
+    }
+
+// FUNCTION: load lifestyle data
+    const loadLifeStyleData = async () => {
+      let response = await fetch(`${apiHost}/getAnswers/${skinid}/${token}`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      const data = await response.json();
+      return data;
+    }
+
+// FUNCTION: show variants based on assigned day and night cream IDs
+// that were pulled from the server (via loadQuizData() function)
+    const showVariant = async (quizData) => {
+      let dayCreamVariants = [];
+      let nightCreamVariants = [];
+      await Promise.all(mainProductVariants.map(async (v) => {
+        if (v.sku && v.sku.includes('day') && v.sku.includes(quizData.cream.day.id)) {
+          dayCreamVariants.push(v)
+        }
+      }));
+      await Promise.all(mainProductVariants.map(async (v) => {
+        if (v.sku && v.sku.includes('night') && v.sku.includes(quizData.cream.night.id)) {
+          nightCreamVariants.push(v)
+        }
+      }));
+
+      if (dayCreamVariants) {
+        if (dayCreamVariantsParent) {
+          let baseVariantPrice = 0;
+          dayCreamVariants.map((v, i) => {
+            let variantOption = document.createElement('div');
+            variantOption.classList.add('variant_option');
+            variantOption.classList.add('variant_option_day');
+            variantOption.classList.add(`variant__option_${
+              i + 1
+            }`);
+            variantOption.classList.add(`variant__option_${
+              v.id
+            }`);
+            variantOption.setAttribute('data-variant-product-id', mainProduct.id);
+            variantOption.setAttribute('data-variant-id', v.id);
+            variantOption.setAttribute('data-variant-sku', v.sku);
+            variantOption.setAttribute('data-variant-price', v.price);
+            if (v.sku && v.sku.includes('day30')) {
+              variantOption.classList.add('selected');
+              variantOption.innerText = '30ml';
+              handlePricePresentation('.pdp-main_product__daycream .pdp-main_product__price', `${
+                v.price
+              }`);
+              baseVariantPrice = v.price
+              cartItems.push({
+                  id: `${
+                  v.id
+                }`,
+                quantity: 1
+              });
+            } else if (v.sku && v.sku.includes('day50')) {
+              variantOption.innerText = '50ml';
+            }
+            dayCreamVariantsParent.appendChild(variantOption);
+            variantOption.closest('.pdp-main_product__details').querySelector('.pdp-main_product__price').setAttribute('data-variant-price', baseVariantPrice);
+          });
+        }
+      }
+
+      if (nightCreamVariants) {
+        if (nightCreamVariantsParent) {
+          let baseVariantPrice = 0;
+          nightCreamVariants.map((v, i) => {
+            console.log(v)
+            let variantOption = document.createElement('div');
+            variantOption.classList.add('variant_option');
+            variantOption.classList.add('variant_option_night');
+            variantOption.classList.add(`variant__option_${
+              i + 1
+            }`);
+            variantOption.classList.add(`variant__option_${
+              v.id
+            }`);
+            variantOption.setAttribute('data-variant-id', v.id);
+            variantOption.setAttribute('data-variant-sku', v.sku);
+            variantOption.setAttribute('data-variant-price', v.price);
+            if (v.sku && v.sku.includes('night30')) {
+              variantOption.classList.add('selected');
+              variantOption.innerText = '30ml';
+              handlePricePresentation('.pdp-main_product__nightcream .pdp-main_product__price', `${
+                v.price
+              }`);
+              baseVariantPrice = v.price
+              cartItems.push({
+                  id: `${
+                  v.id
+                }`,
+                quantity: 1
+              });
+            } else if (v.sku && v.sku.includes('night50')) {
+              variantOption.innerText = '50ml';
+            }
+            nightCreamVariantsParent.appendChild(variantOption);
+            variantOption.closest('.pdp-main_product__details').querySelector('.pdp-main_product__price').setAttribute('data-variant-price', baseVariantPrice);
+          });
+        }
+      }
+    }
+
+// FUNCTION: show recommendations
+    const showRecommendations = async () => {
+    }
+
+// FUNCTION: click event handler for variant option
+    const handleVariantOptionClickEvent = async () => {
+      let dayCreamOptions = dayCreamVariantsParent.querySelectorAll('.variant_option_day');
+      let nightCreamOptions = nightCreamVariantsParent.querySelectorAll('.variant_option_night');
+
+      if (dayCreamOptions) {
+        dayCreamOptions.forEach((o) => {
+          o.addEventListener('click', () => {
+            dayCreamOptions.forEach(async (oo) => {
+              if (oo.getAttribute('data-variant-id') !== o.getAttribute('data-variant-id')) {
+                if (oo.classList.contains('selected')) {
+                  oo.classList.remove('selected');
+                  let temp = cartItems.filter((i) => i.id !== oo.getAttribute('data-variant-id'));
+                  cartItems = temp;
+                }
+              }
+            })
+            if (o.classList.contains('selected')) {
+              o.classList.remove('selected');
+              let temp = cartItems.filter((i) => i.id !== o.getAttribute('data-variant-id'));
+              cartItems = temp;
+            } else {
+              o.classList.add('selected');
+              cartItems.push({id: o.getAttribute('data-variant-id'), quantity: 1})
+            } handlePricePresentation('.pdp-main_product__daycream .pdp-main_product__price', o.getAttribute('data-variant-price'));
+            let controlForm = o.closest('.pdp-main_product__form');
+            if (controlForm) {
+              let qtyInput = controlForm.querySelector('.pdp-main_product__qty__val');
+              controlForm.closest('.pdp-main_product__details').querySelector('.pdp-main_product__price').setAttribute('data-variant-price', o.getAttribute('data-variant-price'));
+              console.log(qtyInput)
+              if (qtyInput) {
+                qtyInput.value = 1;
+              }
+            }
+            console.log(cartItems)
+          });
+        })
+      }
+
+      if (nightCreamOptions) {
+        nightCreamOptions.forEach((o) => {
+          o.addEventListener('click', () => {
+            nightCreamOptions.forEach((oo) => {
+              if (oo.getAttribute('data-variant-id') !== o.getAttribute('data-variant-id')) {
+                if (oo.classList.contains('selected')) {
+                  oo.classList.remove('selected');
+                  let temp = cartItems.filter((i) => i.id !== oo.getAttribute('data-variant-id'));
+                  cartItems = temp;
+                }
+              }
+            })
+            if (o.classList.contains('selected')) {
+              o.classList.remove('selected');
+              let temp = cartItems.filter((i) => i.id !== o.getAttribute('data-variant-id'));
+              cartItems = temp;
+            } else {
+              o.classList.add('selected');
+              cartItems.push({id: o.getAttribute('data-variant-id'), quantity: 1})
+            } handlePricePresentation('.pdp-main_product__nightcream .pdp-main_product__price', o.getAttribute('data-variant-price'));
+            let controlForm = o.closest('.pdp-main_product__form');
+            if (controlForm) {
+              let qtyInput = controlForm.querySelector('.pdp-main_product__qty__val');
+              controlForm.closest('.pdp-main_product__details').querySelector('.pdp-main_product__price').setAttribute('data-variant-price', o.getAttribute('data-variant-price'));
+              console.log(qtyInput)
+              if (qtyInput) {
+                qtyInput.value = 1;
+              }
+            }
+          });
+        })
+      }
+    }
+
+// FUNCTION: build lifestyle UI
+    function buildLifeStyleUI(headerTitle, img, val) {
+      var str = "";
+      str += '<article class="skin-section__body-item show" data-notation="skinType">';
+      str += '<div class="skin-section__body-item-icon"><img src="' + img + '" alt=""></div>';
+      str += '<input type="hidden" value="Dry">'
+      str += '<h2 class="h6 skin-section__body-item-title text-left">' + headerTitle + '</h2>'
+      str += '<div class="skin-section__body-item-iwr">'
+      str += ' <div class="skin-section__body-item-text show">'
+      str += '<span>' + val[0].description + '</span>'
+      str += '<input type="hidden" value="<-Dry->">';
+      str += ' </div>';
+      str += '</div>';
+      str += '</article>';
+      return str;
+    }
+
+// FUNCTION: organize lifestyle data
+    const organizeLifestyleData = (val, lifestyleType) => {
+      var typedata = lifestyleAllData.filter(function(item) {
+        return item.type === lifestyleType;
+      })
+
+      if (typedata.length !== 0) {
+        let skinTypeSel = typedata[0].skinType.filter(function(item) {
+          return item.type === val;
+        })
+        if (skinTypeSel.length !== 0) 
+          return buildLifeStyleUI(typedata[0].title, typedata[0].img, skinTypeSel);
+         else 
+          return "";
+        
+
+      } else {
+        return "";
+      }
+    }
+
+// FUNCTION: click event handler for more result button
+    const handleMoreResultBtnClickEvent = async (inciData) => {
+      let btn = document.querySelectorAll('.pdp-main_product__more_result');
+      if (btn) {
+        btn.forEach((el) => {
+          el.addEventListener('click', async () => {
+            if (el.classList.contains('pdp-main_product__more_result__lifestyle')) {
+              let inciTab = document.querySelector('#HeroInciTab');
+              let inciTabContent = document.querySelector('#HeroInciTabContent');
+              inciTab.innerText = "Your Lifestyle"
+              inciTab.style.fontSize = "1.7rem";
+              inciTab.style.fontWeight = "700";
+              document.querySelector(`#ApplicationTab`).classList.add('hidden');
+              document.querySelector(`#InciTab`).classList.add('hidden');
+
+              if (! lifeStyle) {
+                lifeStyle = await loadLifeStyleData();
+                let skinConditionType = lifeStyle.skinCondition.skinType;
+                let reddeningType = lifeStyle.skinCondition.reddening;
+                let flyingFreqType = lifeStyle.lifestyle.flyingFrequency;
+                let sunExpositionType = lifeStyle.lifestyle.sunExposition;
+                let glassWaterType = lifeStyle.lifestyle.glassWaterIntake;
+                let weeklySports = lifeStyle.lifestyle.weeklySports;
+                let stressLevelType = lifeStyle.lifestyle.stressLevel;
+                let smokingType = lifeStyle.lifestyle.smoking;
+                let blueLightType = lifeStyle.lifestyle.bluelightExposition;
+                let urbanEnvironmentType = lifeStyle.lifestyle.urbanEnvironment;
+                let sleepType = lifeStyle.lifestyle.sleep;
+                let nutritionType = lifeStyle.lifestyle.nutrition.sort();
+                let weeklySportsType = lifeStyle.lifestyle.weeklySports.sort();
+                let skinInfo = organizeLifestyleData(skinConditionType, "skintype");
+                if (typeof reddeningType !== "undefined") 
+                  skinInfo += organizeLifestyleData(reddeningType, "reddening");
+                
+
+
+                skinInfo += organizeLifestyleData(flyingFreqType, "flyingFrequency");
+                skinInfo += organizeLifestyleData(sunExpositionType, "sunExposition");
+                skinInfo += organizeLifestyleData(glassWaterType, "glassWaterIntake");
+                skinInfo += organizeLifestyleData(stressLevelType, "stressLevel");
+                skinInfo += organizeLifestyleData(smokingType, "smoking");
+
+                skinInfo += organizeLifestyleData(blueLightType, "bluelightExposition");
+                skinInfo += organizeLifestyleData(urbanEnvironmentType, "urbanEnvironment");
+
+                skinInfo += organizeLifestyleData(sleepType, "sleep");
+                skinInfo += organizeLifestyleData(nutritionType.toString(), "nutrition");
+                skinInfo += organizeLifestyleData(weeklySportsType.toString(), "weeklySports");
+
+                // let lifeStyleContentContainer = document.createElement('div');
+                // lifeStyleContentContainer.setAttribute('id', 'slideLifestyle');
+                // lifeStyleContentContainer.style.width = "100%";
+                // lifeStyleContentContainer.style.flexWrap = "wrap";
+                // lifeStyleContentContainer.style.flexDirection = "initial";
+                // lifeStyleContentContainer.classList.add('slide_contain_left');
+                // lifeStyleContentContainer.classList.add('slide_contain_left_font');
+                // lifeStyleContentContainer.classList.add('pci__item-li-desc');
+                // lifeStyleContentContainer.innerHTML = skinInfo;
+
+                inciTabContent.innerHTML = skinInfo;
+              }
+
+              popSlide.classList.remove('slide_down');
+              popSlide.classList.add('slide_up');
+            } else {
+              popSlide.classList.remove('slide_down');
+              popSlide.classList.add('slide_up');
+              let inciTab = document.querySelector('#HeroInciTab');
+              let inciTabContent = document.querySelector('#HeroInciTabContent');
+              inciTab.innerText = "Hero Ingredients";
+              inciTab.style.fontSize = ".9rem";
+              document.querySelector(`#ApplicationTab`).classList.remove('hidden');
+              document.querySelector(`#InciTab`).classList.remove('hidden');
+              inciData.ingredients.map((i) => {
+                if (i.ofCream) {
+                  if (el.getAttribute('data-result-for') === 'daycream') {
+                    if (i.ofCream[0] === 'day') {
+                      if (inciTabContent) {
+                        let inciContainer = document.createElement('div');
+                        inciContainer.classList.add('pdp-main_more_result__incis__item');
+                        let inciImage = document.createElement('img');
+                        inciImage.width = "70";
+                        inciImage.height = "70";
+                        inciImage.src = `${
+                          i.imageUrl
+                        }?w=50`;
+                        inciImage.alt = `${
+                          i.name
+                        }`;
+                        let inciDetailContainer = document.createElement('div');
+                        inciDetailContainer.classList.add('pdp-main_product__more_result__incis__details');
+                        let inciTitle = document.createElement('h6');
+                        inciTitle.classList.add('pdp-main_product__more_result__incis__item__title');
+                        inciTitle.innerText = `${
+                          i.name
+                        }`;
+                        let inciDesc = document.createElement('p');
+                        inciDesc.innerText = `${
+                          i.description
+                        }`;
+                        inciContainer.appendChild(inciImage);
+                        inciDetailContainer.appendChild(inciTitle);
+                        inciDetailContainer.appendChild(inciDesc);
+                        inciContainer.appendChild(inciDetailContainer);
+                        inciTabContent.appendChild(inciContainer);
+                      }
+                    }
+                  } else if (el.getAttribute('data-result-for') === 'nightcream') {
+                    if (i.ofCream[0] === 'night') {
+                      if (inciTabContent) {
+                        let inciContainer = document.createElement('div');
+                        inciContainer.classList.add('pdp-main_more_result__incis__item');
+                        let inciImage = document.createElement('img');
+                        inciImage.width = "70";
+                        inciImage.height = "70";
+                        inciImage.src = `${
+                          i.imageUrl
+                        }?w=50`;
+                        inciImage.alt = `${
+                          i.name
+                        }`;
+                        let inciDetailContainer = document.createElement('div');
+                        inciDetailContainer.classList.add('pdp-main_product__more_result__incis__details');
+                        let inciTitle = document.createElement('h6');
+                        inciTitle.classList.add('pdp-main_product__more_result__incis__item__title');
+                        inciTitle.innerText = `${
+                          i.name
+                        }`;
+                        let inciDesc = document.createElement('p');
+                        inciDesc.innerText = `${
+                          i.description
+                        }`;
+                        inciContainer.appendChild(inciImage);
+                        inciDetailContainer.appendChild(inciTitle);
+                        inciDetailContainer.appendChild(inciDesc);
+                        inciContainer.appendChild(inciDetailContainer);
+                        inciTabContent.appendChild(inciContainer);
+                      }
+                    }
+                  }
+                }
+              });
+
+              if (el.getAttribute('data-result-for') === 'standardproduct') {
+                let parentItem = el.closest('.pdp-recommendations__item');
+                if (parentItem) {
+                  let metafields = parentItem.querySelector('.pdp-recommendation__metafields');
+                  if (metafields) {
+                    let metaObject = metafields.querySelectorAll('.pdp-recommendation__metaobject');
+                    if (metaObject) {
+                      metaObject.forEach((mo) => {
+                        let metaName = mo.querySelector('.metaobjectName');
+                        let metaImg = mo.querySelector('.metaobjectImg');
+                        let metaDesc = mo.querySelector('.metaobjectDesc');
+                        if (inciTabContent) {
+                          let inciContainer = document.createElement('div');
+                          inciContainer.classList.add('pdp-main_more_result__incis__item');
+                          let inciImage = document.createElement('img');
+                          inciImage.width = "70";
+                          inciImage.height = "70";
+                          inciImage.src = `${
+                            metaImg.innerText
+                          }?w=50`;
+                          inciImage.alt = `${
+                            metaName.innerText
+                          }`;
+                          let inciDetailContainer = document.createElement('div');
+                          inciDetailContainer.classList.add('pdp-main_product__more_result__incis__details');
+                          let inciTitle = document.createElement('h6');
+                          inciTitle.classList.add('pdp-main_product__more_result__incis__item__title');
+                          inciTitle.innerText = `${
+                            metaName.innerText
+                          }`;
+                          let inciDesc = document.createElement('p');
+                          inciDesc.innerText = `${
+                            metaDesc.innerText
+                          }`;
+                          inciContainer.appendChild(inciImage);
+                          inciDetailContainer.appendChild(inciTitle);
+                          inciDetailContainer.appendChild(inciDesc);
+                          inciContainer.appendChild(inciDetailContainer);
+                          inciTabContent.appendChild(inciContainer);
+                        }
+                      });
+                    }
+                    let standardApplication = metafields.querySelector('.pdp-recommendation__application');
+                    if (standardApplication) {
+                      document.querySelector(`#ApplicationTabContent`).innerText = standardApplication.innerText;
+                    }
+                    let standardIngredients = metafields.querySelector('.pdp-recommendation__ingredients');
+                    if (standardIngredients) {
+                      document.querySelector(`#InciTabContent`).innerText = standardIngredients.innerText;
+                    }
+                  }
+                }
+              }
+              
+              if (el.getAttribute('data-result-for') === 'daycream') {
+                document.querySelector(`#InciTabContent`).innerText = inciData.ingredientsText.day;
+                document.querySelector(`#ApplicationTabContent`).innerHTML = {{ section.settings.day_cream_application | json }};
+              } else if (el.getAttribute('data-result-for') === 'nightcream') {
+                document.querySelector(`#InciTabContent`).innerText = inciData.ingredientsText.night;
+                document.querySelector(`#ApplicationTabContent`).innerHTML = {{ section.settings.night_cream_application | json }};
+              }
+            }
+          });
+        });
+      }
+    }
+
+// FUNCTION: click event handler for more result tab
+    const handleMoreResultTabClickEvent = async () => {
+      let tabs = document.querySelectorAll('.pdp-more_result__tab__links');
+      let tabContents = document.querySelectorAll('.pdp-more_result__tabcontent');
+      if (tabs) {
+        tabs.forEach((tab) => {
+          tab.addEventListener('click', (e) => {
+            tabs.forEach((tab) => {
+              tab.classList.remove('selected');
+            });
+            tab.classList.add('selected');
+
+
+            tabContents.forEach((tabContent) => {
+              tabContent.classList.add('hidden');
+            });
+            document.querySelector(`#${
+              tab.getAttribute('id')
+            }Content`).classList.remove('hidden');
+          });
+        });
+      }
+    }
+
+// FUNCTION: click event handler for more result pop-slide close button
+    const handleMoreResultCloseClickEvent = async () => {
+      let closeBtn = document.querySelector('.pdp-more_result__x');
+      let tabs = document.querySelectorAll('.pdp-more_result__tab__links');
+      let tabContents = document.querySelectorAll('.pdp-more_result__tabcontent');
+      if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
+          popSlide.classList.remove('slide_up');
+          popSlide.classList.add('slide_down');
+          document.querySelector(`#HeroInciTabContent`).innerText = "";
+          document.querySelector(`#ApplicationTabContent`).innerText = "";
+          document.querySelector(`#InciTabContent`).innerText = "";
+
+          // default selected tab and tabContent to HeroInci
+          if (tabs) {
+            tabs.forEach((tab) => {
+              if (tab.getAttribute('id') === "HeroInciTab") {
+                tab.classList.add('selected');
+              } else {
+                tab.classList.remove('selected');
+              }
+            });
+          }
+          if (tabContents) {
+            tabContents.forEach((tab) => {
+              if (tab.getAttribute('id') === "HeroInciTabContent") {
+                tab.classList.remove('hidden');
+              } else {
+                tab.classList.add('hidden');
+              }
+            });
+          }
+        });
+      }
+    }
+
+// FUNCTION: see more description
+    const handleSeeMoreDesc = async () => {
+      let seeMoreBtns = document.querySelectorAll('.pdp-main_product__description__seemore');
+      if (seeMoreBtns) {
+        seeMoreBtns.forEach((el) => {
+          el.addEventListener('click', () => {
+            let parentEl = el.parentElement;
+            console.log(parentEl)
+            if (el.classList.contains('show_more')) {
+              parentEl.nextElementSibling.classList.remove('hidden');
+              parentEl.classList.add('hidden');
+            } else if (el.classList.contains('show_less')) {
+              parentEl.previousElementSibling.classList.remove('hidden');
+              parentEl.classList.add('hidden');
+            }
+          });
+        });
+      }
+    }
+
+    const updateCart = () => {
+      let formData = {
+        items: cartItems
+      }
+      console.log(formData)
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      }).then(response => response.json()).then(async (data) => {
+
+        //await theme.updateCartSummaries(true, true, true);
+        //window.location.href = "{{ routes.cart_url | string }}"
+        window.location.href = "/checkout"
+      });
+    }
+
+// === FUNCTION ENDS  ===
+// ======================
+
+
+// **********************
+// **********************
+// **********************
+
+
+// === EXECUTION START ===
+// =======================
+
+// call loadQuizData() function
+    let quizData = await loadQuizData();
+
+// populate customer info
+    if (quizData && quizData.quizData) {
+      if (quizData.quizData.name && quizData.quizData.name.firstName) {
+        firstName = quizData.quizData.name.firstName;
+        let customerInfoName = document.querySelector('.pdp-customer_info__name span');
+        customerInfoName.innerText = firstName;
+      }
+      if (quizData.quizData.name && quizData.quizData.name.lastName) {
+        lastName = quizData.quizData.name.lastName;
+      }
+      if (quizData.quizData.skinType) {
+        skinType = quizData.quizData.skinType;
+        let customerInfoSkinType = document.querySelector('.pdp-customer_info__skintype.customer_info__skin__value');
+        if (customerInfoSkinType) {
+          if (siteLocale === 'de') {
+            customerInfoSkinType.innerText = skinTypeTranslation[skinType].de;
+          } else {
+            customerInfoSkinType.innerText = skinTypeTranslation[skinType].en;
+          }
+        }
+      }
+      if (quizData.quizData.skinGoals) {
+        skinGoals = quizData.quizData.skinGoals;
+        let customerInfoSkinGoals = document.querySelector('.pdp-customer_info__skingoals.customer_info__skin__value');
+        if (customerInfoSkinGoals) {
+          skinGoalsList = [];
+          skinGoals.map((i) => {
+            if (siteLocale === 'de') {
+              skinGoalsList.push(skinGoalsTranslation[i].de);
+            } else {
+              skinGoalsList.push(skinGoalsTranslation[i].en);
+            }
+          });
+          customerInfoSkinGoals.innerText = skinGoalsList.join(", ");
+        }
+      }
+    }
+
+// call showVariant() function
+    if (quizData && quizData.cream && quizData.cream.day && quizData.cream.night) {
+      dayCreamId = await quizData.cream.day.id;
+      nightCreamId = await quizData.cream.night.id;
+
+// recommendations = await quizData.recommendation;
+      recommendations = ['27.1.S', '37.1.E', '0.1.T', '0.4.C'];
+
+// if (quizData.cream.day.name) {
+// document.querySelector('.pdp-customer_info__name').innerText = quizData.cream.day.name;
+// }
+      await showVariant(quizData);
+    }
+
+// call handleQtyIncDecClickEvent() function
+    handleQtyIncDecClickEvent();
+
+// call loadInciData() function
+// then show respective cream ingredients
+    let inciData = await loadInciData({
+      creamId: {
+        day: dayCreamId,
+        night: nightCreamId
+      },
+      locale: siteLocale,
+      creamVersion: 21
+    });
+    if (inciData && inciData.ingredients && inciData.ingredients.length > 0) {
+      inciData.ingredients.map((i) => {
+        if (i.ofCream) {
+          if (i.ofCream[0] === 'day') {
+            dayCreamIncis.push(i);
+            let dayCreamIncisParent = document.querySelector('.pdp-main_product__incis__day');
+            if (dayCreamIncisParent) {
+              let inciContainer = document.createElement('div');
+              inciContainer.classList.add('pdp-main_product__incis__item');
+              let inciImage = document.createElement('img');
+              inciImage.width = "70";
+              inciImage.height = "70";
+              inciImage.src = `${
+                i.imageUrl
+              }?w=50`;
+              inciImage.alt = `${
+                i.name
+              }`;
+              let inciTitle = document.createElement('p');
+              inciTitle.classList.add('pdp-main_product__incis__item__title');
+              inciTitle.innerText = `${
+                i.name
+              }`;
+              inciContainer.appendChild(inciImage);
+              inciContainer.appendChild(inciTitle);
+              dayCreamIncisParent.appendChild(inciContainer);
+            }
+          } else if (i.ofCream[0] === 'night') {
+            nightCreamIncis.push(i);
+            let nightCreamIncisParent = document.querySelector('.pdp-main_product__incis__night');
+            if (nightCreamIncisParent) {
+              let inciContainer = document.createElement('div');
+              inciContainer.classList.add('pdp-main_product__incis__item');
+              let inciImgContainer = document.createElement('div');
+              inciImgContainer.classList.add('pdp-main_product__incis__item__img__container');
+              let inciImage = document.createElement('img');
+              inciImage.width = "70";
+              inciImage.height = "70";
+              inciImage.src = `${
+                i.imageUrl
+              }?w=50`;
+              inciImage.alt = `${
+                i.name
+              }`;
+              inciImgContainer.appendChild(inciImage);
+              let inciTitle = document.createElement('p');
+              inciTitle.classList.add('pdp-main_product__incis__item__title');
+              inciTitle.innerText = `${
+                i.name
+              }`;
+              inciContainer.appendChild(inciImgContainer);
+              inciContainer.appendChild(inciTitle);
+              nightCreamIncisParent.appendChild(inciContainer);
+            }
+          }
+        }
+      });
+    }
+
+// call showReccomendations() function
+    await showRecommendations();
+
+// show product count
+    if (productCount && productCount > 0) {
+      document.querySelector('.pdp-header__product_count').innerText = `${productCount} products`;
+    }
+
+// add 'click' event listener to variant options
+    handleVariantOptionClickEvent();
+
+// add 'click' event listener to more result button
+    handleMoreResultBtnClickEvent(inciData);
+
+// add 'click' event listener to more result tab
+    handleMoreResultTabClickEvent();
+
+// add 'click' event listener to more result pop-slider
+    handleMoreResultCloseClickEvent();
+
+// add 'click' event listener to see more desc
+    handleSeeMoreDesc();
+
+// add 'click' event listener to checkout button
+    let checkoutButtons = document.querySelectorAll('.pdp-cta__checkout_btn');
+    if (checkoutButtons) {
+      checkoutButtons.forEach((b) => {
+        b.addEventListener('click', async (e) => {
+          e.preventDefault();
+          await updateCart();
+        });
+      });
+    }
+  });
+
+  window.onscroll = function() {
+    var stickyCheckoutContainer = document.querySelector('.pdp-cta__sticky');
+    if (stickyCheckoutContainer) {
+      if (window.scrollY >= 100) {
+        stickyCheckoutContainer.classList.remove('hidden');
+      } else {
+        stickyCheckoutContainer.classList.add('hidden');
+      }
+    }
+  }
+</script>

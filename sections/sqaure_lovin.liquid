@@ -1,0 +1,42 @@
+<div class="squarelovin-container" style="margin-top:30px;">
+	<script id='sqln-5fce5d02976e378c197b23c7' type='text/javascript' data-stream='5fce5d02976e378c197b23c7'>
+		(function() {
+          if (window.location.href.indexOf("en.aveandyou") > -1 || window.location.href.indexOf("aveandyou.com/en") > -1) {
+			var lang = 'en';
+		}
+			else {
+			var lang = 'de';
+			}
+			var s    = document.createElement('script');
+			s.type   = 'text/javascript';
+			s.async  = true;
+			s.src    = 'https://squarelovin.com/squarelovin.js?stream=5fce5d02976e378c197b23c7&t=teaser&l=' + lang + '&u=' + location.href;
+			var sc   = document.getElementsByTagName('script')[0]; sc.parentNode.insertBefore(s, sc);
+	   })();
+	</script>
+</div>
+
+<style>
+  ul.squarelovin-stream-container.product-stream li.squarelovin-stream-item{
+  	min-width:300px;
+  }
+</style>
+
+{% schema %}
+{
+"name": "squarelovin",
+"settings": [
+
+],
+"presets": [
+      {
+        "name": "Squarelovin",
+        "category": "Content"
+      }
+    ]
+}
+{% endschema %}
+
+
+
+

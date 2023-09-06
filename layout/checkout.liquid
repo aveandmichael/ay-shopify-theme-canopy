@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="{{ locale }}" dir="{{ direction }}" class="{{ checkout_html_classes }}">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, height=device-height, minimum-scale=1.0, user-scalable=0"
+    >
+    <meta name="referrer" content="origin">
+
+    <title>{{ page_title }}</title>
+
+    {{ content_for_header }}
+
+    {{ checkout_stylesheets }}
+    {{ checkout_scripts }}
+
+    <div class="custom__checkout__container hidden">
+      {% for li in checkout.line_items %}
+        <div class="custom__checkout__line_item">
+          <div>{{ li.product.id }}</div>
+          <div>{{ li.product.title }}</div>
+          <div>{{ li.product.vendor }}</div>
+          <div>{{ li.product.type }}</div>
+          <div>{{ li.final_price | money_without_currency }}</div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <!-- Google Tag Manager -->
+    <script type="text/lazyload">
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+      })(window,document,'script','dataLayer','GTM-TRNWGS8');
+    </script>
+    <!-- End Google Tag Manager -->
+
+    <script type="text/javascript">
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      (function($) {
+        // generic functions
+        function setLocale(window) {
+          let windowLocation;
+          if (window) {
+            windowLocation = window.location;
+            if (windowLocation.toString().includes("/en/")) {
+              return "en"
+            }
+            return "de"
+          }
+        }
+
+        // functions for contact information step
+        var clearAllFieldErrorMessages = function() {
+          $("p.field__message--error").remove()
+          $("div[data-address-field]").removeClass("field--error")
+        }
+        var clearPhoneFieldValue = function (phoneContainer) {
+          phoneField = phoneContainer.find("#checkout_shipping_address_phone")
+          phoneField.val(null)
+        }
+        var togglePhoneField = function(countryField, phoneContainer) {
+          if (countryField.val() === "Germany") {
+            phoneContainer.hide()
+          } else {
+            phoneContainer.show()
+          }
+        }
+        var changePhoneFieldText = function(phoneContainer) {
+          phoneField = phoneContainer.find("#checkout_shipping_address_phone")
+          phoneLabel = phoneContainer.find(".field__label")
+          phoneField.attr("placeholder", "{{ 'custom_translations.checkout_page.deliver_phone' | t }}")
+          phoneLabel.text("{{ 'custom_translations.checkout_page.deliver_phone' | t }}")
+        }
+        var changeFirstNameFieldText = function(firstNameField) {
+          firstNameLabel = firstNameField.find(".field__label")
+          firstNameField.attr("placeholder", "{{ 'custom_translations.checkout_page.deliver_fn' | t }}")
+          firstNameLabel.text("{{ 'custom_translations.checkout_page.deliver_fn' | t }}")
+        }
+
+        // functions for order summary section
+        function hideRecurringTotalText() {
+          const recurringTotalText = $("#order-summary .total-line--recurring-total")
+          if (recurringTotalText) {
+            recurringTotalText.hide()
+          }
+        }
+        async function translateSellingPlanText(location) {
+          try {
+            const sellingPlanText = $("#order-summary .product__description__selling_plan")
+            if (sellingPlanText) {
+              if (location === 'DE' || location === 'AT') {
+                const translation = await fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyDf_slvJS-odkZNVxTond60vtpjdfW2glI", {
+                  "method": "POST",
+                  "body": JSON.stringify({
+                    "q": `${sellingPlanText.text()}`,
+                    "source": "en",
+                    "target": "de",
+                    "format": "text"
+                  })
+                }).then((res) => res.json())
+                if (translation && translation.data && translation.data.translations && translation.data.translations.length > 0) {
+                  sellingPlanText.text(translation.data.translations[0].translatedText)
+                }
+              }
+            }
+          } catch (e) {
+            console.log("ERROR", e.message)
+          }
+        }
+        async function translateVariant(location) {
+          try {
+            const orderSummaryLineItems = $("#order-summary .order-summary__sections .product-table tbody")
+            if (orderSummaryLineItems) {
+              await orderSummaryLineItems.children().each(async (i, e) => {
+                if (e) {
+                  const variantText = $(e).find(".product__description__variant.order-summary__small-text")
+                  if (variantText) {
+                    if (location === 'DE' || location === 'AT') {
+                      const translation = await fetch("https://translation.googleapis.com/language/translate/v2?key=AIzaSyDf_slvJS-odkZNVxTond60vtpjdfW2glI", {
+                        "method": "POST",
+                        "body": JSON.stringify({
+                          "q": `${variantText.text()}`,
+                          "source": "en",
+                          "target": "de",
+                          "format": "text"
+                        })
+                      }).then((res) => res.json())
+                      if (translation && translation.data && translation.data.translations && translation.data.translations.length > 0) {
+                        variantText.text(translation.data.translations[0].translatedText)
+                        console.log(JSON.stringify(translation.data.translations[0]))
+                      }
+                    }
+                  }
+                }
+              })
+            }
+          } catch (e) {
+            console.log("ERROR TRANSLATION", e.message)
+          }
+        }
+        async function detectCountryCode() {
+          await $.getJSON('https://apiip.net/api/check?accessKey=b9372a73-cc79-4ac6-b56f-c9dbc660b5ec&output=json&fields=countryCode', function(result) {
+            window.sessionStorage.setItem('visitorGeolocationCountryCode', result.countryCode);
+          })
+        }
+        async function translateOrderSummary() {
+          //await $.getJSON('https://apiip.net/api/check?accessKey=b9372a73-cc79-4ac6-b56f-c9dbc660b5ec&output=json&fields=countryCode', function(result) {
+          //  translateSellingPlanText(result && result.countryCode)
+          //  translateVariant(result && result.countryCode)
+          //})
+          const countryCode = window.sessionStorage.getItem('visitorGeolocationCountryCode');
+          if (countryCode) {
+            translateSellingPlanText(countryCode)
+            translateVariant(countryCode)
+          }
+        }
+        function hideShippingOptionDeliveryText() {
+          const deliveryText = $(".section__delivery-option-group .radio__label__accessory .content-box__small-text")
+          if (deliveryText) {
+            deliveryText.hide()
+          }
+        }
+        function hideProductDescPropertyText() {
+          const prodDescPropText = $("#order-summary  .product__description__property")
+          if (prodDescPropText) {
+            prodDescPropText.hide()
+          }
+        }
+        function reduceInputFieldsContactInformationStep() {
+          const loginInput = document.querySelector('.section--contact-information div.section__header #main-header + p.layout-flex__item');
+          const marketingInputCheck = document.querySelector('.section__content .fieldset-description #checkout_buyer_accepts_marketing');
+          const marketingInputText = document.querySelector('.section__content .fieldset-description label.checkbox__label[for="checkout_buyer_accepts_marketing"]');
+          //const shippingAddress2Input = document.querySelector('#checkout_shipping_address_address2');
+          if (loginInput) {
+            loginInput.setAttribute('hidden', true);
+          }
+          if (marketingInputCheck) {
+            marketingInputCheck.style = "display: none !important";
+          }
+          if (marketingInputText) {
+            marketingInputText.style = "display: none !important";
+          }
+          // if (shippingAddress2Input) {
+          //   shippingAddress2Input.style = "display: none !important";
+          // }
+        }
+        function disableOrHideDHLOption() {
+          const packStationOptionEl = document.getElementById("section-packstation-title");
+          const countryCode = window.sessionStorage.getItem('visitorGeolocationCountryCode');
+          if (packStationOptionEl && countryCode && (countryCode!=='DE' && countryCode!=='AT' && countryCode!=='CH')) {
+            packStationOptionEl.setAttribute('hidden', true)
+          }
+        }
+        function hideShowPhoneField(countryDropdown, phoneFieldContainer) {
+          const packStationOptionEl = document.getElementById("section-packstation-title");
+          if (countryDropdown.value === 'Germany') {
+            phoneFieldContainer.style.display = 'none';
+            if (packStationOptionEl) {
+              packStationOptionEl.removeAttribute('hidden')
+            }
+          } else {
+            phoneFieldContainer.style.display = 'block';
+            if (packStationOptionEl) {
+              packStationOptionEl.setAttribute('hidden', true)
+            }
+          }
+        }
+        function returnToPdp(doc) {
+          if (Shopify.Checkout.step === 'contact_information') {
+            console.log("IS CONTACT INFO");
+            let rtcEl = document.querySelector(".step__footer .step__footer__previous-link");
+            if (rtcEl) {
+              console.log("IS RTCEL");
+              rtcEl.href = doc.referrer;
+              if (doc.referrer && doc.referrer.includes("products/product-detail") && doc.referrer.includes("skinid") && doc.referrer.includes("token")) {
+                console.log("IS DOC REFERRER");
+                let rtcElText = rtcEl.querySelector(".step__footer__previous-link-content");
+                if (rtcElText) {
+                  console.log("IS RTCELTEXT");
+                  rtcElText.innerText = "{{ 'custom_translations.checkout_page.return_to_pdp' | t }}";
+                }
+              }
+            }
+          }
+        }
+        function hideSubscriptionPolicy() {
+          let policyEl = document.querySelector('[data-modal="policy-subscription-policy"]');
+          if (policyEl) {
+            policyEl.style.display = 'none';
+          }
+        }
+        function gtmTrackShippingMethod() {
+          let smOptEls = document.querySelectorAll(".section--shipping-method .input-radio");
+          console.log("adawdadadawd", smOptEls)
+          if (smOptEls) {
+            smOptEls.forEach((el) => {
+              el.addEventListener("click", () => {
+                if (el && el.checked) {
+                  console.log("TESTSETESTETETS")
+                  console.log({{ checkout.line_items | json}})
+                  console.log(Checkout)
+                  console.log(Shopify)
+                }
+              });
+            });
+          }
+        }
+
+        $(document).on("page:load page:change", async () => {
+          console.log("DOCUMENT REFERRER", document.referrer);
+          // things to do on contact information
+          if (Shopify.Checkout.step === 'contact_information') {
+            var countryField = $('#checkout_shipping_address_country')
+            var phoneFieldContainer = document.querySelector("div[data-address-field=phone]")
+            var phoneContainer = $("[data-address-field=phone]")
+            var phoneField = $('#checkout_shipping_address_phone')
+            var phoneTooltip = $('#phone_tooltip')
+            var phoneLabel = $("[data-address-field=phone] .field__label")
+            var firstNameField = $('#checkout_shipping_address_first_name')
+  
+            // await togglePhoneField(countryField, phoneContainer)
+            // await changePhoneFieldText(phoneContainer)
+            // await changeFirstNameFieldText(firstNameField)
+
+            // hiding/showing phone field based on
+            // selected shipping country
+            var countryDropdown = document.querySelector('#checkout_shipping_address_country')
+            var phoneFieldContainer = document.querySelector("div[data-address-field=phone]")
+            var phoneFieldQuestionIconContainer = phoneFieldContainer.querySelector('.field__icon')
+            phoneFieldQuestionIconContainer.parentElement.style.position = 'relative'
+            hideShowPhoneField(countryDropdown, phoneFieldContainer); // executes when pages loaded
+            countryDropdown.addEventListener('change', function(e) { // executes when dropdown changed
+              hideShowPhoneField(countryDropdown, phoneFieldContainer);
+            });
+
+            reduceInputFieldsContactInformationStep()
+            await detectCountryCode()
+            disableOrHideDHLOption()
+          }
+
+          // things to do on order summary
+          $(document).ready(() => {
+            returnToPdp(document);
+            hideSubscriptionPolicy();
+            hideRecurringTotalText()
+            hideShippingOptionDeliveryText()
+            translateOrderSummary()
+            hideProductDescPropertyText()
+            gtmTrackShippingMethod()
+          })
+        })
+    })(Checkout.$);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+    {%- comment -%} REMOVE VARIANT ID FROM VARIANT TITLE IF ITEM IS PERSONALISED PRODUCT {%- endcomment -%}
+    <script>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      (function($) {
+        $(document).on("page:load page:change", async () => {
+          var summaryTable = $(".product-table");
+          if (summaryTable) {
+            var items = summaryTable.find("tbody tr");
+            if (items && items.length > 0) {
+              items.each((i, o) => {
+                var variantTitle = $(o).find("span.product__description__variant");
+                if (variantTitle) {
+                  var variantTitleSplit = variantTitle.text().toString().split("/");
+                  if (variantTitleSplit && variantTitleSplit.length > 1) {
+                    variantTitle.html(`${variantTitleSplit[0]} ${variantTitleSplit[1]}`)
+                  }
+                }
+              })
+            }
+          }
+        })
+      })(Checkout.$);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
+
+    {% include 'globale-checkout-css' %}
+
+    {% render 'gtm-trackOrder-dataLayer' %}
+
+    {% include 'globale-checkout-css' %}
+  
+  {% include "globale-checkout-css" %}
+</head>
+  <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe
+        src="https://www.googletagmanager.com/ns.html?id=GTM-TRNWGS8"
+        height="0"
+        width="0"
+        style="display:none;visibility:hidden"
+      ></iframe
+    ></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    {{ skip_to_content_link }}
+
+    <header class="banner" data-header role="banner">
+      <div class="wrap">
+        {{ content_for_logo }}
+      </div>
+    </header>
+
+    {{ order_summary_toggle }}
+    <div class="content" data-content>
+      <div class="wrap">
+        <div class="main">
+          <header class="main__header" role="banner">
+            {{ content_for_logo }}
+            {{ breadcrumb }}
+
+            <!-- Custom Code: copy this and paste it below breadcrumb -->
+            <script>
+                  (function($){
+                   $( document ).ready( function(){
+              var bc_len = document.querySelectorAll( 'ol.breadcrumb li' ).length;
+                     if( bc_len > 0 ){
+                    var curr_index = 0;
+                    var curr_index1 = 0;
+                    document.querySelectorAll( 'ol.breadcrumb li' ).forEach( function(e,i){
+                      if( document.querySelectorAll( 'ol.breadcrumb li' )[i].classList.contains( 'breadcrumb__item--current' ) ) {
+                        //document.querySelectorAll( 'ul.bc li' )[i].classList.add( 'bc_current' );
+                        curr_index1 = i;
+                      }
+                      curr_index = i;
+                    } );
+
+                    for( var i=0; i<bc_len; i++ ) {
+                      if( i<curr_index1 ) {
+                        document.querySelectorAll( 'ul.bc li' )[i].classList.remove( 'bc_current' );
+                        document.querySelectorAll( 'ul.bc li' )[i].classList.add( 'bc_complete' );
+                      }
+                      if( i==curr_index1 ) {
+                        document.querySelectorAll( 'ul.bc li' )[i].classList.add( 'bc_current' );
+                      }
+                    }
+                     } else {
+                       $( 'ul.bc li' ).addClass( 'bc_complete' );
+                       $( 'ul.bc li' ).filter(':last').removeClass( 'bc_complete' ).addClass( 'bc_current' );
+                     }
+                  } );
+                  })(Checkout.$)
+            </script>
+            <ul class="bc">
+              {% comment %}
+                <li class="bc_item bc_complete">{{ 'custom_translations.checkout_page.breadcrumb_1' | t | newline_to_br }}</li>
+              {% endcomment %}
+              <li class="bc_item bc_current">{{ 'custom_translations.checkout_page.breadcrumb_2' | t }}</li>
+              <li class="bc_item">{{ 'custom_translations.checkout_page.breadcrumb_3' | t | newline_to_br }}</li>
+              <li class="bc_item">{{ 'custom_translations.checkout_page.breadcrumb_4' | t | newline_to_br }}</li>
+              {% comment %}
+                <li class="bc_item">{{ 'custom_translations.checkout_page.breadcrumb_5' | t | newline_to_br }}</li>
+              {% endcomment %}
+            </ul>
+            <style>
+              .bc {
+                margin: 15px 0px 0px 0px;
+                padding: 0px;
+                list-style-type: none;
+                width: 100%;
+                max-width: 800px;
+                height: 120px;
+                counter-reset: breadcrumb;
+                position: relative;
+              }
+              .bc._1:before {
+                background: linear-gradient(90deg, #278b0088 calc(20% + 10%), #aaaaaa88 calc(20% + 10%)) !important;
+              }
+              .bc._2:before {
+                background: linear-gradient(90deg, #278b0088 calc(40% + 10%), #aaaaaa88 calc(40% + 10%)) !important;
+              }
+              .bc._3:before {
+                background: linear-gradient(90deg, #278b0088 calc(60% + 10%), #aaaaaa88 calc(60% + 10%)) !important;
+              }
+              .bc._4:before {
+                background: linear-gradient(90deg, #278b0088 calc(80% + 10%), #aaaaaa88 calc(80% + 10%)) !important;
+              }
+              .bc._5:before {
+                background: linear-gradient(90deg, #278b0088 100%, #aaaaaa88 100%) !important;
+              }
+              .bc:before {
+                position: absolute;
+                top: 23px;
+                left: 0%;
+                content: '';
+                width: 100%;
+                height: 2px;
+                background: #278b00;
+              }
+              .bc .bc_item {
+                float: left;
+                padding-top: 60px;
+                width: 33.33%;
+                text-align: center;
+                position: relative;
+              }
+              /*.bc .bc_item:nth-of-type(1):after {
+                content: url( 'https://cdn.shopify.com/s/files/1/0663/2783/8964/files/sock.svg' ) !important;
+              }*/
+              /*.bc .bc_item.bc_complete:not(:nth-of-type(1)):after {*/
+
+              .bc .bc_item:after {
+                counter-increment: breadcrumb;
+                content: counter(breadcrumb);
+                position: absolute;
+                left: calc(50% - 15px);
+                width: 30px;
+                height: 30px;
+                line-height: 30px;
+                text-align: center;
+                border-radius: 50%;
+                background: #323232;
+                color: #fff;
+              }
+              .bc .bc_item.bc_complete:after {
+                content: '\2713';
+              }
+              .bc .bc_item:after,
+              .bc .bc_current:after {
+                top: 9px;
+              }
+
+              .bc .bc_complete:after {
+                transform: scale(1.3);
+              }
+
+              .bc .bc_complete:after,
+              .bc .bc_current:after{
+                background: #278b00;
+                color: #fff;
+              }
+
+              .breadcrumb {
+                display: none;
+              }
+            </style>
+            <!-- End of Custom Code for breadcrumb -->
+
+            {{ alternative_payment_methods }}
+          </header>
+
+          <!-- Payment method custom code : paste this after the end of header tag -->
+          {% comment %}
+              <ul class="FW_Payment_Methods" style="display: flex;justify-content: center;margin: 0 -8px;margin-top: 10px;margin-bottom: 28px;">
+                  <li class="HorizontalList__Item">
+                    <svg viewBox="0 0 38 24" style="padding-right: 5px;padding-left: 5px;width: 38px;height: auto;" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pi-paypal"><title id="pi-paypal">PayPal</title><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"></path><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"></path><path fill="#003087" d="M23.9 8.3c.2-1 0-1.7-.6-2.3-.6-.7-1.7-1-3.1-1h-4.1c-.3 0-.5.2-.6.5L14 15.6c0 .2.1.4.3.4H17l.4-3.4 1.8-2.2 4.7-2.1z"></path><path fill="#3086C8" d="M23.9 8.3l-.2.2c-.5 2.8-2.2 3.8-4.6 3.8H18c-.3 0-.5.2-.6.5l-.6 3.9-.2 1c0 .2.1.4.3.4H19c.3 0 .5-.2.5-.4v-.1l.4-2.4v-.1c0-.2.3-.4.5-.4h.3c2.1 0 3.7-.8 4.1-3.2.2-1 .1-1.8-.4-2.4-.1-.5-.3-.7-.5-.8z"></path><path fill="#012169" d="M23.3 8.1c-.1-.1-.2-.1-.3-.1-.1 0-.2 0-.3-.1-.3-.1-.7-.1-1.1-.1h-3c-.1 0-.2 0-.2.1-.2.1-.3.2-.3.4l-.7 4.4v.1c0-.3.3-.5.6-.5h1.3c2.5 0 4.1-1 4.6-3.8v-.2c-.1-.1-.3-.2-.5-.2h-.1z"></path></svg>
+                  </li>
+                  <li class="HorizontalList__Item">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="padding-right: 5px;padding-left: 5px;width: 38px;height: auto;" role="img" viewBox="0 0 38 24" aria-labelledby="pi-amazon"><title id="pi-amazon">Amazon</title><path d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z" fill="#000" fill-rule="nonzero" opacity=".07"></path><path d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32" fill="#FFF" fill-rule="nonzero"></path><path d="M25.26 16.23c-1.697 1.48-4.157 2.27-6.275 2.27-2.97 0-5.644-1.3-7.666-3.463-.16-.17-.018-.402.173-.27 2.183 1.504 4.882 2.408 7.67 2.408 1.88 0 3.95-.46 5.85-1.416.288-.145.53.222.248.47v.001zm.706-.957c-.216-.328-1.434-.155-1.98-.078-.167.024-.193-.148-.043-.27.97-.81 2.562-.576 2.748-.305.187.272-.047 2.16-.96 3.063-.14.138-.272.064-.21-.12.205-.604.664-1.96.446-2.29h-.001z" fill="#F90" fill-rule="nonzero"></path><path d="M21.814 15.291c-.574-.498-.676-.73-.993-1.205-.947 1.012-1.618 1.315-2.85 1.315-1.453 0-2.587-.938-2.587-2.818 0-1.467.762-2.467 1.844-2.955.94-.433 2.25-.51 3.25-.628v-.235c0-.43.033-.94-.208-1.31-.212-.333-.616-.47-.97-.47-.66 0-1.25.353-1.392 1.085-.03.163-.144.323-.3.33l-1.677-.187c-.14-.033-.296-.153-.257-.38.386-2.125 2.223-2.766 3.867-2.766.84 0 1.94.234 2.604.9.842.82.762 1.918.762 3.11v2.818c0 .847.335 1.22.65 1.676.113.164.138.36-.003.482-.353.308-.98.88-1.326 1.2a.367.367 0 0 1-.414.038zm-1.659-2.533c.34-.626.323-1.214.323-1.918v-.392c-1.25 0-2.57.28-2.57 1.82 0 .782.386 1.31 1.05 1.31.487 0 .922-.312 1.197-.82z" fill="#221F1F"></path></svg>
+                  </li>
+                  <li class="HorizontalList__Item">
+                    <svg xmlns="http://www.w3.org/2000/svg" style="padding-right: 5px;padding-left: 5px;width: 38px;height: auto;" role="img" viewBox="0 0 38 24" aria-labelledby="pi-klarna"><title id="pi-klarna">Klarna</title><g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><path d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z" fill="#FFB3C7"></path><path d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32" fill="#FFB3C7"></path><path d="M34.117 13.184c-.487 0-.882.4-.882.892 0 .493.395.893.882.893.488 0 .883-.4.883-.893a.888.888 0 00-.883-.892zm-2.903-.69c0-.676-.57-1.223-1.274-1.223-.704 0-1.274.547-1.274 1.222 0 .675.57 1.223 1.274 1.223.704 0 1.274-.548 1.274-1.223zm.005-2.376h1.406v4.75h-1.406v-.303a2.446 2.446 0 01-1.394.435c-1.369 0-2.478-1.122-2.478-2.507 0-1.384 1.11-2.506 2.478-2.506.517 0 .996.16 1.394.435v-.304zm-11.253.619v-.619h-1.44v4.75h1.443v-2.217c0-.749.802-1.15 1.359-1.15h.016v-1.382c-.57 0-1.096.247-1.378.618zm-3.586 1.756c0-.675-.57-1.222-1.274-1.222-.703 0-1.274.547-1.274 1.222 0 .675.57 1.223 1.274 1.223.704 0 1.274-.548 1.274-1.223zm.005-2.375h1.406v4.75h-1.406v-.303A2.446 2.446 0 0114.99 15c-1.368 0-2.478-1.122-2.478-2.507 0-1.384 1.11-2.506 2.478-2.506.517 0 .997.16 1.394.435v-.304zm8.463-.128c-.561 0-1.093.177-1.448.663v-.535H22v4.75h1.417v-2.496c0-.722.479-1.076 1.055-1.076.618 0 .973.374.973 1.066v2.507h1.405v-3.021c0-1.106-.87-1.858-2.002-1.858zM10.465 14.87h1.472V8h-1.472v6.868zM4 14.87h1.558V8H4v6.87zM9.45 8a5.497 5.497 0 01-1.593 3.9l2.154 2.97H8.086l-2.341-3.228.604-.458A3.96 3.96 0 007.926 8H9.45z" fill="#0A0B09" fill-rule="nonzero"></path></g></svg>
+                  </li>
+                  <li class="HorizontalList__Item">
+                    <svg width="48" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pi-sofort"><title id="pi-sofort">SOFORT</title><path opacity="opacity: 0.07;" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3Z" fill="rgba(0, 0, 0, 0.07)"></path><path d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32Z" fill="#fff"></path><path d="M33.555 20H3L5.322 5H36l-2.445 15Z" fill="#393A41"></path><path d="M13.116 10c-1.403 0-2.47 1.243-2.47 2.725 0 1.34.875 2.274 2.066 2.274 1.403 0 2.462-1.278 2.462-2.76.008-1.349-.867-2.239-2.058-2.239Zm-.315 3.738c-.538 0-.912-.423-.912-1.076 0-.723.463-1.41 1.132-1.41.536 0 .911.441.911 1.094.008.731-.462 1.392-1.132 1.392ZM21.56 10c-1.402 0-2.461 1.243-2.461 2.725 0 1.34.875 2.274 2.066 2.274 1.403 0 2.463-1.278 2.463-2.76C23.636 10.89 22.76 10 21.562 10Zm-.307 3.738c-.537 0-.912-.423-.912-1.076 0-.723.463-1.41 1.133-1.41.535 0 .911.441.911 1.094 0 .731-.463 1.392-1.133 1.392Zm6.506-2.16c0-.9-.581-1.472-1.64-1.472h-1.485l-.654 4.787h1.25l.206-1.508h.059l.66 1.508h1.434l-.918-1.676c.684-.282 1.087-.89 1.087-1.638Zm-2 .795h-.183l.139-1.007h.169c.39 0 .595.142.595.45 0 .363-.293.557-.72.557Zm-16.547-.354c-.477-.292-.581-.362-.581-.521 0-.193.19-.29.448-.29.302 0 .758.043 1.206.554.108-.4.287-.777.529-1.11-.63-.431-1.22-.652-1.756-.652-1.066 0-1.683.687-1.683 1.516 0 .715.447 1.085.977 1.412.478.29.595.387.595.564 0 .194-.198.3-.463.3-.456 0-.986-.344-1.301-.697L7 14.426c.417.378.954.582 1.507.574 1.103 0 1.699-.671 1.699-1.527 0-.705-.382-1.084-.993-1.454Zm9.263.184h-1.47l.117-.837h1.572c.2-.491.513-.923.912-1.26h-2.573c-.573 0-1.058.467-1.14 1.102l-.499 3.694h1.25l.206-1.508h1.485l.11-.82c.007-.132.015-.247.03-.37Zm9.312-2.096c.338.308.544.74.588 1.26h1.044l-.477 3.526h1.249l.477-3.527h1.162l.169-1.26h-4.212Z" fill="#EDEDED"></path></svg>
+                  </li>
+                  <li class="HorizontalList__Item">
+                    <svg viewBox="0 0 38 24" style="padding-right: 5px;padding-left: 5px;width: 38px;height: auto;" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pi-visa"><title id="pi-visa">Visa</title><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"></path><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"></path><path d="M28.3 10.1H28c-.4 1-.7 1.5-1 3h1.9c-.3-1.5-.3-2.2-.6-3zm2.9 5.9h-1.7c-.1 0-.1 0-.2-.1l-.2-.9-.1-.2h-2.4c-.1 0-.2 0-.2.2l-.3.9c0 .1-.1.1-.1.1h-2.1l.2-.5L27 8.7c0-.5.3-.7.8-.7h1.5c.1 0 .2 0 .2.2l1.4 6.5c.1.4.2.7.2 1.1.1.1.1.1.1.2zm-13.4-.3l.4-1.8c.1 0 .2.1.2.1.7.3 1.4.5 2.1.4.2 0 .5-.1.7-.2.5-.2.5-.7.1-1.1-.2-.2-.5-.3-.8-.5-.4-.2-.8-.4-1.1-.7-1.2-1-.8-2.4-.1-3.1.6-.4.9-.8 1.7-.8 1.2 0 2.5 0 3.1.2h.1c-.1.6-.2 1.1-.4 1.7-.5-.2-1-.4-1.5-.4-.3 0-.6 0-.9.1-.2 0-.3.1-.4.2-.2.2-.2.5 0 .7l.5.4c.4.2.8.4 1.1.6.5.3 1 .8 1.1 1.4.2.9-.1 1.7-.9 2.3-.5.4-.7.6-1.4.6-1.4 0-2.5.1-3.4-.2-.1.2-.1.2-.2.1zm-3.5.3c.1-.7.1-.7.2-1 .5-2.2 1-4.5 1.4-6.7.1-.2.1-.3.3-.3H18c-.2 1.2-.4 2.1-.7 3.2-.3 1.5-.6 3-1 4.5 0 .2-.1.2-.3.2M5 8.2c0-.1.2-.2.3-.2h3.4c.5 0 .9.3 1 .8l.9 4.4c0 .1 0 .1.1.2 0-.1.1-.1.1-.1l2.1-5.1c-.1-.1 0-.2.1-.2h2.1c0 .1 0 .1-.1.2l-3.1 7.3c-.1.2-.1.3-.2.4-.1.1-.3 0-.5 0H9.7c-.1 0-.2 0-.2-.2L7.9 9.5c-.2-.2-.5-.5-.9-.6-.6-.3-1.7-.5-1.9-.5L5 8.2z" fill="#142688"></path></svg>
+                  </li>
+                  <li class="HorizontalList__Item">
+                    <svg viewBox="0 0 38 24" style="padding-right: 5px;padding-left: 5px;width: 38px;height: auto;" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="pi-master"><title id="pi-master">Mastercard</title><path opacity=".07" d="M35 0H3C1.3 0 0 1.3 0 3v18c0 1.7 1.4 3 3 3h32c1.7 0 3-1.3 3-3V3c0-1.7-1.4-3-3-3z"></path><path fill="#fff" d="M35 1c1.1 0 2 .9 2 2v18c0 1.1-.9 2-2 2H3c-1.1 0-2-.9-2-2V3c0-1.1.9-2 2-2h32"></path><circle fill="#EB001B" cx="15" cy="12" r="7"></circle><circle fill="#F79E1B" cx="23" cy="12" r="7"></circle><path fill="#FF5F00" d="M22 12c0-2.4-1.2-4.5-3-5.7-1.8 1.3-3 3.4-3 5.7s1.2 4.5 3 5.7c1.8-1.2 3-3.3 3-5.7z"></path></svg>
+                  </li>
+
+            </ul>
+          {% endcomment %}
+          <!-- End of Payment custom code -->
+
+          <main class="main__content" role="main">
+            {{ content_for_layout }}
+          </main>
+          <footer class="main__footer" role="contentinfo">
+            {{ content_for_footer }}
+          </footer>
+
+          <!-- Custom Code for icons and text: paste under content_for_order_summary on mobile mode -->
+          <div class="advantages mobile-only">
+            <h2>{{ 'custom_translations.checkout_page.advantages' | t | newline_to_br }}</h2>
+          </div>
+          <div class="advantages-items mobile-only">
+            <div class="item-row">
+              <div class="item-col">
+                {{ 'ch-icon-1.png' | file_url | img_tag: 'Lorem ipsum' }}
+              </div>
+              <div class="item-col">
+                <strong>{{ 'custom_translations.checkout_page.advantage_title_1' | t | newline_to_br }}</strong>
+              </div>
+            </div>
+
+            <div class="item-row">
+              <div class="item-col">
+                {{ 'icon-01-01.png' | file_url | img_tag: 'Lorem ipsum' }}
+              </div>
+              <div class="item-col">
+                <strong>{{ 'custom_translations.checkout_page.advantage_title_4' | t | newline_to_br }}</strong>
+              </div>
+            </div>
+
+            {% comment %}
+              <div class="item-row">
+                <div class="item-col">
+                  {{ 'ch-icon-2.png' | file_url | img_tag: 'Lorem ipsum' }}
+                </div>
+                <div class="item-col">
+                  <strong>{{ 'custom_translations.checkout_page.advantage_title_2' | t | newline_to_br }}</strong>
+                </div>
+              </div>
+            {% endcomment %}
+
+            <div class="item-row">
+              <div class="item-col">
+                {{ 'ch-icon-3.png' | file_url | img_tag: 'Lorem ipsum' }}
+              </div>
+              <div class="item-col">
+                <strong>{{ 'custom_translations.checkout_page.advantage_title_3' | t | newline_to_br }}</strong>
+              </div>
+            </div>
+          </div>
+          <!-- End of Custom Code for icons and text -->
+        </div>
+        <aside class="sidebar" role="complementary">
+          <div class="sidebar__header">
+            {{ content_for_logo }}
+          </div>
+          <div class="sidebar__content">
+            {{ content_for_order_summary }}
+
+            <!-- Custom Code for icons and text: paste under content_for_order_summary on desktop mode -->
+            <div class="advantages desktop-only">
+              <h2 class="advantages_desktop_header">
+                {{ 'custom_translations.checkout_page.advantages' | t | newline_to_br }}
+              </h2>
+            </div>
+
+            <div class="advantages-items desktop-only">
+              <div class="item-row">
+                <div class="item-col">
+                  {{ 'ch-icon-1.png' | file_url | img_tag: 'Lorem ipsum' }}
+                </div>
+                <div class="item-col">
+                  <strong>{{ 'custom_translations.checkout_page.advantage_title_1' | t | newline_to_br }}</strong>
+                  <p>{{ 'custom_translations.checkout_page.advantage_text_1' | t | newline_to_br }}</p>
+                </div>
+              </div>
+
+              {% comment %}
+                <div class="item-row">
+                  <div class="item-col">
+                    {{ 'icon-01-01.png' | file_url | img_tag: 'Lorem ipsum' }}
+                  </div>
+                  <div class="item-col">
+                    <strong>{{ 'custom_translations.checkout_page.advantage_title_4' | t | newline_to_br }}</strong>
+                  </div>
+                </div>
+              {% endcomment %}
+
+              <div class="item-row">
+                <div class="item-col">
+                  {{ 'ch-icon-2.png' | file_url | img_tag: 'Lorem ipsum' }}
+                </div>
+                <div class="item-col">
+                  <strong>{{ 'custom_translations.checkout_page.advantage_title_2' | t | newline_to_br }}</strong>
+                  <p>{{ 'custom_translations.checkout_page.advantage_text_2' | t | newline_to_br }}</p>
+                </div>
+              </div>
+
+              <div class="item-row">
+                <div class="item-col">
+                  {{ 'aveandyou-optimization-icon-3.png' | file_url | img_tag: 'Lorem ipsum' }}
+                </div>
+                <div class="item-col">
+                  <strong>{{ 'custom_translations.checkout_page.advantage_title_3' | t | newline_to_br }}</strong>
+                  <p>{{ 'custom_translations.checkout_page.advantage_text_3' | t | newline_to_br }}</p>
+                </div>
+              </div>
+            </div>
+            <style>
+              .order-summary__sections {
+                height: auto !important;
+              }
+              .advantages-items .desktop-only {
+                display: none;
+              }
+              .advantages-items .mobile-only .item-col {
+                display: flex;
+                align-items: center;
+              }
+              .advantages-items .item-row {
+                display: flex;
+                margin: 20px 0px;
+              }
+              .advantages-items .item-row img {
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+              }
+              .item-row .item-col:nth-of-type(1) {
+                flex: 50px;
+              }
+              .item-row .item-col:nth-of-type(2) {
+                flex: 250px;
+              }
+              .advantages {
+                position: relative;
+                text-align: center;
+                margin: 15px 0px 20px 0px;
+              }
+              .advantages.desktop-only {
+                margin: 50px 0px 20px 0px;
+              }
+              .advantages h2 {
+                text-align: center;
+                display: inline-block;
+                position: relative;
+                z-index: 1;
+                padding: 0px 10px;
+                background: #fff;
+              }
+              .advantages h2.advantages_desktop_header {
+                background: #fbeddf;
+              }
+              .advantages:before{
+                content: ' ';
+                position: absolute;
+                left: 0%;
+                top: 50%;
+                height: 1px;
+                width: 100%;
+                background: #6666;
+                z-index: 0;
+              }
+
+              .advantages-items img {
+                width: 70px;
+              }
+              @media only screen and (min-width: 769px) {
+                .mobile-only {
+                  display: none;
+                }
+              }
+              @media only screen and (max-width: 768px) {
+                .desktop-only {
+                  display: none;
+                }
+                .advantages-items.mobile-only {
+                  margin: 0 auto;
+                  display: flex;
+                  flex-wrap: wrap;
+                  margin-bottom: 30px;
+                  gap: 30px 0;
+                }
+                .advantages-items.mobile-only .item-row {
+                  margin: 0;
+                  align-items: center;
+                  gap: 5px;
+                  flex: 50%;
+                  flex-direction: column;
+                  text-align: center;
+                }
+                .advantages-items.mobile-only .item-row .item-col {
+                  flex: unset;
+                }
+              }
+            </style>
+            <!-- End of Custom Code for icons and text -->
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    {{ tracking_code }}
+
+    <!-- Custom code for DHL : paste this code after {{ tracking code }} -->
+    <style>
+      .section.section--shipping-address .section__header {
+        display: flex;
+      }
+      .section.section--shipping-address .section__header h2 {
+        flex: 50%;
+        padding: 15px;
+        background: #f8f8f8;
+        border-radius: 6px 6px 0px 0px;
+        font-weight: bold;
+        font-size: 14px;
+      }
+      .section.section--shipping-address .section__header {
+        margin-bottom: 0px;
+      }
+      .section.section--shipping-address .section__header h2:not(.active) {
+        border-bottom: solid 1px #d5d5d5;
+      }
+      .section.section--shipping-address .section__header h2:not(.active):hover {
+
+        cursor: pointer !important;
+        background: #eaeaea;
+      }
+      .section.section--shipping-address .section__header h2.active {
+        background: #fff;
+        border-top: solid 1px #d5d5d5;
+        border-left: solid 1px #d5d5d5;
+        border-right: solid 1px #d5d5d5;
+        border-bottom: solid 1px #fff;
+      }
+      .section.section--shipping-address .section__content {
+        border-left: solid 1px #d5d5d5;
+        border-right: solid 1px #d5d5d5;
+        border-bottom: solid 1px #d5d5d5;
+        border-radius: 0px 0px 6px 6px;
+        padding: 10px;
+      }
+
+      .section.section--shipping-address .section__content .fieldset .address-fields {
+        display: flex;
+        flex-wrap: wrap;
+      }
+      [data-address-field="first_name"] {
+        order: 1;
+      }
+      [data-address-field="last_name"] {
+        order: 2;
+      }
+      [data-address-field="address1"] {
+        order: 3;
+      }
+      [data-address-field="address2"] {
+        order: 4;
+      }
+      [data-address-field="zip"] {
+        order: 5;
+      }
+      [data-address-field="city"] {
+        order: 6;
+      }
+      [data-address-field="country"] {
+        order: 7;
+      }
+    </style>
+    <script>
+      ( function($) {
+        $( '.section.section--shipping-address .section__header #section-delivery-title' ).addClass( 'active' );
+        $( '.section.section--shipping-address .section__header' ).append( '<h2 class="section__title" id="section-packstation-title"> {{ 'custom_translations.checkout_page.deliver_dhl' | t }} </h2>' );
+        //$( '[data-address-field="address1"]' ).after( '<div style="display: none;" data-address-field="packstation" data-autocomplete-field-container="true" class="field field--required field--show-floating-label"><div class="field__input-wrapper"><label class="field__label field__label--visible" for="checkout_shipping_address_packstation">Packstation number</label><input placeholder="Packstation number" autocomplete="shipping packstation-number" autocorrect="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-required="true" data-backup="packstation" data-autocomplete-trigger="true" data-autocomplete-title="Suggestions" class="field__input" size="30" type="text" value="" name="checkout[shipping_address][packstation]" id="checkout_shipping_address_packstation" aria-haspopup="false"></div></div>' );
+        $( '.section.section--shipping-address .section__header h2' ).on( 'click', function(){
+          if( $( this ).hasClass( 'active' ) ) {
+            return;
+          }
+          var $title = $( this ).attr( 'id' );
+          console.log( $title );
+          $( '.section.section--shipping-address .section__header h2' ).removeClass( 'active' );
+          $( this ).addClass( 'active' );
+          switch( $title ) {
+            case 'section-delivery-title':
+              $( '[data-address-field="address1"] label' ).html( '{{ 'custom_translations.checkout_page.deliver_st_1' | t }}' );
+              $( '[data-address-field="address1"] input' ).attr( 'placeholder', '{{ 'custom_translations.checkout_page.deliver_st_1' | t }}' );
+              $( '[data-address-field="address2"] label' ).html( '{{ 'custom_translations.checkout_page.deliver_add_1' | t }}' );
+              $( '[data-address-field="address2"] input' ).attr( 'placeholder', '{{ 'custom_translations.checkout_page.deliver_add_1' | t }}' );
+              break;
+            case 'section-packstation-title':
+              $( '[data-address-field="address1"] label' ).html( '{{ 'custom_translations.checkout_page.deliver_st_2' | t }}' );
+              $( '[data-address-field="address1"] input' ).attr( 'placeholder', '{{ 'custom_translations.checkout_page.deliver_st_2' | t }}' );
+              $( '[data-address-field="address2"] label' ).html( '{{ 'custom_translations.checkout_page.deliver_add_2' | t }}' );
+              $( '[data-address-field="address2"] input' ).attr( 'placeholder', '{{ 'custom_translations.checkout_page.deliver_add_2' | t }}' );
+              break;
+          }
+        } );
+      } )( Checkout.$ );
+    </script>
+    <!-- end of custom code -->
+
+    {% include 'globale-checkout-js' %}
+    <script>
+      window.addEventListener('load', (event) => {
+      document.querySelector('.order-summary-toggle').click();
+      });
+    </script>
+
+    {% include 'globale-checkout-js' %}
+  
+  {% include "globale-checkout-js" %}
+</body>
+</html>

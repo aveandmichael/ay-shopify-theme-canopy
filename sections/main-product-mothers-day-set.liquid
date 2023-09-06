@@ -1,0 +1,1367 @@
+{{ '//cdn.shopify.com/s/javascripts/carts.js' | script_tag }}
+
+{%- liquid
+  assign max_cols = 4
+  assign min_cols = 2
+  assign aspect_ratio = 5
+  assign primary_image = product.featured_media.preview_image
+  assign secondary_image = product.media[1].preview_image
+  assign current_variant = product.selected_or_first_available_variant
+  if current_variant.metafields.secomapp.freegifts 
+    assign current_variant = product.variants[0] 
+  endif
+   assign form_id = 'product_form_' | append: product.id
+   
+  if use_ajax_quantities
+    assign form_class = "product-form product-form--mini product-form--not-quickbuy column"
+  else
+    assign form_class = "product-form column"
+  endif
+
+  assign free_giftbox_current_variant = section.settings.recommended_set_free_giftbox.selected_or_first_available_variant
+-%}
+
+<div class="mothersday-set-container section container product-container product-container--{{ section.settings.page_width }} {% if is_featured_product %}border-top featured-product-section{% endif %}"
+     data-section-type="product-template" data-components="accordion">
+  {% comment %}
+  <div class="product-header">
+    <center><h1>Your Mother's Day Set</h1></center>
+  </div>
+  {% endcomment %}
+
+  <div class="set-container__main">
+    <div class="set-container__heading">
+      <h1>{{ section.settings.pdp_header }}</h1>
+    </div>
+    <div class="set-container__content">
+      <div class="set-container__content-recommended">
+        <div class="set-container__content-recommended__image set-container__content__feature_image">
+          {% if localization.language.iso_code == "de" %}
+            {{ section.settings.recommended_set_image_de | image_url: width: 2000 | image_tag }}
+          {% else %}
+            {{ section.settings.recommended_set_image_en | image_url: width: 2000 | image_tag }}
+          {% endif %}
+        </div>
+        <div class="set-container__content-recommended__action">
+          {% form 'product', product, class: form_class, data-ajax-add-to-cart: false, data-product-id: product.id, data-enable-history-state: true, data-open-cart-drawer: false %}
+            <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+            <input type="hidden" name="quantity" value="1" min="1" required>
+            <button type="submit" name="add"
+                    class="btn product-add alt outline {% if section.settings.enable_payment_button and product.selling_plan_groups == empty %}alt outline{% endif %}">
+              <span class="button-text">{% if product.available %}{{ 'products.grid.add_to_cart' | t }}{% else %}{{ 'products.product.unavailable' | t }}{% endif %}</span>
+              <span class="loading-spinner" aria-label="{{ 'products.product.adding_to_cart' | t }}"></span>
+              <span class="added-to-cart" aria-label="{{ 'products.product.added_to_cart' | t }}"></span>
+              <span class="button-text product-in-set__hidden">{{ 'products.product.added_to_cart' | t }}</span>
+            </button>
+            <p id="SetRecommendedSetError" class="hidden_error error__color__red">
+              You have the custom set in your cart. <br />
+              Please remove the custom set from cart in order to add the recommended set.
+            </p>
+          {% endform %}
+        </div>
+      </div>
+      {% comment %}
+      <div class="mothersday-divider-or">
+        <div class="divider"></div>
+        <span>OR</span>
+      </div>
+      {% endcomment %}
+      <div class="set-container__content-custom">
+        <div class="set-container__content-custom__image set-container__content__feature_image">
+          {% if localization.language.iso_code == "de" %}
+            {{ section.settings.custom_set_image_de | image_url: width: 2000 | image_tag }}
+          {% else %}
+            {{ section.settings.custom_set_image_en | image_url: width: 2000 | image_tag }}
+          {% endif %}
+        </div>
+        <div class="set-container__content-custom__action">
+          <button type="submit" class="btn product-add mini-form mothersday-set-builder-trigger">
+            {{ 'products.grid.create_own_set' | t }}
+          </button>
+          <p id="SetBuilderTriggerError" class="hidden_error error__color__red">
+            You have already added the recommended set in the cart. <br />
+            Please remove it from cart in order to build your own set.
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="set-container__builder">
+      <div class="own-set landing_step step_0">
+        {% comment %}
+        <h1>{{ section.settings.landing_step_main_heading }}</h1>
+        {% endcomment %}
+        <div class="step-footer">
+          <button type="button" class="btn next-step-btn step-builder-btn">{{ section.settings.landing_step_button_text }}</button>
+        </div>
+        <div class="landing_step__content">
+          <div class="landing_step__feature_image">
+            {% if localization.language.iso_code == "de" %}
+            {{ section.settings.landing_step_feature_image_de | image_url: width: 1500 | image_tag }}
+            {% else %}
+            {{ section.settings.landing_step_feature_image_en | image_url: width: 1500 | image_tag }}
+            {% endif %}
+          </div>
+          {% comment %}
+          <div class="landing_step__copy">
+            <ol>
+              <li>
+                <span>
+                  Choose as many products as
+                  you want from each step of
+                  the skincare routine! This is
+                  the perfect order for your
+                  routine.
+                </span>
+              </li>
+              <li>
+                <span>
+                  The number of products you
+                  choose will determine your
+                  discount rate! (Up to 30% off)
+                </span>
+              </li>
+              <li>
+                <span>
+                  See the smile on your mom's
+                  face as she opens her brand
+                  new skincare routine!
+                </span>
+              </li>
+            </ol>
+          </div>
+          {% endcomment %}
+        </div>
+      </div>
+      {% if section.blocks %}
+        {% for block in section.blocks %}
+          <div class="own-set step_{{ forloop.index }} step-journey suspend-set">
+            <div class="own-set-header step-header">
+              <center>
+                <h3>{{ forloop.index }} / {{ forloop.length }}</h3>
+                <h2>{{ block.settings.preset.title }}</h2>
+                {% if block.settings.necessity == "optional" %}
+                  <p><i>You can skip this step.</i></p>
+                {% endif %}
+              </center>
+            </div>
+            <br />
+            <div class="own-set-footer step-footer">
+              {% if forloop.index > 1 %}
+                <div class="step-footer__btn-container">
+                  <button class="btn prev-step-btn">BACK</button>
+                  <span class="back-to-main-link back-to-main-link_{{ forloop.index }}">or back to main</span>
+                </div>
+              {% endif %}
+              {% if forloop.last != true %}
+                {% if forloop.index == 1 %}
+                  <button class="btn main-step-btn">
+                    MAIN
+                  </button>
+
+                  <div class="step-footer__btn-container">
+                    <button class="btn next-step-btn">NEXT</button>
+                    {% comment %}
+                    <span class="finish-step-link">or finish setup</span>
+                    {% endcomment %}
+                  </div>
+                {% else %}
+                  <div class="step-footer__btn-container">
+                    <button class="btn next-step-btn">NEXT</button>
+                    {% comment %}
+                    <span class="finish-step-link">or finish setup</span>
+                    {% endcomment %}
+                  </div>
+                {% endif %}
+              {% else %}
+                <button class="btn final-step-btn">PREVIEW SET</button>
+              {% endif %}
+            </div>
+            <div class="product-list product-grid row grid use-infinite-scroll" data-normheights=".image" data-normheights-inner="img" style="width:100%;">
+              {% if block.settings.preset %}
+                  {% for product in block.settings.preset.products %}
+                    {% unless product.tags contains 'personalized' %}
+                      {% assign only_two_items = false %}
+                      {% if forloop.length <= 2 %}
+                        {% assign only_two_items = true %}
+                      {% endif %}
+                      {% render 'product-block-mothersday', product: product, max_cols: 4, min_cols: 4, hide_form: true, custom_atc: true, step: forloop.parentloop.index, with_details: true, collection_id: block.settings.preset.id, collection_title: block.settings.preset.title, without_stars: true, unclickable_grid_item: true %}
+                    {% endunless %}
+                  {% endfor %}
+                  {% comment %}
+                    ADD THIS EXTRA DIV IF THERE ARE 2 OR LESS ITEMS
+                    TO REMOVE LONG GAP BETWEEN PRICE AND SHORT DESCRIPTION
+                  {% endcomment %}
+                  {% if only_two_items %}
+                    <div class="product-block pdp-{{ current_variant.sku |replace: ".", "-" }}  checkRecomm
+                      layout-align-{{ settings.prod_block_layout }}
+                      {% if settings.label_soldout_show and product.available == false %}sold-out {% endif %}{{ product-block | default: 'flex column' }}
+                      max-cols-{{ max_cols }}
+                      min-cols-{{ min_cols }}
+                      product-block--gutter-{{ settings.prod_thumb_gutter }}
+                      product-block--gap-{{ settings.prod_thumb_gap }}
+                      product-block--border-{{ settings.prod_thumb_show_border }}
+                      {% if is_last %}product-block--last{% endif %}
+                      {% unless settings.prod_quick_buy_show and settings.prod_quick_buy_type == 'in-page' %}
+                        product-block--no-quickbuy
+                     {% endunless %}
+                     {% if show_quickbuy and product.variants.size > 1 and product.available == true %}product-block--with-quickbuy{% endif %}
+                    "
+                    id="{{ section.id }}_{{ product.id }}"
+                    style="flex-grow: unset;"></div>
+                  {% endif %}
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="set-container__preview">
+      <div class="step-footer">
+        <div class="own-set-footer step-footer">
+          <div class="step-footer__btn-container" style="width:100%;margin-bottom:30px;text-decoration:underline;">
+            <button class="prev-step-btn__preview" style="background:none;color:#000;border:none;">BACK TO SET BUILDER</button>
+          </div>
+        </div>
+        <div class="own-set-header step-header preview_header">
+          <center>
+            <h2 class=>SET PREVIEW</h2>
+          </center>
+          <div class="preview_header__price"></div>
+        </div>
+      </div>
+      {% comment %}
+      <div class="product-list product-grid row grid use-infinite-scroll" data-normheights=".image" data-normheights-inner="img" style="width:100%;">
+      </div>
+      {% endcomment %}
+      {% assign reqSet = "Mother's Day Set" | escape | json %}
+      <div class="step_preview_container">
+        {% for block in section.blocks %}
+          {% assign has_item = false %}
+          <div class="step_preview_{{ forloop.index }} step_preview_product_grid" data-collection-title="{{ block.settings.preset.title }}" data-step="{{ forloop.index }}">
+            <div class="own-set-header step-header">
+              <center>
+                <h1>STEP {{ forloop.index }} - {{ block.settings.preset.title }}</h1>
+              </center>
+            </div>
+            <div class="preview_items_container"></div>
+          </div>
+        {% endfor %}
+        <div class="own-set-footer step-footer">
+          <div class="step-footer__btn-container">
+            {% assign lang = localization.language.iso_code | append: '-' %}
+            {% assign subfolder = localization.country.iso_code | downcase | prepend: lang %}
+            <a href="{% if localization.country.iso_code != 'DE' %}/{{ subfolder }}{% endif %}/checkout" class="btn btn-checkout">CHECKOUT</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+<div class="set-popup hidden">
+  <div class="set-popup__content">
+    <div class="set-popup__content-close"><button>X</button></div>
+    <div class="set-popup__content-header"></div>
+    <div class="set-popup__content-area"></div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Mothers Day Set Product",
+    "blocks": [
+      {
+        "type": "collection",
+        "name": "Custom Set",
+        "limit": 5,
+        "settings": [
+          {
+            "type": "collection",
+            "id": "preset",
+            "label": "Addtional step to a custom set"
+          },
+          {
+            "type": "select",
+            "id": "necessity",
+            "label": "Specify whether step is required or optional",
+            "options": [
+              {
+                "value": "optional",
+                "label": "Optional"
+              },
+              {
+                "value": "required",
+                "label": "Required"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "settings": [
+      {
+        "type": "text",
+        "id": "pdp_header",
+        "label": "PDP Header",
+        "default": "YOUR MOTHER'S DAY SET"
+      },
+      {
+        "type": "text",
+        "id": "pdp_subheader",
+        "label": "PDP Subheader",
+        "default": "Add more, save more! Up to 30% discount."
+      },
+      {
+        "type": "select",
+        "id": "page_width",
+        "default": "medium",
+        "label": "Page width",
+        "options": [
+          {
+            "value": "narrow",
+            "label": "Narrow"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "wide",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "type": "product",
+        "id": "recommended_set_free_giftbox",
+        "label": "Free Gift Box Product",
+        "info": "The free gift box product that comes with the set. Needs to be defined so it is added as part of order and so that fulfillment team knows to include this."
+      },
+      {
+        "type": "image_picker",
+        "id": "recommended_set_image_de",
+        "label": "Recommended Set Image (DE)",
+        "info": "Recommended Set image for German"
+      },
+      {
+        "type": "image_picker",
+        "id": "recommended_set_image_en",
+        "label": "Recommended Set Image (EN)",
+        "info": "Recommended Set image for English"
+      },
+      {
+        "type": "image_picker",
+        "id": "custom_set_image_de",
+        "label": "Custom Set Image (DE)",
+        "info": "Custom Set image for German"
+      },
+      {
+        "type": "image_picker",
+        "id": "custom_set_image_en",
+        "label": "Custom Set Image (EN)",
+        "info": "Custom Set image for English"
+      },
+      {
+        "type": "product_list",
+        "id": "recommended_set_products",
+        "label": "Recommended Set Product Composition",
+        "info": "Define the products of the recommended set. These will be shown on the frontend for presentation purposes.",
+        "limit": 4
+      },
+      {
+        "type": "text",
+        "id": "landing_step_main_heading",
+        "label": "Landing Step Main Heading",
+        "info": "Main heading text to show on the landing step"
+      },
+      {
+        "type": "text",
+        "id": "landing_step_button_text",
+        "label": "Landing Step Button Text",
+        "info": "Text/label to show in the button on the landing step"
+      },
+      {
+        "type": "image_picker",
+        "id": "landing_step_feature_image_de",
+        "label": "Landing Step Feature Image (DE)",
+        "info": "Instruction image for German"
+      },
+      {
+        "type": "image_picker",
+        "id": "landing_step_feature_image_en",
+        "label": "Landing Step Feature Image (EN)",
+        "info": "Instruction image for English"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .set-container__main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .set-container__heading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .set-container__content {
+    display: flex;
+    gap: 30px;
+    justify-content: space-evenly;
+  }
+  .set-container__content form {
+    width: 100%;
+  }
+  .set-container__content__feature_image {
+    max-width: 300px !important;
+  }
+  #SetRecommendedSetError.hidden_error, #SetBuilderTriggerError.hidden_error {
+    display: none;
+  }
+  #SetRecommendedSetError.error__color__red, #SetBuilderTriggerError.error__color__red {
+    color: red;
+    text-align: center;
+    width: 200px;
+    margin-top: 10px;
+  }
+  .set-container__main .btn.product-add {
+    width: 250px; 
+    height: 50px;
+  }
+  @media only screen and (min-width: 1920) {
+    .set-container__content__feature_image {
+      max-width: initial !important;
+    }
+  }
+  @media only screen and (max-width: 767px) {
+    .set-container__content {
+      flex-direction: column;
+    }
+    .set-container__content__feature_image {
+      max-width: 300px !important;
+    }
+  }
+
+  /*  RECOMMENDED SET TRIGGER  */
+  .set-container__content-recommended {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .set-container__content-recommended__action form {
+    width: 100% !important; 
+  }
+  .set-container__content-recommended .set-container__content-recommended__action form{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .set-container__content-recommended__action button {
+    margin-top: 15px !important; 
+  }
+
+  /*  CUSTOM SET TRIGGER  */
+  .set-container__content-custom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .set-container__content-custom .set-container__content-custom__action{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .set-container__content-custom__action button {
+    margin-top: 15px; 
+  }
+
+
+  /*  SET BUILDER  */
+  .set-container__builder .set-container__heading h1 {
+    margin: 0!important;
+  }
+  .set-container__builder .product-list .product-form__item button {
+    display: flex!important;
+    justify-content: center!important;
+    align-items: center!important;
+  }
+
+  /*  ANIMATION  */
+  .set-container__builder, .set-container__preview {
+    width: 100%;
+    z-index: 3;
+    transform: translateX(-300%);
+    position: relative;
+    height: 0;
+  }
+  .set-container__content {
+    transition: transform 1s ease-out;
+    transform: translateX(0);
+  }
+  .set-container__content.slide-out {
+    z-index: 1;
+    animation: slide-out-left 1s ease forwards;
+  }
+  .set-container__content.slide-out, .set-container__builder.slide-out, .set-container__builder.own-set.slide-out, .set-container__preview.slide-out {
+    z-index: 1;
+    animation: slide-out-left 1s ease forwards;
+  }
+  .set-container__content.slide-in, .set-container__builder.slide-in, .own-set.slide-in, .set-container__preview.slide-in {
+    animation: slide-in-left 1s ease forwards;
+  }
+  .set-container__builder.slide-in, .set-container__preview.slide-in {
+    height: auto;
+  }
+
+  @keyframes slide-out-left {
+    0% {
+      transform: translateX(0);
+      display: block;
+    }
+    100% {
+      transform: translateX(-300%);
+      display: none;
+      height: 0;
+    }
+  }
+  
+  @keyframes slide-in-left {
+    0% {
+      display: none;
+      transform: translateX(-150%);
+    }
+    100% {
+      transform: translateX(0);
+      display: block;
+    }
+  }
+
+  /*  OWN SET  */
+  .own-set.suspend-set {
+    transform: translateX(-300%);
+    display: none;
+  }
+  .own-set {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+  }
+  .own-set-header.step-header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .own-set-header.step-header h2 {
+    font-size: 2.5rem;
+    color: #d09191;
+  }
+  .own-set-footer.step-footer {
+    width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 25px;
+  }
+  .own-set-footer.step-footer .step-footer__btn-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  .set-container__preview .step-footer__btn-container {
+    align-items: center!important; 
+  }
+  .own-set-footer.step-footer .step-footer__btn-container span {
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  @media only screen and (max-width: 580px) {
+    .own-set-header.step-header h2 {
+      font-size: 1.5rem;
+    }
+    .own-set-footer.step-footer .step-footer__btn-container span {
+      font-size: .8rem;
+    }
+  }
+
+  /*  LANDING STEP  */
+  .landing_step .landing_step__content {
+    display: flex;
+    gap: 15px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    justify-content: center;
+  }
+  .landing_step h1 {
+    font-size: 2.5rem;
+  }
+  .landing_step h2 {
+    font-size: 2rem;
+    color: #515151;
+  }
+  .landing_step .landing_step__feature_image {
+    /*flex: 100%;*/
+    width: 50%;
+  }
+  .landing_step .landing_step__copy ol {
+    width: 70%;
+    margin: 0;
+  }
+  .landing_step .landing_step__copy ol li {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    line-height: 30px;
+    text-align: justify;
+  }
+  .landing_step button {
+    /*height: 60px;*/
+    width: 250px;
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+  .landing_step .step-footer:last-child {
+    display: none;
+  }
+  @media only screen and (max-width: 767px) {
+    .landing_step .landing_step__content {
+      flex-direction: column;
+    }
+    .landing_step .landing_step__feature_image {
+      width: 100%;
+    }
+    .landing_step .landing_step__copy ol {
+      width: 100%;
+      padding: 0 40px;
+    }
+    .landing_step .step-footer:last-child {
+      display: flex;
+    }
+  }
+
+  /*  CUSTOM SET GRID (product-block snippet)  */
+  .set-container__main .product-add .product-in-set__hidden, .set-container__main .product-add .button-text__hidden {
+    display: none;
+  }
+
+  /*  PREVIEW  */
+  .step_preview_container {
+    display: flex;
+    flex-direction: column;
+  }
+  .step_preview_container .step-header h1 {
+    color: #d09191;
+  }
+  .step_preview_container .step-footer__btn-container {
+    width:100%;
+    margin-bottom:30px;
+  }
+  .step_preview_container .btn-checkout {
+    height: 60px;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: 0;
+    background: #d09191;
+    border: none;
+  }
+  .preview_header, .preview_header__price {
+    text-align: center;
+  }
+  .preview_header__price .set-total-container {
+    margin-bottom: 60px;
+  }
+  .preview_header__price .theme-money {
+    margin-bottom: 15px;
+  }
+  .preview_header__price .struck-out-price {
+    font-size: 1.2rem;
+  }
+  .preview_header__price .reduced-price {
+    font-size: 2rem;
+    color: #d09191;
+  }
+  .preview_header__price .total-label {
+    font-size: 1rem;
+    color: #676767;
+    margin-top: 10px;
+  }
+  .preview_items_container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .step_preview_product_grid {
+    display: grid;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .step_preview_product_grid button {
+    width: 200px;
+    justify-self: center;
+    margin-bottom: 30px;
+  }
+  .step_preview_product_grid:not(:last-child) {
+    margin-bottom: 30px;
+  }
+  .preview_item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 25%;
+  }
+  .preview_item .price {
+    display: flex;
+    gap: 10px;
+  }
+  .preview_item .set-preview_product-title {
+    width: 250px;
+    font-weight: 700;
+    font-size: 1.5rem;
+    text-align: center;
+  }
+  .preview_item .price .struck-out-price {
+    font-size: 1.1rem;
+  }
+  .preview_item .price .reduced-price {
+    font-size: 1.3rem;
+    font-weight: 600;
+  }
+  @media only screen and (max-width: 500px) {
+    .preview_item .set-preview_product-title {
+      font-weight: 700;
+      font-size: 1.1rem; 
+    }
+  }
+  @media only screen and (min-width: 768px) {
+    .step_preview_container .step-footer {
+      justify-content: center;
+    }
+    .step_preview_container .step-footer__btn-container {
+      width: 250px;
+    } 
+  }
+
+
+  /*  PRODUCT GRID OVERRIDE  */
+  .product-block__title-price a.title {
+    font-size: .9rem!important;
+  }
+  .product-block__title-price > span {
+    font-size: .7rem!important;
+  }
+  .product-block__inner .price {
+    margin-top: 1.6rem!important;
+    margin-bottom: .5rem!important;
+  }
+  .product-block .price .amount {
+    font-weight: 700!important;
+  }
+  ul.product-grid__details-list {
+    display: flex;
+    list-style: none;
+    margin: 8px 0 0 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+  }
+  ul.product-grid__details-list li {
+    margin-top: 10px;
+    font-size: .7rem;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  ul.product-grid__details-list li:not(:first-child), 
+  ul.product-grid__details-list li:not(:last-child) {
+    margin: 0 3px; 
+  }
+  @media only screen and (min-width: 768px) {
+    .product-block__title-price a.title {
+      font-size: 1.2rem!important;
+    }
+    .product-block__title-price > span {
+      font-size: .9rem!important;
+    }
+  }
+
+
+  /*  POP UP  */
+  .set-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    height: 100vh;
+  }
+  .set-popup.hidden {
+    display: none;
+  }
+  .set-popup__content {
+    width: 320px;
+    border-radius: 10px;
+    background: #fff;
+    padding: 10px 20px 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  .set-popup__content .set-popup__content-close {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+  }
+  .set-popup__content .set-popup__content-close button {
+    background-color: #eee;
+    font-weight: 700;
+    text-align: center;
+    border: 0;
+    color: #000;
+    font-size: 1.2rem;
+  }
+  .set-popup__content .set-popup__content-header {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .set-popup__content .set-popup__content-area {
+  }
+{% endstylesheet %}
+
+<script>
+  window.addEventListener("DOMContentLoaded", async (event) => {
+    getCart()
+    let lastStepCache = window.sessionStorage.getItem('setLastStep')
+    nth_step = lastStepCache ? parseInt(lastStepCache) : 0;
+    var SetBuilderTriggerError = document.querySelector('#SetBuilderTriggerError');
+    var SetRecommendedSetError = document.querySelector('#SetRecommendedSetError');
+    async function getCart() {
+      let cart = await fetch('/cart.js').then((r) => r.json());
+      console.log('GET CART', cart)
+      return cart;
+    }
+    async function addToCart(variantId, qty, metaData) {
+      let properties = {}
+      if (metaData && metaData.addProperties) {
+        properties = {
+          set: "Mother's Day Set",
+          _finalized: false,
+          _collectionId: metaData.collectionId,
+          _collectionTitle: metaData.collectionTitle,
+          _step: metaData.step,
+        }
+      }
+      let cart = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          "Content-Type": 'application/json'
+        },
+        body: JSON.stringify({
+          id: variantId,
+          quantity: qty,
+          properties,
+        })
+      }).then((r) => r.json());
+      return cart;
+    }
+    async function removeFromCart(lineItemNum) {
+      let cart = await fetch('/cart/change.js', {
+        method: 'POST',
+        headers: {
+          "Content-Type": 'application/json'
+        },
+        body: JSON.stringify({
+          id: lineItemNum,
+          quantity: 0
+        })
+      }).then((r) => r.json());
+      return cart;
+    }
+    async function isProductInCart(productId) {
+      let cart = await getCart()
+      console.log('GET CART', cart)
+      if (cart && cart.token) {
+        for (let i = 0; i < cart.items.length; i++) {
+          if (cart.items[i].product_id === productId) {
+            let cI = cart.items[i]
+            return {
+              inCart: true,
+              cart: null,
+              variantId: cart.items[i].variant_id,
+              lineItemNum: i+=1,
+              lineItemProperties: cI.properties,
+              lineItemKey: cI.key
+            };
+          }
+        }
+      }
+      return {
+        inCart: false,
+        cart,
+        variantId: null,
+        lineItemNum: i+=1,
+        lineItemKey: null,
+        lineItemProperties: {}
+      }
+    }
+    async function isAnyItemInCustomSet() {
+      let cart = await getCart()
+      if (cart && cart.token) {
+        for (let i = 0; i < cart.items.length; i++) {
+          if (cart.items[i].properties.set && cart.items[i].properties.set === "Mother's Day Set") {
+            let cI = cart.items[i];
+            return true;
+          }
+        }
+      }
+      return false;
+    }
+    async function clearUnfinalizedSetItem() {
+      let cart = await getCart()
+      if (cart && cart.token) {
+        for (let i = 0; i < cart.items.length; i++) {
+          if (Object.keys(cart.items[i].properties).length > 0) {
+            if (cart.items[i].properties.set && !cart.items[i].properties._finalized) {
+              let updatedCart = await removeFromCart(cart.items[i].key).then((c) => {
+                console.log('UNFINALIZED CART ITEMS REMOVED', cart.items[i].product_title)
+              }).catch((err) => console.log(err))
+            }
+          }
+        }
+      }
+    }
+    async function hideSetContainerContent() {
+      let d1 = document.querySelector('.set-container__content');
+      d1.classList.remove('slide-in');
+      d1.classList.add('slide-out');
+    }
+    async function showSetContainerContent() {
+      let d1 = document.querySelector('.set-container__content');
+      d1.classList.remove('slide-out');
+      d1.classList.add('slide-in');
+    }
+    async function hideSetContainerBuilder() {
+      let d2 = document.querySelector('.set-container__builder');
+      d2.classList.remove('slide-in');
+      d2.classList.add('slide-out');
+    }
+    async function showSetContainerBuilder() {
+      let d2 = document.querySelector('.set-container__builder');
+      d2.classList.remove('slide-out');
+      d2.classList.add('slide-in');
+    }
+    async function hideSetContainerPreview() {
+      let d2 = document.querySelector('.set-container__preview');
+      d2.classList.remove('slide-in');
+      d2.classList.add('slide-out');
+    }
+    async function showSetContainerPreview() {
+      let d2 = document.querySelector('.set-container__preview');
+      d2.classList.remove('slide-out');
+      d2.classList.add('slide-in');
+      document.querySelector('.step-journey').classList.add('suspend-set')
+      document.querySelector('.step-journey').classList.remove('slide-in')
+      document.querySelector('.step-journey').classList.add('slide-out')
+    }
+    async function showSetContainerMain() { // go back to main from custom steps
+      document.querySelector('.landing_step').classList.remove('suspend-set')
+      document.querySelector('.landing_step').classList.add('slide-in')
+      document.querySelector('.landing_step').classList.remove('slide-out')
+      document.querySelector('.step-journey').classList.add('suspend-set')
+      document.querySelector('.step-journey').classList.remove('slide-in')
+      document.querySelector('.step-journey').classList.add('slide-out')
+      hideSetContainerBuilder()
+      hideSetContainerPreview()
+      showSetContainerContent()
+      // nth_step = 0
+      // window.sessionStorage.setItem('setLastStep', 0)
+    }
+    async function bringToCachedStep() {
+      for (let i = 0; i < lastStepCache; i++) {
+        document.querySelector(`.step_${i}`).classList.add('suspend-set');
+        document.querySelector(`.step_${i}`).classList.remove('slide-in');
+        document.querySelector(`.step_${i}`).classList.add('slide-out');
+      }
+      document.querySelector(`.step_${lastStepCache}`).classList.remove(`suspend-set`);
+      document.querySelector(`.step_${lastStepCache}`).classList.remove(`slide-out`);
+      document.querySelector(`.step_${lastStepCache}`).classList.add(`slide-in`);
+      hideSetContainerContent()
+      hideSetContainerPreview()
+      showSetContainerBuilder()
+      window.scrollTo(0, 0);
+    }
+    async function asyncRefreshPreview (cbF) {
+      let setTotalOrig = 0
+      let setTotal = 0
+      let discountRate = 0;
+      let discountThreshold = {
+        '29': 10,
+        '54': 14,
+        '99': 17,
+        '~': 20
+      }
+      let previewItemsContainer = document.querySelectorAll(`.preview_items_container`)
+      let previewHeaderPrice = document.querySelectorAll('.preview_header__price')
+      previewItemsContainer.forEach((el) => {
+        el.innerHTML = ''
+        // let children = el.children
+        // if (children && children.length > 0) {
+        //   for(let i = 0; i < children.length; i++) {
+        //     console.log(children[i])
+        //     if (!children[i].className.includes('step-header')) {
+        //       el.removeChild(children[i])
+        //     }
+        //   }
+        // }
+      })
+      previewHeaderPrice.forEach((el) => {
+        el.innerHTML = ''
+      })
+      let crt = getCart()
+      crt.then(async (cart) => {
+        if (cart && cart.token) {
+          for (let i = 0; i < cart.items.length; i++) {
+            let cartItem = cart.items[i];
+              let d = document.createElement('div')
+              d.classList.add('preview_item')
+              let previewStepContainer = document.querySelector(`.step_preview_${cartItem.properties._step} .preview_items_container`)
+              if (cartItem.properties && cartItem.properties._step) {
+                d.innerHTML = `
+                    <img src="${cartItem.image}" width="120" height="120" alt="${cartItem.product_title}" />
+                    <p class="set-preview_product-title">${cartItem.product_title}</p>
+                    <div class="price">
+                      <p class="struck-out-price theme-money">${theme.formatMoney(cartItem.original_line_price, theme.money_format)}</p>
+                      <p class="reduced-price theme-money">${theme.formatMoney(cartItem.final_price, theme.money_format)}</p>
+                    </div>
+                `
+                previewStepContainer.appendChild(d)
+                setTotalOrig += cartItem.original_line_price
+                setTotal += cartItem.final_price
+              }
+              discountRate = 100 - ((setTotal / setTotalOrig) * 100)
+          }
+          let totalDiv = document.createElement('div')
+          totalDiv.classList.add('set-total-container')
+          totalDiv.innerHTML = `
+            <div class="struck-out-price theme-money">
+              ${theme.formatMoney(setTotalOrig, theme.money_format)}
+            </div>
+            <div class="reduced-price theme-money">
+              ${theme.formatMoney(setTotal, theme.money_format)}
+              <p class="total-label">SET TOTAL</p>
+            </div>
+          `
+          // totalDiv.innerHTML = `
+          //   <div class="struck-out-price theme-money">
+          //     ${theme.formatMoney(setTotalOrig, theme.money_format)}
+          //   </div>
+          //   <div class="reduced-price theme-money">
+          //     ${theme.formatMoney(setTotal, theme.money_format)}
+          //     ${discountRate > 0 && `
+          //       <sup>${parseFloat(discountRate).toFixed(0)}% OFF</sup>
+          //     `}
+          //     <p class="total-label">SET TOTAL</p>
+          //   </div>
+          // `
+          document.querySelector('.preview_header__price').appendChild(totalDiv)
+
+          // handle empty steps
+          let prevGrid = document.querySelectorAll('.step_preview_product_grid');
+          if (prevGrid) {
+            prevGrid.forEach((el) => {
+              let prevCont = el.querySelector('.preview_items_container')
+              if (el.querySelector('.preview-add-set-btn_container') === null) {
+                if (!prevCont.hasChildNodes()) {
+                  let prevAddSetBtnCont = document.createElement('div')
+                  let prevAddSetBtnContCntr = document.createElement('center')
+                  let prevAddSetBtn = document.createElement('button')
+                  prevAddSetBtnCont.classList.add('preview-add-set-btn_container')
+                  prevAddSetBtn.classList.add('btn')
+                  prevAddSetBtn.classList.add('preview-add-set-btn')
+                  prevAddSetBtn.setAttribute('data-step', el.getAttribute('data-step'))
+                  prevAddSetBtn.innerHTML = `ADD ${el.getAttribute('data-collection-title')}`.toUpperCase()
+                  prevAddSetBtn.onclick = () => {
+                    document.querySelector(`.step_${nth_step}`).classList.add('suspend-set');
+                    document.querySelector(`.step_${nth_step}`).classList.remove('slide-in');
+                    document.querySelector(`.step_${nth_step}`).classList.add('slide-out');
+                    nth_step = parseInt(el.getAttribute('data-step'));
+                    document.querySelector(`.step_${nth_step}`).classList.remove(`suspend-set`);
+                    document.querySelector(`.step_${nth_step}`).classList.remove(`slide-out`);
+                    document.querySelector(`.step_${nth_step}`).classList.add(`slide-in`);
+                    console.log('CURRENT STEP', nth_step)
+                    hideSetContainerPreview()
+                    showSetContainerBuilder()
+                    window.scrollTo(0, 0);
+                  }
+                  el.appendChild(prevAddSetBtn)
+                  el.appendChild(prevAddSetBtnCont)
+                }
+              }
+            })
+          }
+        }
+        if (cbF) {
+          cbF()
+        }
+      }).catch((err) => console.log(err))
+    }
+
+    // ADDING RECOMMENDED SET
+    function handleSpinner(el) {
+      el.classList.add('product-add--added')
+      setTimeout(() => {
+        el.children[1].nextElementSibling.classList.add('added-to-cart-check')
+        setTimeout(() => {
+          el.classList.remove('product-add--adding')
+          el.children[1].previousElementSibling.classList.add('button-text__hidden')
+          el.children[1].nextElementSibling.nextElementSibling.classList.remove('product-in-set__hidden')
+          el.classList.remove('product-add--added')
+          // el.classList.remove('alt')
+          // el.classList.remove('outline')
+        }, 1000)
+      }, 300)
+    }
+    let recommendedSetBtn = document.querySelector('.set-container__content-recommended button.product-add');
+    let recommendedSetForm = document.querySelector('.product-form');
+    recommendedSetForm.addEventListener('submit', async function(event) {
+      event.preventDefault()
+      let _e = await isAnyItemInCustomSet();
+      if (_e) {
+        SetRecommendedSetError.classList.remove('hidden_error');
+        return;
+      } else {
+        recommendedSetBtn.classList.add('product-add--adding')
+        let updatedCart = addToCart({{ current_variant.id | json }}, 1, {addProperties: false}).then(async (cart) => {
+          if (recommendedSetBtn.children[1].className.includes('loading-spinner')) {
+            await addToCart({{ free_giftbox_current_variant.id | json }}, 1, {addProperties: false })
+            await handleSpinner(recommendedSetBtn);
+            nth_step = 0
+            window.sessionStorage.setItem('setLastStep', 0)
+            window.location.href = "{{ route.cart_url }}"
+          }
+        }).catch((err) => console.log(err))
+      }
+    })
+
+    // NAVIGATING FROM LANDING STEP
+    if (lastStepCache && parseInt(lastStepCache) > 0) {
+      bringToCachedStep()
+    }
+    document.querySelector('.set-container__content-custom button').addEventListener('click', async function(event) {
+      if (lastStepCache && parseInt(lastStepCache) > 0) {
+        document.querySelector('.step-builder-btn').innerHTML = 'PICK UP WHERE YOU LEFT OFF'
+      }
+      let _e = await isProductInCart({{ product.id | json }})
+      if (_e.inCart) {
+        SetBuilderTriggerError.classList.remove('hidden_error')
+        return;
+      }
+      hideSetContainerContent()
+      hideSetContainerPreview()
+      showSetContainerBuilder()
+      window.scrollTo(0, 0);
+    });
+
+    // NAVIGATION BETWEEN STEPS
+    next_step_btn_list = document.querySelectorAll(`.next-step-btn`)
+    next_step_btn_list.forEach((el) => {
+      el.addEventListener('click', function() {
+        if ((nth_step === 0 && lastStepCache && parseInt(lastStepCache) > 0) || el.classList.contains('step-builder-btn') && lastStepCache && parseInt(lastStepCache) > 0) {
+          bringToCachedStep()
+          nth_step = parseInt(lastStepCache)
+        } else {
+          document.querySelector(`.step_${nth_step}`).classList.add('suspend-set');
+          document.querySelector(`.step_${nth_step}`).classList.remove('slide-in');
+          document.querySelector(`.step_${nth_step}`).classList.add('slide-out');
+          nth_step += 1;
+          document.querySelector(`.step_${nth_step}`).classList.remove(`suspend-set`);
+          document.querySelector(`.step_${nth_step}`).classList.remove(`slide-out`);
+          document.querySelector(`.step_${nth_step}`).classList.add(`slide-in`);
+          console.log('CURRENT STEP', nth_step)
+          window.sessionStorage.setItem('setLastStep', nth_step)
+          lastStepCache = window.sessionStorage.getItem('setLastStep')
+        }
+        window.scrollTo(0, 0);
+      })
+    })
+    prev_step_btn_list = document.querySelectorAll(`.prev-step-btn`)
+    prev_step_btn_list.forEach((el) => {
+      el.addEventListener('click', function() {
+        document.querySelector(`.step_${nth_step}`).classList.add('suspend-set');
+        document.querySelector(`.step_${nth_step}`).classList.remove('slide-in');
+        document.querySelector(`.step_${nth_step}`).classList.add('slide-out');
+        nth_step -= 1;
+        document.querySelector(`.step_${nth_step}`).classList.remove(`suspend-set`);
+        document.querySelector(`.step_${nth_step}`).classList.remove(`slide-out`);
+        document.querySelector(`.step_${nth_step}`).classList.add(`slide-in`);
+        console.log('CURRENT STEP', nth_step)
+        // window.sessionStorage.setItem('setLastStep', nth_step)
+        // lastStepCache = window.sessionStorage.getItem('setLastStep')
+        window.scrollTo(0, 0);
+      })
+    })
+    preview_add_set_btn_list = document.querySelectorAll(`.preview-add-set-btn`)
+    preview_add_set_btn_list.forEach((el) => {
+      el.addEventListener('click', function() {
+        document.querySelector(`.step_${nth_step}`).classList.add('suspend-set');
+        document.querySelector(`.step_${nth_step}`).classList.remove('slide-in');
+        document.querySelector(`.step_${nth_step}`).classList.add('slide-out');
+        nth_step = parseInt(el.getAttribute('data-step'));
+        document.querySelector(`.step_${nth_step}`).classList.remove(`suspend-set`);
+        document.querySelector(`.step_${nth_step}`).classList.remove(`slide-out`);
+        document.querySelector(`.step_${nth_step}`).classList.add(`slide-in`);
+        console.log('CURRENT STEP', nth_step)
+        hideSetContainerPreview()
+        showSetContainerBuilder()
+        window.scrollTo(0, 0);
+      })
+    })
+    document.querySelector(`.prev-step-btn__preview`).addEventListener('click', () => {
+        document.querySelector(`.step_${nth_step}`).classList.remove(`suspend-set`);
+        document.querySelector(`.step_${nth_step}`).classList.remove(`slide-out`);
+        document.querySelector(`.step_${nth_step}`).classList.add(`slide-in`);
+        console.log('CURRENT STEP', nth_step)
+        hideSetContainerPreview()
+        showSetContainerBuilder()
+        window.scrollTo(0, 0);
+    })
+    document.querySelector(`.main-step-btn`).addEventListener('click', function() {
+      showSetContainerMain()
+      window.scrollTo(0, 0);
+    })
+    let btm_lnk = document.querySelectorAll(`.step-footer__btn-container span.back-to-main-link`)
+    if (btm_lnk) {
+      btm_lnk.forEach((el) => {
+        el.addEventListener('click', function() {
+          showSetContainerMain()
+          document.querySelector(`.step_${nth_step}`).classList.add('suspend-set');
+          document.querySelector(`.step_${nth_step}`).classList.remove('slide-in');
+          document.querySelector(`.step_${nth_step}`).classList.add('slide-out');
+          window.scrollTo(0, 0);
+        })
+      })
+    }
+
+    // ADDING ITEMS IN CUSTOM SET
+    async function manageSet(action, el, cartItem) {
+      if (action === 'add') {
+        el.parentElement.classList.add('product-add--adding')
+        let updatedCart = addToCart(cartItem.variantId, 1, {
+          addProperties: true,
+          step: el.parentElement.getAttribute('data-step'),
+          collectionId: el.parentElement.getAttribute('data-collection-id'),
+          collectionTitle: el.parentElement.getAttribute('data-collection-title')
+        }).then((cart) => {
+          if (el.className.includes('loading-spinner')) {
+            el.parentElement.classList.add('product-add--added')
+            setTimeout(() => {
+              el.nextElementSibling.classList.add('added-to-cart-check')
+              setTimeout(() => {
+                el.parentElement.classList.remove('product-add--adding')
+                el.previousElementSibling.classList.add('button-text__hidden')
+                el.nextElementSibling.nextElementSibling.classList.remove('product-in-set__hidden')
+                el.parentElement.classList.remove('product-add--added')
+                el.parentElement.classList.remove('alt')
+                el.parentElement.classList.remove('outline')
+              }, 1000)
+            }, 300)
+          }
+        }).catch((err) => console.log(err))
+      } else if (action === 'remove') {
+        el.parentElement.classList.add('product-add--adding')
+        let updatedCart = removeFromCart(cartItem.lineItemKey).then((cart) => {
+          if (el.className.includes('loading-spinner')) {
+            el.parentElement.classList.add('product-add--added')
+            setTimeout(() => {
+              el.nextElementSibling.classList.add('added-to-cart-check')
+              setTimeout(() => {
+                el.parentElement.classList.remove('product-add--adding')
+                el.previousElementSibling.classList.remove('button-text__hidden')
+                el.nextElementSibling.nextElementSibling.classList.add('product-in-set__hidden')
+                el.parentElement.classList.remove('product-add--added')
+                el.parentElement.classList.add('alt')
+                el.parentElement.classList.add('outline')
+              }, 1000)
+            }, 300)
+          }
+        }).catch((err) => { console.log(err)});
+      }
+    }
+    let atc_btn = document.querySelectorAll('button.custom-atc.product-add')
+    atc_btn.forEach((el) => {
+      el.addEventListener('click', async function(event) {
+        let _e = await isProductInCart((Number(el.getAttribute('data-product-id'))))
+        if (_e.inCart) {
+          console.log("IS IN CART");
+          if (_e.lineItemProperties && _e.lineItemProperties.set && _e.lineItemProperties.set === "Mother's Day Set") {
+            for(let i = 0; i < el.children.length; i++) {
+              manageSet('remove', el.children[i], _e)
+            }
+          } else {
+            console.log('IS IN CART BUT NOT IN CUSTOM SET')
+            manageSet('add', el.children[i], {variantId: _e.variantId})
+          }
+        } else {
+          console.log("NOT IN CART");
+          for(let i = 0; i < el.children.length; i++) {
+            manageSet('add', el.children[i], {variantId: el.getAttribute('data-current-variant-id')})
+          }
+        }
+        nth_step = parseInt(el.getAttribute('data-step'))
+        window.sessionStorage.setItem('setLastStep', nth_step)
+        lastStepCache = window.sessionStorage.getItem('setLastStep')
+      });
+    });
+
+    // COMPLETING CUSTOM SET
+    document.querySelector('.final-step-btn').addEventListener('click', async () => {
+      asyncRefreshPreview(()=> {
+          hideSetContainerContent()
+          hideSetContainerBuilder()
+          showSetContainerPreview()
+      })
+    })
+
+    // POP UP
+    let popup = document.querySelector('.set-popup')
+    let prodDetailItem = document.querySelectorAll('.product-grid__details-list li.product-detail__lnk');
+    if (prodDetailItem) {
+      prodDetailItem.forEach((el) => {
+        el.addEventListener('click', () => {
+          popup.classList.remove('hidden');
+          let popupHeader = popup.querySelector('.set-popup__content-header');
+          let popupContentArea = popup.querySelector('.set-popup__content-area');
+          popupHeader.innerHTML = `${el.getAttribute('data-header')}`;
+          popupContentArea.innerHTML = `${el.getAttribute('data-content')}`;
+        })
+      });
+    }
+    document.querySelector('.set-popup__content .set-popup__content-close button').addEventListener('click', (event) => {
+      // event.parentElement.parentElement.parentElement.classList.add('hidden');
+      document.querySelector('.set-popup').classList.add('hidden')
+      event.nextElementSibling.innerHTML = ''
+      event.nextElementSibling.nextElementSibling.innerHTML = ''
+    })
+  });
+</script>

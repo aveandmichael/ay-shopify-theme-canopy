@@ -1,0 +1,202 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+<style>
+  a {
+    color: #343434 !important;
+    text-decoration: none !important;
+  }
+  a:hover {
+    color: #000;
+    text-decoration: none !important;
+  }
+  a.nav-details {
+    text-decoration: underline !important;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 0.1em !important;
+  }
+  .btn:hover {
+    color: #fff !important;
+  }
+</style>
+
+<div class="container-fluid" data-fta="{{ first_time_accessed }}">
+  <div class="row" style="background: #fbf6f2;">
+
+    <!-- Import the sidebar from snippet -->
+    {% include 'account-sidebar' %}
+    
+    <div class="col-10">
+
+      <!-- Actual Page -->
+      <div class="row">
+        <div class="col-md-8">
+          
+          <!-- Personal Details -->
+          <div class="p-2">
+            <div class="row">
+              <div class="col-md-12" style="background: #dfdfdf;">
+                <div class="p-3">Personal Details</div>
+              </div>
+              <div class="col-md-12" style="background: #ffffff;">
+                <div class="p-3">
+                  <table>
+                    <tr>
+                      <td style="width: 100px">Name: </td>
+                      <td>{{ customer.name }}</td>
+                    </tr>
+                    <tr>
+                      <td>E-mail: </td>
+                      <td>{{ customer.email }}</td>
+                    </tr>
+                    <tr>
+                      <td>Address: </td>
+                      <td>{{ customer.default_address.city}}, {% if address.province_code %}{{customer.default_address.province_code}}, {% endif %}{{customer.default_address.country}} {{ customer.default_address.zip}}</td>
+                    </tr>
+                    <tr>
+                      <td>Phone: </td>
+                      <td>{{ customer.default_address.phone }}</td>
+                    </tr>
+                    <tr>
+                      <td>Password: </td>
+                      <td>******** <a href="/pages/reset-password">CHANGE PASSWORD</a></td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Billing/ Shipping Adresses -->
+
+          <div class="p-2">
+            <div class="row">
+              <div class="col-md-12" style="background: #dfdfdf;">
+                <div class="p-3">Billing/Shipping Addresses</div>
+              </div>
+              <div class="col-md-12" style="background: #ffffff;">
+                <div class="p-3">
+                  {% paginate customer.addresses by 10 %}
+                    <table class="table table-striped">
+                      <tr>
+                        <th><b class="d-none d-lg-block">Name</b><b class="d-lg-none d-block">Details</b></th>
+                        <th class="d-none d-lg-table-cell">Company</th>
+                        <th class="d-none d-lg-table-cell">Street, City, Country Zip</th>
+                        <th class="d-none d-lg-table-cell">Phone</th>
+                      </tr>
+                      {% for address in customer.addresses %}
+                        <tr id="view_address_{{address.id}}">
+                          <td class="d-block d-lg-table-cell">{{ address.first_name }} {{address.last_name }}</td>
+                          <td class="d-block d-lg-table-cell">{{ address.company }}</td>
+                          <td class="d-block d-lg-table-cell">{{ address.street }}, {{ address.city }} {% if address.province_code %}, {{ address.province_code }}{% endif %}, {{ address.country }} {{ address.zip }}</td>
+                          <td class="d-block d-lg-table-cell">{{ address.phone }}</td>
+                        </tr>
+                      {% endfor %}
+                    </table>
+                    <div class="pb-3">{% render 'pagination', paginate: paginate %}</div>
+                  {% endpaginate %}
+                  <a href="{{ routes.account_addresses_url }}" class="btn btn-outline-dark btn-sm rounded-0">{{ 'customer.account.view_addresses' | t }}</a>
+          
+                  <hr>
+                  <h4>{{ 'customer.addresses.add_new' | t }}</h4>
+                  {% form 'customer_address', customer.new_address %}
+                    {% if form.errors %}
+                      <div class="notification errors">
+                        {{ form.errors | default_errors }}
+                      </div>
+                      <script>$('#add_address').show()</script>
+                    {% endif %}
+
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <input type="text" id="address_first_name_new" class="address_form form-control rounded-0 mb-3" name="address[first_name]" value="{{form.first_name}}" placeholder="{{ 'customer.addresses.first_name' | t }}" />
+                      </div>
+                      <div class="col-md-4">
+                        <input type="text" id="address_last_name_new" class="address_form form-control rounded-0 mb-3" name="address[last_name]" value="{{form.last_name}}" placeholder="{{ 'customer.addresses.last_name' | t }}" />
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-8">
+                        <input type="text" id="address_company_new" class="address_form form-control rounded-0 mb-3" name="address[company]" value="{{form.company}}" placeholder="{{ 'customer.addresses.company' | t }}" />
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-8">
+                        <input type="text" id="address_address1_new" class="address_form form-control rounded-0 mb-3" name="address[address1]" value="{{form.address1}}" placeholder="{{ 'customer.addresses.address1' | t }}" />
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-8">
+                        <input type="text" id="address_address2_new" class="address_form form-control rounded-0 mb-3" name="address[address2]" value="{{form.address2}}" placeholder="{{ 'customer.addresses.address2' | t }}" />
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <input type="text" id="address_city_new" class="address_form form-control rounded-0 mb-3" name="address[city]" value="{{form.city}}" placeholder="{{ 'customer.addresses.city' | t }}" />
+                      </div>
+                      <div class="col-md-4">
+                        <select id="address_country_new" name="address[country]" class="form-control rounded-0 mb-3" data-default="{{form.country}}">{{ all_country_option_tags }}</select>
+                      </div>
+                    </div>
+                    <div class="form-group row" id="address_province_container_new" style="display:none">
+                      <div class="col-md-4">
+                        <select id="address_province_new" class="address_form form-control rounded-0 mb-3" name="address[province]" data-default="{{form.province}}"></select>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-md-4">
+                        <input type="text" id="address_zip_new" class="address_form form-control rounded-0 mb-3" name="address[zip]" value="{{form.zip}}" placeholder="{{ 'customer.addresses.zip' | t }}" />
+                      </div>
+                      <div class="col-md-4">
+                        <input type="text" id="address_phone_new" class="address_form form-control rounded-0 mb-3" name="address[phone]" value="{{form.phone}}" placeholder="{{ 'customer.addresses.phone' | t }}" />
+                      </div>
+                    </div>
+                    <div class="form-group mb-3">
+                      <label>{{ form.set_as_default_checkbox }} {{ 'customer.addresses.set_default' | t }}</label>
+                    </div>
+          
+                    <div class="form-group">
+                      <input class="btn btn-dark rounded-0" type="submit" value="{{ 'customer.addresses.add' | t }}" />
+                    </div>
+                  
+                  {% endform %}
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+          
+            
+        </div>
+        <div class="col-md-4">
+
+          <!-- Subscriptions -->
+          <div class="p-2">
+            <div class="row">
+              <div class="col-md-12" style="background: #dfdfdf;">
+                <div class="p-3">Subscriptions</div>
+              </div>
+              <div class="col-md-12" style="background: #ffffff;">
+                <div class="p-3">
+                  <!-- Begin Recharge code -->
+                    <p class="text-center"><a href="/tools/recurring/login/">Manage Subscriptions</a></p>
+                  <!-- End Recharge code -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'shopify_common.js' | shopify_asset_url }}"></script>
+<script>
+  // initialize observers on address selectors
+  new Shopify.CountryProvinceSelector('address_country_new', 'address_province_new', {hideElement: 'address_province_container_new'});
+  {% for address in customer.addresses %}
+    new Shopify.CountryProvinceSelector('address_country_{{address.id}}', 'address_province_{{address.id}}', {hideElement: 'address_province_container_{{address.id}}'});
+  {% endfor %}
+</script>

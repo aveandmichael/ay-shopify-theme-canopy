@@ -1,0 +1,21 @@
+{% comment %}
+  View Order Data Layer
+{% endcomment %}
+
+<script type="text/javascript">
+  window.dataLayer = window.dataLayer || [];
+  window.appStart = function(){
+    console.log("TRACK ORDERRRRRRR")
+    console.log(window.location.pathname)
+    if (window.location.pathname.includes("/orders/")) {
+      console.log("track_order event")
+      window.eventHandle = function(){
+        dataLayer.push({
+          event: "track_order",
+        });
+      };
+      eventHandle();
+    }
+  }
+  appStart();
+</script>

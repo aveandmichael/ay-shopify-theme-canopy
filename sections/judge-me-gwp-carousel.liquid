@@ -1,0 +1,41 @@
+{% style %}
+  #cst__jm__reviews .jdgm-widget-actions-wrapper, .cst__jm__reviews .jdgm-row-search {
+    display:none !important;
+  }
+
+{% endstyle %}
+
+<section id="cst__jm__reviews" class="section border-top
+  section-id-{{ section.id }}
+  {% if section.settings.alternate_bg_color %}use-alt-bg full-width-section{% endif %}
+">
+  <div class="container">
+    {% render 'judgeme_widgets', widget_type: 'judgeme_review_widget', concierge_install: false, product: all_products[section.settings.product__slug] %}
+  </div>
+</section>
+
+{% schema %}
+  {
+    "name": "Judge.me GWP Carousel",
+    "settings": [
+      {
+        "type": "checkbox",
+        "id": "alternate_bg_color",
+        "label": "Use alternate section color",
+        "default": false
+      },
+      {
+        "type": "text",
+        "id": "product__slug",
+        "label": "Product Slug",
+        "default": "foamy-famous-cleanser"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Judge.me GWP Carousel",
+        "category": "Advanced"
+      }
+    ]
+  }
+{% endschema %}

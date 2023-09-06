@@ -1,0 +1,27 @@
+{% comment %}
+  Category Page Click Data Layer
+{% endcomment %}
+
+<script type="text/javascript">
+  window.dataLayer = window.dataLayer || [];
+
+  window.appStart = function(){
+    var template_name = {{ template.name | json }};
+
+    if (template_name === "collection") {
+      window.eventHandle = function(){
+        dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+        dataLayer.push({
+          event: "Category_page_clicked",
+          ecommerce: {
+            item_list_id: "{{ collection.id }}",
+            item_list_name: "{{ collection.title }}",
+          }
+        });
+      };
+      console.log("TEMPALTE NAME", template_name);
+      eventHandle();
+    }
+  }
+  appStart();
+</script>

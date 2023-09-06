@@ -1,0 +1,256 @@
+<style>
+  .review-heading {
+     overflow: hidden;
+     text-align: center;
+     font-weight: 300;
+     font-size: 30px; 
+  }
+  .review-heading:before,
+  .review-heading:after {
+     background-color: #333;
+     content: "";
+     display: inline-block;
+     height: 1px;
+     position: relative;
+     vertical-align: middle;
+     width: 50%;
+  }
+  .review-heading:before {
+     right: 0.5em;
+     margin-left: -50%;
+  }
+  .review-heading:after {
+     left: 0.5em;
+     margin-right: -50%;
+  }
+  .sect_reviews{
+    width:100%;
+  /*  height:450px; */
+    display: flex;
+    justify-content: center;
+    margin: 1% 0 1% 0;
+  }
+  
+  .sect_reviews .MB25{
+   margin-bottom: 25px;
+  }
+  .sect_reviews .start_cont{
+    
+    display: flex;
+    justify-content: center;
+    
+  }
+  .sect_reviews .start_cont {
+    margin-bottom: 50px;
+  }
+  .sect_reviews .start_cont .ratings {
+    content: "\2605";
+    width: 30px;
+    height: 29px;
+    background: #2F3131 0% 0% no-repeat padding-box;
+  }
+  .sect_reviews .review_cont{
+    width: 700px;
+    overflow:hidden;
+  }
+  
+  .sect_reviews .C{
+    text-align:center;
+  }
+  
+  .review_box{
+    width: 100%;
+  }
+  
+  .sect_reviews .flickity-page-dots {
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+}
+  
+  .sect_reviews .review_user_name{
+        font: normal normal 600 20px/28px Volte-Semibold;
+        letter-spacing: 1px;
+        color: #000000;
+    }
+  
+  .review_img {
+    border-radius: 50%;
+    width:150px;
+   background-repeat: no-repeat;
+    background-position: center 20;
+    background-size: cover;
+  }
+  
+    @media screen and (max-width: 769px){
+      
+       .sect_reviews{
+           /*height:700px;*/
+       }
+      
+      .sect_reviews .review_cont{
+        margin: 0 20px 0 20px;
+      }
+  
+     .sect_reviews .review_user{
+          font: normal normal 500 16px/22px Volte;
+       letter-spacing:0.3px;
+     }
+      
+      .sect_reviews .review_user_name{
+    
+        font: normal normal 600 16px/16px Volte-Semibold;
+        letter-spacing: 0.3px;
+   
+    }
+    }
+    
+</style>
+{%- assign ratings_color = section.settings.rating_color -%}
+{%- assign star_size = section.settings.star_size -%}
+<section class="section gwp-review {% if section.settings.alternate_bg_color %}use-alt-bg full-width-section{% endif %}">
+<div>
+<div class="container">
+<div style="height: 50px;"></div>
+<h2 class="section-heading align-center review-heading"  style="margin: 10px 0px;" data-cc-animate> {{ section.settings.title | escape }} </h2>
+<div class="sect_reviews" >
+  
+  <div class="review_cont" data-flickity='{ "autoPlay": true, "prevNextButtons": false, "pageDots": false }'>
+    {% for block in section.blocks %}
+    <div class="review_box" style="margin-right:25px;">
+      {%- if block.settings.image != blank -%}
+      <div class="" style="width:100%; height:150px; display:flex; justify-content:center;">
+        <div style="background-image:url('{{ block.settings.image_review | img_url: '250x250' }}')" class="review_img"   ></div>
+      </div>
+      {%- endif -%}
+      <div class="start_cont ">
+        <span style="font-size: {{ star_size }}%;color: {{ ratings_color }}">&starf;</span>
+        <span style="font-size: {{ star_size }}%;color:{{ ratings_color }}">&starf;</span>
+        <span style="font-size: {{ star_size }}%;color: {{ ratings_color }}">&starf;</span>
+       <span style="font-size: {{ star_size }}%;color: {{ ratings_color }}">&starf;</span>
+         <span style="font-size: {{ star_size }}%;color: {{ ratings_color }}">&starf;</span>
+      </div>
+      
+      <div class="C MB25 review_user"> {{ block.settings.review_desc }} </div>  
+      
+      <div class="C MB25 review_user_name">
+        {{ block.settings.txt_review }}
+      </div>
+    </div>
+    {%  endfor  %}
+    
+  </div>
+</div>
+{% if section.settings.button_label != blank %}
+  <div class="text-column__button-row align-center">
+    {%- capture button_class -%}
+      {%- if section.settings.button_style == 'link' -%}
+        link-display
+      {%- else -%}
+        btn
+        {% if section.settings.button_style == 'secondary' %}btn--secondary{% endif %}
+      {%- endif -%}
+    {%- endcapture -%}
+
+    <a class="{{ button_class }}" href="{{ section.settings.link }}">
+      {{ section.settings.button_label | escape }}
+    </a>
+  </div>
+{% endif %}
+<div style="height: 50px;"></div>
+</div>
+</div>
+</section>
+  <link rel="stylesheet" href="https://unpkg.com/flickity@2/dist/flickity.min.css">
+  <script src="https://unpkg.com/flickity@2/dist/flickity.pkgd.min.js"></script>
+
+
+{% schema %}
+  {
+    "name": "[GWP] Reviews",
+    "settings": [ {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "default": "Customer Reviews"
+    },
+    {
+      "type": "color",
+      "id": "rating_color",
+      "label": "Ratings Color",
+      "default": "#FF0000"
+    },
+    {
+        "type": "range",
+        "id": "star_size",
+        "min": 40,
+        "max": 500,
+        "step": 10,
+        "unit": "%",
+        "label": "Star Size (%)",
+        "default": 200
+      },
+      {
+        "type": "select",
+        "id": "button_style",
+        "label": "Button style",
+        "default": "primary",
+        "options": [
+          {
+            "label": "Button - primary",
+            "value": "primary"
+          },
+          {
+            "label": "Button - secondary",
+            "value": "secondary"
+          },
+          {
+            "label": "Link",
+            "value": "link"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button label"
+      },
+      {
+        "type": "url",
+        "id": "link",
+        "label": "Link"
+      },
+      {
+        "type": "checkbox",
+        "id": "alternate_bg_color",
+        "label": "Use alternate section color",
+        "default": true
+      }
+    ],
+    "blocks":[{
+      "type": "text",
+      "name" : "Add Reviews",
+      "settings" :[ {
+        "type": "image_picker",
+        "label" : "Add Reviewer Image",
+        "id": "image_review"
+      },
+      {
+        "type": "textarea",
+        "id": "review_desc",
+        "label": "Review"
+     },
+     {
+       "type": "text",
+       "id": "txt_review",
+        "label": "Name"
+     } ]
+  }],
+   "presets": [{
+      "name": "[GWP] Reviews",
+      "category": "Text",
+      "settings": { },
+      "blocks": [ ]
+    } ]
+  }
+{% endschema %}

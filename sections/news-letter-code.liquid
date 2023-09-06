@@ -1,0 +1,99 @@
+<style>
+  
+   
+   .newsletter-addon{
+     text-align: center;
+    background: #f4f7f4;
+  }
+  
+  .newsletter-addon p:nth-child(1){
+    font: normal normal 600 32px/60px Volte;
+    margin: 0 0 -0.55556px;
+  }
+ 
+  .newsletter-addon p:nth-child(2){
+    font: normal normal bolder 33px/40px Volte;
+    margin: 0 0 12px;
+    color: #f7a67f;
+  }
+
+  .newsletter-addon p:nth-child(3){
+    font: normal normal 500 16px/32px Volte;
+    margin-bottom: 25px;
+  }
+  
+  @media screen and (min-width:0px) and (max-width:768px){
+    
+  .newsletter-addon p:nth-child(1){
+    font: normal normal 600 28px/40px Volte;
+    margin: 0 0 20px;
+  }
+ 
+
+
+  }
+  
+</style>
+<section id="section-id-newsletter" class="border-top rich-text section-id-newsletter section">
+<div class="container" >
+  <div id="newsletter-addon" class="newsletter-addon" style="display:none;">
+    <p>Thank you for subscribing to our newsletter!</p>
+    <p><b>27N9845KN</b></p>
+    <p>You are now part of AVE & YOU. Feel free to follow us on Instagram and Facebook. You can enter your discount code at the end of the shopping cart.</p>
+  </div>
+   </div> 
+  
+  <div id="newsletter-addon10" class="newsletter-addon" style="display:none;">
+    <p>Thank you for subscribing to our newsletter!</p>
+    <p><b>ZO98H3F</b></p>
+    <p>You are now part of AVE & YOU. Feel free to follow us on Instagram and Facebook. You can enter your discount code at the end of the shopping cart.</p>
+  </div>
+   
+</section>
+
+{% schema %}
+  {
+    "name": "newsletter-code",
+    "settings": [],
+    "presets": [{
+        "name": "news-letter-code",
+        "category": "Custom"
+      }]
+  }
+{% endschema %}
+
+{% stylesheet %}
+{% endstylesheet %}
+
+{% javascript %}
+{% endjavascript %}
+
+ <script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+<script>
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+  
+  
+  $(document).ready(function(){
+    
+    var newsletter = getUrlVars()["utm_campaign"];
+   // console.log("newsletter "+newsletter);
+  //  var newsletter_status =  newsletter === "pop-up" ? true : false;
+   
+    if( newsletter == "popup25" ) {
+      $("#newsletter-addon").css("display", "block");
+    }else if( newsletter == "popup10" ) {
+      $("#newsletter-addon10").css("display", "block");
+    }
+    
+  })
+  
+</script>

@@ -1,0 +1,43 @@
+{% comment %}
+  Product Page Loaded - View Item Data Layer
+{% endcomment %}
+
+<script type="text/javascript">
+window.dataLayer = window.dataLayer || [];
+
+window.appStart = function(){
+  var template_name = {{ template.name | json }};
+
+  if (template_name === "product") {
+    window.eventHandle = function(){
+      var productPrice = {{ product.price | money_without_currency | defualt: 0 | json }};
+      var productCompareAtPrice = {{ product.compare_at_price | money_without_currency | replace:',','.' | default: 0 }};
+      var discount = {{ product.compare_at_price | minus: product.price | money_without_currency | replace:',','.' | default: 0 }};
+  
+      dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+      dataLayer.push({
+        event: "view_item",
+        ecommerce: {
+          currency: "{{ shop.currency }}",
+          value: {{ product.price | money_without_currency | json }},
+          items: [
+          {
+            item_id: "{{ product.id }}",
+            item_name: "{{ product.title }}",
+            discount: 0,
+            item_brand: "{{ product.vendor | remove: "'" | remove: '"' }}",
+            item_category: "{{ product.collections.first.title | remove: "'" | remove: '"' }}",
+            item_category2: "{{ product.collections.first.title | remove: "'" | remove: '"' }}",
+            price: {{ product.price | money_without_currency | json }},
+            quantity: 1
+          }
+          ]
+        }
+      });
+    };
+    console.log("TEMPLATE NAME VIL", template_name)
+    eventHandle();
+  }
+}
+appStart();
+</script>

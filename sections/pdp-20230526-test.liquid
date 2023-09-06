@@ -1,0 +1,527 @@
+{{ 'pdp-20230526.css' | asset_url | stylesheet_tag }}
+
+{% assign recommendations = collections[section.settings.recommendation_collection_source] %}
+
+<div class="pdp-page_loading_indicator pdp-section__padded__all hidden">
+	<?xml version="1.0" encoding="utf-8"?>
+	<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto; width:30px; height:30px;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+	<circle cx="50" cy="50" fill="none" stroke="#000" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+		<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+	</circle>
+	</svg>
+	<p>ANALYZING YOUR DATA</p>
+</div>
+
+<div class="pdp-main_section" data-section-type="product-template" data-components="accordion">
+	{% comment %} BANNER SECTION {% endcomment %}
+	<div class="pdp-section pdp-banner" data-locale="{{ localization.country.iso_code }}">
+		{% if section.settings.banner %}
+			{{ section.settings.banner | image_url: width: 1080 | image_tag: class: 'pdp-banner__desktop' }}
+		{% endif %}
+		{% if section.settings.banner_mobile %}
+			{{ section.settings.banner_mobile | image_url: width: 600 | image_tag: class: 'pdp-banner__mobile' }}
+		{% endif %}
+	</div>
+
+	{% comment %} PDP HEADER SECTION {% endcomment %}
+	<div class="pdp-section pdp-section__padded__xy pdp-header">
+		<h3 class="pdp-text pdp-text__header pdp-text__your_routine">{{ section.settings.main_header_text }}</h3>
+		<p class="pdp-text pdp-text__paragraph pdp-text__product_count"></p>
+	</div>
+
+	{% comment %} CUSTOMER INFO SECTION {% endcomment %}
+	<div class="pdp-section pdp-section__padded__xy pdp-customer_info">
+		{% comment %}
+		<div class="pdp-customer_info__row pdp-customer_info__name">
+			<div class="pdp-customer_info__name__label_image">
+				{{ section.settings.label_image | image_url: width: 70 | image_tag }}
+			</div>
+			<p class="pdp-customer_info__name__label_name">Michael</p>
+		</div>
+		{% endcomment %}
+		<div class="pdp-customer_info__row pdp-customer_info__skintype">
+			<div class="pdp-customer_info__header">
+				{{ section.settings.customer_info_skintype_header }}
+			</div>
+			<div class="pdp-customer_info__value"></div>
+		</div>
+		<div class="pdp-customer_info__row pdp-customer_info__skingoals">
+			<div class="pdp-customer_info__header">
+				{{ section.settings.customer_info_skingoals_header }}
+			</div>
+			<div class="pdp-customer_info__value"></div>
+		</div>
+	</div>
+
+	{% comment %} INSIGHTS SECTION {% endcomment %}
+	<div class="pdp-section pdp-section__padded__all pdp-more_insights">
+		<h4 class="pdp-product__more_result pdp-product__more_result__lifestyle">{{ section.settings.lifestyle_button_text }}</h4>
+	</div>
+
+	{% comment %} PERSONALIZED SECTION {% endcomment %}
+	<div class="pdp-section pdp-section__padded__xy pdp-product_group pdp-personalized_container"></div>
+    <div class="pdp-product__metafields hidden">
+      {% if product.metafields.custom.lifestyle %}
+        {% for ls in product.metafields.custom.lifestyle.value %}
+          <div class="pdp-product__metafields__lifestyle">
+            <div class="pdp-product__metafields__lifestyle__title">{{ ls.title }}</div>
+            <div class="pdp-product__metafields__lifestyle__img">{{ ls.img }}</div>
+            <div class="pdp-product__metafields__lifestyle__type">{{ ls.type }}</div>
+            <div class="pdp-product__metafields__lifestyle__skinTypes">
+              {% for lss in ls.skinTypes.value %}
+                <div class="pdp-product__metafields__lifestyle__skinType">
+                  <div class="pdp-product__metafields__lifestyle__skinTypes__id">{{ lss.key }}</div>
+                  <div class="pdp-product__metafields__lifestyle__skinTypes__type">{{ lss.type }}</div>
+                  <div class="pdp-product__metafields__lifestyle__skinTypes__desc">{{ lss.description }}</div>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+	{% comment %} RECOMMENDATIONS SECTION {% endcomment %}
+	<div class="pdp-section pdp-section__padded__xy pdp-product_group pdp-recommendations_container">
+		{% if section.settings.recommendation_collection_source %}
+			{% for recommendation in recommendations.products %}
+				{% assign current_variant = recommendation.selected_or_first_available_variant %}
+				{% assign variants = recommendation.variants %}
+				<div id="Recommendation__{{ recommendation.id }}" class="pdp-recommendation hidden" data-product-id="{{ recommendation.id }}">
+					<div class="pdp-recommendation__commons">
+						<div class="pdp-recommendation__featured_image">
+							{{ recommendation.featured_image | img_url: 'medium' }}
+						</div>
+						<div class="pdp-recommendation__title">
+							{{ recommendation.title }}
+						</div>
+						<div class="pdp-recommendation__description">
+							{{ recommendation.description }}
+						</div>
+						<div class="pdp-recommendation__price">
+							{{ current_variant.price }}
+						</div>
+						<div class="pdp-recommendation__product_size">
+							{{ recommendation.metafields.custom.product_size }}
+						</div>
+						<div class="pdp-recommendation__review_badge">
+							{% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge_average', jm_style: '', concierge_install:
+            false, product: recommendation %}
+						</div>
+						<div class="pdp-recommendation__review_rating">
+							{% if recommendation.metafields.reviews.rating.value %}
+								{{ recommendation.metafields.reviews.rating.value }}/5.0
+							{% endif %}
+						</div>
+					</div>
+					<div class="pdp-recommendation__exps">
+						{% for variant in variants %}
+						<div class="pdp-recommendation__exp {% if variant.title contains 'Default Title' %}selected{% endif %}" data-id="{{ variant.id }}" data-title="{{ variant.title }}" data-prc="{{ variant.price }}">{{ variant.sku | string | replace: ".","@" }}</div>
+						{% endfor %}
+					</div>
+					<div class="pdp-recommendation__metafields">
+						{% if recommendation.metafields.custom.hero_ingredients %}
+							{% for hcmf in recommendation.metafields.custom.hero_ingredients.value %}
+								{% assign media_image = hcmf.image | file_url %}
+									<div class="pdp-recommendation__incis">
+										<div class="metaobjectName">{{ hcmf.name }}</div>
+										<div class="metaobjectImg">{{ media_image }}</div>
+										<div class="metaobjectDesc">{{ hcmf.description }}</div>
+									</div>
+							{% endfor %}
+						{% endif %}
+						{% if recommendation.metafields.custom.product_features %}
+							{% for pf in recommendation.metafields.custom.product_features.value %}
+								<div class="pdp-recommendation__features">{{ pf.feature }}</div>
+							{% endfor %}
+						{% endif %}
+						<div class="pdp-recommendation__application">{{ recommendation.metafields.my_fields.anwendung_produkt }}</div>
+						<div class="pdp-recommendation__ingredients">{{ recommendation.metafields.my_fields.inhaltsstoffe_produkt }}
+						</div>
+					</div>
+                    <div class="pdp-recommendation__sellingplan">
+                    </div>
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+
+	{% comment %} GO BEYOND SECTION {% endcomment %}
+	<div class="pdp-section pdp-section__padded__xy pdp-product_group pdp-recommendations_container pdp-gobeyond">
+		{% if section.settings.extra_product %}
+			{% for gobeyond in section.settings.extra_product %}
+				{% assign current_variant = gebeyond.selected_or_first_available_variant %}
+				{% assign variants = gobeyond.variants %}
+				<div id="Recommendation__{{ gobeyond.id }}" class="pdp-recommendation hidden" data-product-id="{{ gobeyond.id }}">
+					<div class="pdp-recommendation__commons">
+						<div class="pdp-recommendation__featured_image">
+							{{ gobeyond.featured_image | img_url: 'medium' }}
+						</div>
+						<div class="pdp-recommendation__title">
+							{{ gobeyond.title }}
+						</div>
+						<div class="pdp-recommendation__description">
+							{{ gobeyond.description }}
+						</div>
+						<div class="pdp-recommendation__price">
+							{{ current_variant.price }}
+						</div>
+						<div class="pdp-recommendation__product_size">
+							{{ gobeyond.metafields.custom.product_size }}
+						</div>
+						<div class="pdp-recommendation__review_badge">
+							{% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge_average', jm_style: '', concierge_install:
+						false, product: gobeyond %}
+						</div>
+						<div class="pdp-recommendation__review_rating">
+							{% if gobeyond.metafields.reviews.rating.value %}
+								{{ gobeyond.metafields.reviews.rating.value }}/5.0
+							{% endif %}
+						</div>
+					</div>
+					<div class="pdp-recommendation__exps">
+						{% for variant in variants %}
+						<div class="pdp-recommendation__exp {% if variant.title contains 'Default Title' %}selected{% endif %}" data-id="{{ variant.id }}" data-title="{{ variant.title }}" data-prc="{{ variant.price }}">{{ variant.sku | string | replace: ".","@" }}</div>
+						{% endfor %}
+					</div>
+					<div class="pdp-recommendation__metafields">
+						{% if gobeyond.metafields.custom.hero_ingredients %}
+							{% for hcmf in gobeyond.metafields.custom.hero_ingredients.value %}
+								{% assign media_image = hcmf.image | file_url %}
+									<div class="pdp-recommendation__incis">
+										<div class="metaobjectName">{{ hcmf.name }}</div>
+										<div class="metaobjectImg">{{ media_image }}</div>
+										<div class="metaobjectDesc">{{ hcmf.description }}</div>
+									</div>
+							{% endfor %}
+						{% endif %}
+						<div class="pdp-recommendation__application">{{ gobeyond.metafields.my_fields.anwendung_produkt }}</div>
+						<div class="pdp-recommendation__ingredients">{{ gobeyond.metafields.my_fields.inhaltsstoffe_produkt }}
+						</div>
+					</div>
+				</div>
+			{% endfor %}
+		{% endif %}
+	</div>
+
+	{% comment %} MORE RESULT SLIDER {% endcomment %}
+	<div class="pdp-more_result slide_down hidden">
+		<div class="pdp-more_result__x">
+			{% render 'svg-x' %}
+		</div>
+		<div class="pdp-more_result__tab">
+			<button class="pdp-more_result__tab__links selected" id="HeroInciTab">
+  				{{ section.settings.popup_heroinci_header_text }}
+			</button>
+			<button class="pdp-more_result__tab__links" id="ApplicationTab">
+				{{ section.settings.popup_application_header_text }}
+			</button>
+			<button class="pdp-more_result__tab__links" id="InciTab">
+				{{ section.settings.popup_ingr_header_text }}
+			</button>
+		</div>
+		<div class="pdp-more_result__tabcontent tabcontent_hero selected" id="HeroInciTabContent"></div>
+		<div class="pdp-more_result__tabcontent tabcontent_application hidden" id="ApplicationTabContent"></div>
+		<div class="pdp-more_result__tabcontent tabcontent_ingredients hidden" id="InciTabContent"></div>
+	</div>
+
+	{% comment %} STICKY CHECKOUT {% endcomment %}
+   {% comment %}
+    <div class="pdp-cta__sticky hidden">
+      <button class="pdp-cta__checkout_btn">{{ section.settings.checkout_button_text }}</button>
+      {% if localization.country.iso_code == "DE" %}
+  		{% if cart.total_price > 50 %}
+  			<div class="pdp-cta__checkout_subtext">{{ section.settings.checkout_subtext_above_de }}</div>
+  		{% else %}
+  			<div class="pdp-cta__checkout_subtext">{{ section.settings.checkout_subtext_below_de }}</div>
+  		{% endif  %}
+      {% endif %}
+    </div>
+    {% endcomment %}
+    <div class="pdp-cta__sticky hidden">
+  	<div class="pdp-cta__subscription-container">
+        <div class="pdp-cta__subscription-checkbox">
+    		<input id="recharge_subscription" name="recharge_subscription" type="checkbox" />
+    		<label for="recharge_subscription">Purchase via subscription</label>
+        </div>
+        <div class="pdp-cta__subscription-select">
+          <select hidden>
+            {% comment %}
+            {% if product.selling_plan_groups and product.selling_plan_groups[0].selling_plans %}
+              {% for sp in product.selling_plan_groups[0].selling_plans %}
+                <option value="{{ sp.id }}">{{ sp.name }}</option>
+              {% endfor %}
+            {% endif %}
+            {% endcomment %}
+            <option value="Delivery every 2 Months">Delivery every 2 Months</option>
+            <option value="Delivery every 3 Months">Delivery every 3 Months</option>
+            <option value="Delivery every 4 Months">Delivery every 4 Months</option>
+            <option value="Delivery every 5 Months">Delivery every 5 Months</option>
+          </select>
+        </div>
+  	</div>
+  	<div class="pdp-cta__action-container">
+  		<button class="pdp-cta__checkout_btn">{{ section.settings.checkout_button_text }}</button>
+  		<div class="pdp-cta__total"></div>
+  	</div>
+      {% if localization.country.iso_code == "DE" %}
+  		{% if cart.total_price > 50 %}
+  			<div class="pdp-cta__checkout_subtext">{{ section.settings.checkout_subtext_above_de }}</div>
+  		{% else %}
+  			<div class="pdp-cta__checkout_subtext">{{ section.settings.checkout_subtext_below_de }}</div>
+  		{% endif  %}
+      {% endif %}
+    </div>
+
+    {% comment %}
+	<div style="height:150px"></div>
+   {% endcomment %}
+</div>
+
+{%- render 'pdp-20230526-test-js'
+   , routes: routes,
+   , cream_label_image: section.settings.label_image | image_url: width: 30
+   , product: product
+   , localization: localization
+   , product_judgeme_badge: product.metafields.judgeme.badge
+   , product_rating: product.metafields.reviews.rating.value
+   , standard_products: recommendations.products
+   , day_cream_description: section.settings.day_cream_description | string
+   , night_cream_description: section.settings.night_cream_description | string
+   , main_header_text: section.settings.main_header_text | string
+   , product_count_text: section.settings.product_count_text | string
+   , lifestyle_button_text: section.settings.lifestyle_button_text | string
+   , lifestyle_button_loading_text: section.settings.lifestyle_button_loading_text | string
+   , daycream_header_text: section.settings.daycream_header_text | string
+   , nightcream_header_text: section.settings.nightcream_header_text | string
+   , description_show_more_text: section.settings.description_show_more_text | string
+   , description_show_less_text: section.settings.description_show_less_text | string
+   , more_daycream_button_text: section.settings.more_daycream_button_text | string
+   , more_nightcream_button_text: section.settings.more_nightcream_button_text | string
+   , jar_button_text: section.settings.jar_button_text | string
+   , dispenser_button_text: section.settings.dispenser_button_text | string
+   , step_1_header_text: section.settings.step_1_header_text | string
+   , step_2_header_text: section.settings.step_2_header_text | string
+   , step_3_header_text: section.settings.step_3_header_text | string
+   , step_4_header_text: section.settings.step_4_header_text | string
+   , gobeyond_header_text: section.settings.gobeyond_header_text | string
+   , more_standardproduct_button_text: section.settings.more_standardproduct_button_text | string
+   , popup_heroinci_header_text: section.settings.popup_heroinci_header_text | string
+   , popup_application_header_text: section.settings.popup_application_header_text | string
+   , popup_ingr_header_text: section.settings.popup_ingr_header_text | string
+   , checkout_button_text: section.settings.checkout_button_text | string
+   , checkout_subtext_above_de: section.settings.checkout_subtext_above_de | string
+   , checkout_subtext_below_de: section.settings.checkout_subtext_below_de | string
+   
+-%}
+
+{% schema %}
+{
+	"name": "pc-pdp-20230516",
+	"settings": [
+        {
+          "type": "text",
+          "id": "main_header_text",
+          "label": "Main Header Text"
+        },
+        {
+          "type": "text",
+          "id": "customer_info_skintype_header",
+          "label": "Customer Info: Skin Type Header",
+          "default": "SKIN TYPE"
+        },
+        {
+          "type": "text",
+          "id": "customer_info_skingoals_header",
+          "label": "Customer Info: Skin Goals Header",
+          "default": "SKIN GOALS"
+        },
+        {
+          "type": "text",
+          "id": "product_count_text",
+          "label": "Product Count Text"
+        },
+        {
+          "type": "text",
+          "id": "lifestyle_button_text",
+          "label": "Lifestyle Button Text"
+        },
+        {
+          "type": "text",
+          "id": "lifestyle_button_loading_text",
+          "label": "Lifestyle Button Loading Text"
+        },
+        {
+          "type": "text",
+          "id": "daycream_header_text",
+          "label": "Day Cream Header"
+        },
+        {
+          "type": "text",
+          "id": "nightcream_header_text",
+          "label": "Night Cream Header"
+        },
+        {
+          "type": "text",
+          "id": "description_show_more_text",
+          "label": "Show More Text (Description)"
+        },
+        {
+          "type": "text",
+          "id": "description_show_less_text",
+          "label": "Show Less Text (Description)"
+        },
+        {
+          "type": "text",
+          "id": "more_daycream_button_text",
+          "label": "Day Cream More Button Text"
+        },
+        {
+          "type": "text",
+          "id": "more_nightcream_button_text",
+          "label": "Night Cream More Button Text"
+        },
+        {
+          "type": "text",
+          "id": "jar_button_text",
+          "label": "Jar Button Text",
+          "default": "Jar"
+        },
+        {
+          "type": "text",
+          "id": "dispenser_button_text",
+          "label": "Dispenser Button Text",
+          "default": "Dispenser"
+        },
+        {
+          "type": "text",
+          "id": "step_1_header_text",
+          "label": "Step 1 Header Text"
+        },
+        {
+          "type": "text",
+          "id": "step_2_header_text",
+          "label": "Step 2 Header Text"
+        },
+        {
+          "type": "text",
+          "id": "step_3_header_text",
+          "label": "Step 3 Header Text"
+        },
+        {
+          "type": "text",
+          "id": "step_4_header_text",
+          "label": "Step 4 Header Text"
+        },
+        {
+          "type": "text",
+          "id": "gobeyond_header_text",
+          "label": "Go Beyond Header Text"
+        },
+        {
+          "type": "text",
+          "id": "more_standardproduct_button_text",
+          "label": "Standard Product More Button Text"
+        },
+        {
+          "type": "text",
+          "id": "popup_heroinci_header_text",
+          "label": "Hero Inci Header Text (Popup)"
+        },
+        {
+          "type": "text",
+          "id": "popup_application_header_text",
+          "label": "Application Header Text (Popup)"
+        },
+        {
+          "type": "text",
+          "id": "popup_ingr_header_text",
+          "label": "Ingredients Header Text (Popup)"
+        },
+        {
+          "type": "text",
+          "id": "checkout_button_text",
+          "label": "Checkout Button Text"
+        },
+		{
+			"type": "image_picker",
+			"id": "label_image",
+			"label": "Cream Label Image",
+			"info": "Choose the image to show beside the customer name as a cream label."
+		},
+		{
+			"type": "image_picker",
+			"id": "banner",
+			"label": "Banner (Desktop)",
+			"info": "Choose the banner image to show on top of PDP on desktop."
+		},
+		{
+			"type": "image_picker",
+			"id": "banner_mobile",
+			"label": "Banner (Mobile)",
+			"info": "Choose the banner image to show on top of PDP on mobile."
+		},
+		{
+			"type": "select",
+			"id": "page_width",
+			"default": "medium",
+			"label": "Page width",
+			"options": [
+				{
+					"value": "narrow",
+					"label": "Narrow"
+				},
+				{
+					"value": "medium",
+					"label": "Medium"
+				},
+				{
+					"value": "wide",
+					"label": "Wide"
+				}
+			]
+		},
+		{
+			"type": "collection",
+			"id": "recommendation_collection_source",
+			"label": "Recommendation Collection Source",
+			"info": "Select the collection that will be used as the source of recommended products"
+		},
+        {
+          "type": "text",
+          "id": "day_cream_description",
+          "label": "Day Cream Description"
+        },
+        {
+          "type": "text",
+          "id": "night_cream_description",
+          "label": "Night Cream Description"
+        },
+		{
+			"type": "richtext",
+			"id": "day_cream_application",
+			"label": "Day Cream Application"
+		},
+		{
+			"type": "richtext",
+			"id": "night_cream_application",
+			"label": "Night Cream Application"
+		},
+		{
+			"type": "product_list",
+			"id": "extra_product",
+			"label": "Go Beyond product"
+		},
+        {
+            "type": "text",
+            "id": "checkout_subtext_below_de",
+            "label": "Checkout Subtext Below € (DE)"
+        },
+        {
+            "type": "text",
+            "id": "checkout_subtext_above_de",
+            "label": "Checkout Subtext Above € (DE)"
+        }
+	]
+}
+{% endschema %}

@@ -1,0 +1,641 @@
+
+<style>
+
+  .skin-section__body-item {
+    margin-bottom: 40px;
+}
+
+  
+   .slide_contain-outer{
+    width:100%;
+    height:100%;
+  }
+  
+  .popUp_pdp{
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 6px 8px 10px #00000029;
+    border-radius: 38px;
+    position: fixed;
+  
+    width: 75%;
+    height: 600px;
+    overflow: hidden;
+    
+    top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  transition: 200ms ease-in-out;
+  border: 1px solid black;
+  border-radius: 10px;
+  z-index: 100000;
+  background-color: white;
+  width: 1200px;
+  max-width: 80%;
+  }
+  
+  .popUp_pdp .popUp_header_section {
+    width:100%;
+    height:18px;
+   
+  }
+  
+  .popUp_pdp .popUp_header_section .closeIcon{
+     position: absolute;
+    right: 20px;
+    top: -10px;
+    width: 20px;
+    height: 18px;
+    font-size: 36px;
+  }
+  
+  .closeIcon{
+    top: 15px! important;
+  }
+  
+  .CP{
+    cursor:pointer
+  }
+  
+  .popUp_pdp_main_container{
+    width: 85%;
+    margin: 0 auto;
+    height:500px;
+    margin-top: 25px;
+  }
+  
+  .mySlides {display:none; width:100%; height:100%;}
+  
+  .w3-black, .w3-hover-black:hover {
+    color: #fff!important;
+    background-color: #000!important;
+}
+  
+  .w3-display-left {
+    position: absolute;
+    top: 50%;
+    left: 0%;
+    transform: translate(0%,-50%);
+    -ms-transform: translate(-0%,-50%);
+}
+  
+  .w3-display-right {
+    position: absolute;
+    top: 50%;
+    right: 0%;
+    transform: translate(0%,-50%);
+    -ms-transform: translate(0%,-50%);
+}
+  
+  .w3-btn, .w3-button {
+    border: none;
+    display: inline-block;
+    padding: 8px 16px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    background-color: inherit;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+}
+  
+  .w3-display-container{
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  
+  .mySlides .slide_header{
+    font: normal normal 600 26px/40px Volte;
+    letter-spacing: 1.5px;
+    color: #000000;
+    text-transform: uppercase;
+    border-bottom: 2px solid #2F507B;
+    display: inline-block;
+  }
+  
+  .slide_contain{
+    width:100%;
+    height:90%;
+    display: flex;
+    
+  }
+  
+  .slide_contain_left{
+    width:60%;
+    height:inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    
+  }
+  
+  .slide-cream{
+     width:60%;
+    height:inherit;
+    max-height:450px;
+  }
+  
+  .slide_contain_right{
+     width:40%;
+    height:inherit;
+  }
+  
+  
+  .slide_short_desc{
+    margin: 60px 0;
+    font: normal normal normal 20px/30px Volte;
+    letter-spacing: 1px;
+    color: #000000;
+  }
+    
+  .slide_skin_goals_contain{
+    
+  }
+  
+   
+  .skingoal_header{
+    font: normal normal 600 30px/30px Volte;
+    letter-spacing: 1.5px;
+    color: #000000;
+    text-transform: uppercase;
+  }
+  
+  .skin_gl{
+     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+   min-width:200px;
+  }
+  
+  .skin_goal_w_Img{
+    display:flex;
+    justify-content: space-between;
+    margin-top:20px;
+  }
+  
+  .skin_gl img{
+    width:70px;
+    height:70px;
+  }
+  
+  .skin_gl .skin_txt{
+    font: normal normal 500 18px/28px Volte;
+    letter-spacing: 1.25px;
+    color: #000000;
+    margin-top:10px;
+    text-align:center;
+    height:60px;
+  }
+  
+  .slide_contain_right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end
+  }
+  
+  .flbx{
+    justify-content: space-evenly !important;
+  }
+  
+  .popup_haut_creme_info p{
+    font: normal normal 500 20px/35px Volte;
+    letter-spacing: 1px;
+    color: #000000;
+  }
+  
+  .popup_haut_creme_info h2 {
+    font: normal normal 600 20px/35px Volte;
+    letter-spacing: 1px;
+    color: #000000;
+  }
+  
+  .popup_haut_creme_info p {
+    font: normal normal 500 20px/35px Volte;
+     letter-spacing: 1px;
+  }
+  
+   #overlay_popup {
+  position: fixed;
+  opacity: 1;
+  transition: 200ms ease-in-out;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, .5);
+  pointer-events: all;
+    z-index:108;
+}
+  
+ 
+  .slide-hdr-margin { margin: 25px 0; }
+  
+  .pop_up_close_Icon {
+    background-image: url(https://cdn.shopify.com/s/files/1/0254/3973/1778/files/cancel.png?v=1628416186);
+    position: absolute;
+    background-size: contain;
+    background-position: center center;
+    right: 2vw;
+}
+
+.close_icon {
+    width: 16px;
+    height: 16px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+  
+  .btn_mre_info_fntstyle{
+    
+     letter-spacing: 1.35px;
+    color: #000000;
+    text-transform: uppercase;
+  }
+  
+ 
+ 
+  .btn_mre_info {
+    width: 426px;
+    height: 50px;
+    margin: 25px 0;
+    border: 2px solid #000;
+    border-radius:25px;
+    color: #000;
+    background: #FFFFFF 0% 0% no-repeat padding-box;
+    box-shadow: 0px 3px 6px #00000029;
+    font-weight:400;
+  }
+  
+  .btn_flex{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  
+  
+  @media screen and (min-width:551px) and (max-width:992px){
+     .slide_contain-outer{
+    height:90%;
+    overflow:auto;
+  }
+  
+   .skin_gl img{
+    width:70px;
+    height:62px;
+  }
+  .skin_gl .skin_txt {
+    font: normal normal 500 14px/22px Volte;
+    letter-spacing: 1px;
+     height:40px;
+  }
+  
+    .btn_mre_info_fntstyle { font: normal normal 600 17px/23px Volte; letter-spacing: 0.85px; }
+  .btn_mre_info {
+    width: 100%;
+  }
+    
+    .popUp_pdp{
+     max-width:95%;
+    width: 100%;
+    margin-top: 30px;
+  }
+  .slide_contain{
+    flex-direction: column-reverse;
+        height: auto;
+        margin-top: 20px;
+  }
+  .slide_short_desc{
+        margin: 5px 0px;
+     font: normal normal normal 16px/27px Volte;
+  }
+  
+  .skin_goal_w_Img{
+    flex-wrap:wrap;
+  }
+  
+  .slide_contain_right img{
+    width: 210px;
+    height: 220px;
+  }
+  
+  .slide_contain_left, .slide_contain_right{
+    width:100%;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+   .skingoal_header {
+    font: normal normal 600 22px/28px Volte;
+    letter-spacing: 0.75px;
+ }
+  .popup_haut_creme_info p {
+    font: normal normal 500 14px/25px Volte;
+    letter-spacing: 0.75px;
+}
+  .pci__item-li-ttl, .pci__item-ttl {
+     font: normal normal 600 16px/22px Volte;
+  }
+  
+  .skin_gl{
+    width:100%;
+    margin-bottom:20px;
+  }
+ 
+  .slide_short_desc, .skingoal_header{
+    text-align:center;
+  }
+  
+   .slide-cream{
+     width:100%;
+  }
+
+     .skin-section__body-item {
+    position: relative;
+    width: 50%;
+    padding-right: 50px;
+    padding-left: 100px;
+}
+    
+  }
+  
+  @media screen and (min-width:0px) and (max-width:550px){
+
+  
+   .slide_contain-outer{
+    height:90%;
+    overflow:auto;
+  }
+   .skin_gl img{
+    width:70px;
+    height:62px;
+  }
+   
+  .skin_gl .skin_txt {
+    font: normal normal 500 14px/22px Volte;
+    letter-spacing: 1px;
+    height:40px;
+    
+  }
+  .slideshow{
+    display: none!important;
+  }
+ 
+  
+ 
+  .btn_mre_info_fntstyle { font: normal normal 600 17px/23px Volte; letter-spacing: 0.85px; }
+  .btn_mre_info {
+    width: 100%;
+  }
+  
+  .slide_contain{
+    flex-direction: column-reverse;
+        height: auto;
+        margin-top: 20px;
+  }
+  
+  
+  .skin_goal_w_Img{
+    flex-wrap:wrap;
+  }
+  
+  .slide_contain_right img{
+    width: 210px;
+    height: 220px;
+  }
+  
+  .slide_contain_left, .slide_contain_right{
+    width:100%;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  
+  .popup_haut_creme_info p {
+    font: normal normal 500 14px/25px Volte;
+    letter-spacing: 0.75px;
+}
+  
+ .skingoal_header {
+    font: normal normal 600 22px/28px Volte;
+    letter-spacing: 0.75px;
+ }
+  
+  .pci__item-li-ttl, .pci__item-ttl {
+     font: normal normal 600 16px/22px Volte;
+  }
+  
+  .skin_gl{
+    width:100%;
+     margin-bottom:20px;
+  }
+  
+  .slide_short_desc, .skingoal_header{
+    text-align:center;
+  }
+  
+   .slide-cream{
+     width:100%;
+  }
+  
+  .more_info_txt { font: normal normal 500 14px/25px Volte; letter-spacing: 0.7px; }
+  
+  .mySlides .slide_header {
+    font: normal normal 600 20px/30px Volte;
+  }
+   .imgContainer{
+     height: 305px;
+  }
+
+    .popUp_pdp{
+      max-width:95%;
+    }
+  
+}
+
+   @media screen and (min-width: 990px){
+.skin-section__body-item-icon {
+    position: absolute;
+    top: 0;
+    left: 15px;
+}
+  
+.skin-section__body-item {
+    position: relative;
+    width: 50%;
+    padding-right: 50px;
+    padding-left: 100px;
+}
+  }
+
+  .skin-section__body-item-text {
+    font-size: 12px;
+    line-height: 24px;
+}
+
+  .skin-section__body-item {
+  
+    margin-bottom: 40px;
+}
+
+    .skin-section__body-item-icon img {
+    width: 40px;
+    height: auto;
+}
+
+
+  
+  
+ 
+</style>
+
+
+<div id="skin_result_popup" class="popUp_pdp DN">
+  <div class="popUp_header_section"><div class="closeIcon CP pop_up_close_Icon close_icon" onclick="closePopUp()"></div></div>
+  <div class="popUp_pdp_main_container">
+      <div class="w3-content w3-display-container">
+     <div class="mySlides slide3 "  style="width:100%" >
+           <div class="slide_header slid_hdfnt">Your Daycream Hero Ingredients</div>
+           <div class="slide_contain-outer">
+           <div class="slide_contain" style="align-items:center">
+            <div id="slideDayCreamHero" style="width:90%!important" class=" slide_contain_left slide_contain_left_font pci__item-li-desc ">
+               
+            </div>
+          
+          </div>   
+             </div>
+          </div>
+
+         <div class="mySlides slide3 slidesNightContent"  style="width:100%" >
+           <div class="slide_header slid_hdfnt">Your NightCream Hero Ingredients</div>
+           <div class="slide_contain-outer">
+           <div class="slide_contain" style="align-items:center">
+            <div id="slideNightCreamHero" style="width:90%!important" class=" slide_contain_left slide_contain_left_font pci__item-li-desc ">
+               
+            </div>
+          
+          </div>   
+             </div>
+          </div>
+        <div class="mySlides slide3 "  style="width:100%" >
+           <div class="slide_header slid_hdfnt">Your Day Cream Ingredients</div>
+           <div class="slide_contain-outer">
+           <div class="slide_contain" style="align-items:center">
+            <div id="slideDayCream" class=" slide_contain_left slide_contain_left_font pci__item-li-desc ">
+               
+            </div>
+            <div class="slide_contain_right slide_contain_image">
+              <img src="https://cdn.shopify.com/s/files/1/0254/3973/1778/files/slide2-img.png?v=1628171218" />
+            </div>
+          </div>   
+             </div>
+          </div>
+ 
+        <div class="mySlides slide3 slidesNightContent"  style="width:100%">
+            <div class="slide_header slid_hdfnt">Your Night Cream Ingredients</div>
+           <div class="slide_contain-outer">
+           <div class="slide_contain" style="align-items:center">
+            <div id="slideNightCream" class=" slide_contain_left slide_contain_left_font pci__item-li-desc">
+          
+          </div>
+            <div class="slide_contain_right slide_contain_image">
+              <img src="https://cdn.shopify.com/s/files/1/0254/3973/1778/files/slide2-img.png?v=1628171218" />
+            </div>
+          </div>   
+         </div>
+        </div>
+
+        <div class="mySlides slide3 "  style="width:100%" >
+           <div class="slide_header slid_hdfnt">Lifestyle</div>
+           <div class="slide_contain-outer" style="overflow: auto!Important;">
+           <div class="slide_contain" style="align-items:center">
+            <div id="slideLifestyle" style="width:100%!important; flex-wrap: wrap!important; flex-direction: initial!important;" class=" slide_contain_left slide_contain_left_font pci__item-li-desc ">
+           
+            </div>
+          
+          </div>   
+             </div>
+          </div>
+        {% paginate collections.all.products by 10000 %}
+
+        
+         {% for product in collections.all.products %}
+
+
+        {% if product.tags contains 'pdp-recommendation-new' %}
+         <div class="mySlides slide3 slides-inhalt {{ product.selected_or_first_available_variant.sku | replace: ".", "-"  }}-inhalt checkRecomm hide"  style="width:100%">
+           <div class="slide_header slid_hdfnt">{{ product.title }} <span style="font-weight:600">Ingredients</span></div>
+           <div class="slide_contain">
+            <div  class=" slide_contain_left slide_contain_left_font pci__item-li-desc">
+            {% comment %}
+            {% if product.metafields.inhaltsstoffe.list %}{{ product.metafields.inhaltsstoffe.list }}{% else %}{{ product.metafields.my_fields.inhaltsstoffe_produkt }}{% endif %} 
+            {% endcomment %}
+            {% if product.metafields.my_fields.inhaltsstoffe_produkt %}{{ product.metafields.my_fields.inhaltsstoffe_produkt }}{% endif %}
+          
+          </div>
+            <div class="slide_contain_right slide_contain_image">
+               <img src="{{ product.featured_image.src | img_url: '350x350' }}" alt="{{ featured.featured_image.alt | escape }}">
+            </div>
+          </div>   
+        
+        </div>
+        
+        {% endif  %}
+        {% endfor %}
+{% endpaginate %}
+  <button class="w3-button w3-black w3-display-left" onclick="plusDivs(-1)">&#10094;</button>
+  <button class="w3-button w3-black w3-display-right" onclick="plusDivs(1)">&#10095;</button>
+</div>
+  </div>
+</div>
+
+<div id="overlay_popup" class="DN"></div>
+
+<script>
+  
+      var slideIndex = 1;
+showDivs(slideIndex);
+  
+  
+
+function plusDivs(n) {
+  showDivs(slideIndex += n);
+}
+
+function showDivs(n) {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  if (n > x.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = x.length}
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";  
+  }
+  x[slideIndex-1].style.display = "block";  
+}
+  
+  
+   function OpenCart(obj){
+    if (obj.attr('data-selected') == "0"){
+      obj.attr('data-selected', "1");
+      $("#jatc-bar").css("display", "block")
+    }else{
+       obj.attr('data-selected', "0");
+      $("#jatc-bar").css("display", "none");
+      
+    }
+    
+    
+  }
+  
+   function closePopUp(){
+    $("#skin_result_popup").addClass("DN"); $("#overlay_popup").addClass("DN");
+  }
+  
+  function openPopup(){
+    $("#skin_result_popup").removeClass("DN");
+    $("#overlay_popup").removeClass("DN");
+  }
+  
+</script>
+
+

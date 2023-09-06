@@ -1,0 +1,1683 @@
+<script>
+  window.addEventListener("DOMContentLoaded", async (event) => {
+	const urlParams = new URLSearchParams(window.location.search);
+	const skinid = urlParams.get('skinid');
+	const token = urlParams.get('token');
+	var actualCart = [];
+	var cartItems = [];
+	var cartTotal = 0;
+	var quizData = null;
+	var inciData = null;
+	var productCount = 0;
+	var personalizedCreamCartProperties = {
+		day: {
+			"_skinId": skinid,
+		},
+		night: {
+			"_skinId": skinid,
+		},
+	}
+	const routes = {{ routes | json}};
+	var apiHost = `https://europe-west1-metrics-staging-1.cloudfunctions.net`;
+	var siteLocale = {{ localization.language.iso_code | json }};
+	var productCountText = "{{ product_count_text }}";
+	var lifestyleButtonText = "{{ lifestyle_button_text }}";
+	var lifestyleButtonLoadingText = "{{ lifestyle_button_loading_text }}";
+	var dayCreamHeaderText = "{{ daycream_header_text }}";
+	var nightCreamHeaderText = "{{ nightcream_header_text }}";
+	var descriptionShowMoreText = "{{ description_show_more_text }}";
+	var descriptionShowLessText = "{{ description_show_less_text }}";
+	var moreDayCreamButtonText = "{{ more_daycream_button_text }}";
+    var jarButtonText = "{{ jar_button_text }}";
+    var dispenserButtonText = "{{ dispenser_button_text }}";
+	var moreNightCreamButtonText = "{{ more_nightcream_button_text }}";
+	var step1HeaderText = "{{ step_1_header_text }}";
+	var step2HeaderText = "{{ step_2_header_text }}";
+	var step3HeaderText = "{{ step_3_header_text }}";
+	var step4HeaderText = "{{ step_4_header_text }}";
+	var goBeyondHeaderText = "{{ gobeyond_header_text }}";
+	var moreStandardProductButtonText = "{{ more_standardproduct_button_text }}";
+	var popupHeroinciHeaderText = "{{ popup_heroinci_header_text }}";
+	var popupApplicationHeaderText = "{{ popup_application_header_text }}";
+	var popupIngredientsHeaderText = "{{ popup_ingr_header_text }}";
+	var creamLabelImgSrc = {{ cream_label_image | json}};
+	var personalizedProduct = {{ product | json}};
+	var dayCreamDescription = "{{ day_cream_description }}";
+	var nightCreamDescription = "{{ night_cream_description }}";
+	var personalizedProductRating = "{{ product_rating }}";
+	var personalizedProductJudgemeBadge = {{ product_judgeme_badge | json}};
+	var standardProducts = {{ standard_products | json}};
+	var checkoutSubtextAboveDE = "{{ checkout_subtext_above_de }}";
+	var checkoutSubtextBelowDE = "{{ checkout_subtext_below_de }}";
+	var pdpMainSection = document.querySelector('.pdp-main_section');
+	var pdpPageLoadingSection = document.querySelector('.pdp-page_loading_indicator');
+	var pdpProductCount = document.querySelector('.pdp-text__product_count');
+	var popSlide = document.querySelector('.pdp-more_result');
+	var skinTypeTranslation = {
+		"VeryDry": {
+			en: "Very Dry",
+			de: "Sehr Trocken",
+            ar: "Very Dry",
+	  },
+		"Dry": {
+			en: "Dry",
+			de: "Trocken",
+            ar: "Dry",
+	  },
+		"Mischhaut": {
+			en: "Combination",
+			de: "Mischhaut",
+            ar: "Combination",
+	  },
+		"Oily": {
+			en: "Oily",
+			de: "Fettig",
+            ar: "Oily",
+	  },
+		"normal": {
+			en: "Normal",
+			de: "Normal",
+            ar: "Normal",
+	  }
+	};
+	var skinGoalsTranslation = {
+		"MehrFeuchtigkeit": {
+			en: "Increase Hydration",
+			de: "Mehr Feuchtigkeit",
+			ar: "Increase Hydration",
+	  },
+		"WenigerAustrocknung": {
+			en: "Reduce Dry Areas",
+			de: "Weniger trockene Stellen",
+			ar: "Reduce Dry Areas",
+	  },
+		"Reddening": {
+			en: "Reduce Redness",
+			de: "Weniger Rötungen",
+			ar: "Reduce Redness",
+	  },
+		"Falten": {
+			en: "Reduce Wrinkles",
+			de: "Weniger Falten",
+			ar: "Reduce Wrinkles",
+	  },
+		"BlueLightProtection": {
+			en: "Blue Light Protection",
+			de: "Schutz vor Display-Licht",
+			ar: "Blue Light Protection",
+	  },
+		"WenigerPigmentflecken": {
+			en: "Reduce Pigmentation",
+			de: "Weniger Pigmentflecken",
+			ar: "Reduce Pigmentation",
+	  },
+		"ReinereHaut": {
+			en: "Reduce Pimples",
+			de: "Reinere Haut",
+			ar: "Reduce Pimples",
+	  },
+		"StrahlendererTeint": {
+			en: "Skin Glow",
+			de: "Strahlender Teint",
+			ar: "Skin Glow",
+	  },
+		"PorenVerfeinerung": {
+			en: "Refine Pores",
+			de: "Verfeinerung des Porenbildes",
+			ar: "Refine Pores",
+	  },
+		"AntiPollution": {
+			en: "Anti Pollution",
+			de: "Schutz gegen Umwelteinflüsse",
+			ar: "Anti Pollution",
+	  },
+        "Redenning": {
+          en: "Redenning",
+          de: "Redenning",
+          ar: "Redenning"
+      },
+	};
+	var lifeStyle = null;
+    var lifestyleAllData = [];
+
+	async function getCart() {
+		let d = await fetch("/cart.js").then((r) => r.json())
+		if (d && d.token) {
+			return d
+		}
+		return null
+	}
+
+
+	async function removeCartItemAJAX(items) {
+		let d = fetch('/cart/update.js', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				updates: items
+			})
+		}).then(response => response.json()).then(async (data) => {
+			console.log("NEW PDP: ajax cart item removed")
+		});
+	}
+
+	async function updateProductQtyInputFromActualCart() {
+		let excludedItems = { }
+		let cart = await getCart();
+		if (cart && cart.token) {
+			if (cart.items && cart.items.length > 0) {
+				await Promise.all(cart.items.map(async (c) => {
+					console.log("_Set", c.properties._Set)
+					let variantOptions = document.querySelectorAll(".pdp-product__variant_option.variant_option_personalized");
+					if (variantOptions) {
+						variantOptions.forEach((vo) => {
+						let voVariantId = vo.getAttribute('data-variant-id');
+							if (Number(voVariantId) !== c.id) {
+								vo.classList.remove("selected");
+							} else {
+								vo.classList.add("selected");
+							}
+						});
+					}
+				}));
+				await Promise.all(cart.items.map(async (c) => {
+					console.log(c)
+					let variant = document.querySelector(`[data-variant-id="${c.id}"]`);
+					if (variant) {
+						variant.classList.add("selected");
+						let variantParentForm = variant.closest(".pdp-product__form");
+						if (variantParentForm) {
+							let qtyInput = variantParentForm.querySelector(".pdp-product__quantity__selector__input");
+							if (qtyInput) {
+								qtyInput.value = c.quantity
+								excludedItems[`${c.id}`] = 0;
+							}
+						}
+					}
+				}));
+				//await removeCartItemAJAX(excludedItems)
+
+
+					//cartItems = []
+				await Promise.all(cart.items.map(async (c) => {
+					cartItems.push({
+						id: c.id,
+						quantity: c.quantity,
+						properties: c.properties,
+						price: c.price
+					});
+				}));
+				console.log("CI", cartItems);
+
+				const dict = { };
+				await Promise.all(cartItems.map((obj) => {
+					const id = obj.id;
+					if (dict.hasOwnProperty(id)) {
+						if (obj.quantity > dict[id].quantity) {
+							dict[id] = obj;
+						}
+					} else {
+						dict[id] = obj;
+					}
+				}))
+				cartItems = Object.values(dict);
+			}
+		}
+	}
+
+	async function handleStickyCheckoutUpsellText(mode) {
+		let cartTotal = 0;
+		if (cartItems && cartItems.length > 0) {
+			let upsellText = document.querySelector(".pdp-cta__checkout_subtext");
+			await Promise.all(cartItems.map((c) => {
+				if (c.price) {
+					cartTotal += parseInt(c.price) * c.quantity;
+				}
+			}));
+			console.log("cartTotal", cartTotal);
+			let country = "{{ localization.country.iso_code }}";
+			if (upsellText && country === "DE") {
+				if (cartTotal > 5000) {
+					upsellText.innerText = checkoutSubtextAboveDE;
+				} else {
+					upsellText.innerText = checkoutSubtextBelowDE;
+				}
+			}
+		}
+	}
+
+
+	async function addToCart(items) {
+		if (items && items.length > 0) {
+			await Promise.all(items.map((item) => {
+				cartItems.push({
+					id: item.id,
+					quantity: item.quantity,
+					properties: item.properties,
+					price: item.price,
+				});
+			}));
+		}
+	}
+
+	async function updateCartItem(variantUpdate) {
+		if (cartItems && cartItems.length > 0) {
+			await Promise.all(cartItems.map((item, idx) => {
+				if (item.id === variantUpdate.id) {
+					let tmp = cartItems.filter((i) => i.id !== variantUpdate.id);
+					cartItems = tmp;
+					// cartItems.push(variantUpdate);
+					Object.keys(variantUpdate).map((vu) => {
+						let tmpProperties = {}
+						if (vu === 'properties') {
+							if (item && item.properties) {
+								tmpProperties = item.properties;
+								item[vu] = { ...tmpProperties, ...variantUpdate[vu] }
+							} else {
+								item[vu] = variantUpdate[vu];
+							}
+						} else {
+							item[vu] = variantUpdate[vu];
+						}
+					});
+					cartItems.push(item);
+				}
+			}));
+		}
+	}
+
+
+	async function removeFromCart(variantId) {
+		if (cartItems && cartItems.length > 0) {
+			await Promise.all(cartItems.map((ci) => {
+				if (ci.id === Number(variantId)) {
+					ci.quantity = 0
+				}
+			}))
+		}
+	}
+
+
+	async function personalizedCreamExistsInActualCart(mode) {
+		let _stat = false;
+		console.log("TTTT", actualCart)
+		if (actualCart && actualCart.items && actualCart.items.length > 0) {
+			await Promise.all(actualCart.items.map((c) => {
+				if (mode === "day") {
+					if (c.variant_title && c.variant_title.toLowerCase().includes("day cream")) {
+						_stat = true
+					}
+				} else if (mode === "night") {
+					if (c.variant_title && c.variant_title.toLowerCase().includes("night cream")) {
+						_stat = true
+					}
+				}
+			}));
+		}
+		return _stat;
+	}
+
+
+	async function loadQuizData() {
+		let response = await fetch(`${apiHost}/getDataForOrder/${skinid}`);
+		const data = await response.json();
+		return data;
+	}
+
+
+	const loadInciData = async (reqData) => {
+		let response = await fetch(`${apiHost}/getCreamIngredients`, {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json"
+				},
+			body: JSON.stringify(reqData)
+		});
+		const data = await response.json();
+		return data;
+	}
+
+
+	async function loadLifeStyleData() {
+		let response = await fetch(`${apiHost}/getAnswers/${skinid}/${token}`, {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json"
+				}
+		});
+		const data = await response.json();
+		return data;
+	}
+
+
+	async function presetPersonalizedCreamProperties(qD) {
+		// day cream
+		personalizedCreamCartProperties['day']['_answerId'] = qD.answerId;
+		personalizedCreamCartProperties['day']['Name'] = qD.cream.day.name;
+		personalizedCreamCartProperties['day']['_Cream ID'] = qD.cream.day.id;
+		personalizedCreamCartProperties['day']['_Fragrance'] = qD.cream.day.fragrance;
+		personalizedCreamCartProperties['day']['_Duft'] = qD.cream.day.fragranceName;
+		// night cream
+		personalizedCreamCartProperties['night']['_answerId'] = qD.answerId;
+		personalizedCreamCartProperties['night']['Name'] = qD.cream.night.name;
+		personalizedCreamCartProperties['night']['_Cream ID'] = qD.cream.night.id;
+		personalizedCreamCartProperties['night']['_Fragrance'] = qD.cream.night.fragrance;
+		personalizedCreamCartProperties['night']['_Duft'] = qD.cream.night.fragranceName;
+	}
+
+
+	function buildLifeStyleUI(headerTitle, img, val) {
+	  var str = "";
+		str += '<article class="skin-section__body-item show" data-notation="skinType">';
+		str += '<div class="skin-section__body-item-icon"><img src="' + img + '" alt=""></div>';
+		str += '<input type="hidden" value="Dry">'
+		str += '<h2 class="h6 skin-section__body-item-title text-left">' + headerTitle + '</h2>'
+		str += '<div class="skin-section__body-item-iwr">'
+		str += ' <div class="skin-section__body-item-text show">'
+		str += '<span>' + val[0].description + '</span>'
+		str += '<input type="hidden" value="<-Dry->">';
+		str += ' </div>';
+		str += '</div>';
+		str += '</article>';
+		return str;
+	}
+
+    async function jsonifyLifestyleMetaobject() {
+      let tmpObj = []
+      let prodLsMainDiv = document.querySelector(".pdp-product__metafields");
+      if (prodLsMainDiv) {
+        let lsMain = prodLsMainDiv.querySelectorAll(".pdp-product__metafields__lifestyle");
+        if (lsMain) {
+          lsMain.forEach((lsEl) => {
+            let tmpLs = {};
+            let tmpObjSTyp = [];
+            let lsTtl = lsEl.querySelector(".pdp-product__metafields__lifestyle__title").innerText;
+            let lsImg = lsEl.querySelector(".pdp-product__metafields__lifestyle__img").innerText;
+            let lsTyp = lsEl.querySelector(".pdp-product__metafields__lifestyle__type").innerText;
+            let lsSTyps = lsEl.querySelector(".pdp-product__metafields__lifestyle__skinTypes");
+            if (lsTtl && lsImg && lsTyp) {
+              tmpLs["title"] = lsTtl;
+              tmpLs["img"] = lsImg;
+              tmpLs["type"] = lsTyp;
+            }
+            if (lsSTyps) {
+              let lsSTyp = lsSTyps.querySelectorAll(".pdp-product__metafields__lifestyle__skinType");
+              if (lsSTyp) {
+                lsSTyp.forEach((lsSTypEl) => {
+                  let lsSTypId = lsSTypEl.querySelector(".pdp-product__metafields__lifestyle__skinTypes__id").innerText;
+                  let lsSTypTyp = lsSTypEl.querySelector(".pdp-product__metafields__lifestyle__skinTypes__type").innerText;
+                  let lsSTypDesc = lsSTypEl.querySelector(".pdp-product__metafields__lifestyle__skinTypes__desc").innerText;
+                  if (lsSTypId && lsSTypTyp && lsSTypDesc) {
+                    tmpObjSTyp.push({
+                      id: lsSTypId,
+                      type: lsSTypTyp,
+                      description: lsSTypDesc,
+                    })
+                  }
+                });
+              }
+            }
+            tmpLs["skinType"] = tmpObjSTyp;
+            tmpObj.push(tmpLs)
+            lifestyleAllData.push(tmpLs)
+          });
+        }
+      }
+    }
+
+
+	function organizeLifestyleData(val, lifestyleType) {
+	  var typedata = lifestyleAllData.filter(function(item) {
+			return item.type === lifestyleType;
+	  })
+
+		if (typedata.length !== 0) {
+			let skinTypeSel = typedata[0].skinType.filter(function(item) {
+				return item.type === val;
+			})
+			if (skinTypeSel.length !== 0)
+				return buildLifeStyleUI(typedata[0].title, typedata[0].img, skinTypeSel);
+			else
+				return "";
+		} else {
+			return "";
+		}
+	}
+
+
+	function togglePageLoadingIndicator() {
+		if (!quizData) {
+			if (pdpPageLoadingSection) {
+				pdpPageLoadingSection.classList.remove('hidden');
+			}
+		} else {
+			if (pdpMainSection) {
+				pdpMainSection.classList.remove('hidden');
+				if (pdpPageLoadingSection) {
+					pdpPageLoadingSection.classList.add('hidden');
+					pdpPageLoadingSection.innerHTML = '';
+				}
+			}
+		}
+	}
+
+	async function toggleSubscriptionOption() {
+	  console.log("REC SP", standardProducts)
+	  const subCheckboxEl = document.querySelector("#recharge_subscription");
+	  const subSelectEl = document.querySelector(".pdp-cta__subscription-select select");
+	  if (subCheckboxEl && subSelectEl) {
+		subCheckboxEl.addEventListener("change", async (e) => {
+		  if (e.target && e.target.checked) {
+			subSelectEl.removeAttribute("hidden")
+		  } else {
+			subSelectEl.setAttribute("hidden", true)
+			await Promise.all(cartItems.map((ci) => {
+			  if (ci.properties && ci.properties._skinId) {
+				ci["selling_plan"] = "";
+			  }
+			}))
+			console.log(cartItems)
+		  }
+		});
+	  }
+	}
+
+	async function toggleSubscriptionSelect() {
+	  const subSelectEl = document.querySelector(".pdp-cta__subscription-select select");
+		if (subSelectEl) {
+			subSelectEl.addEventListener("change", async (e) => {
+				await Promise.all(cartItems.map((ci) => {
+					if (ci.properties && ci.properties._skinId) {
+						// ci["selling_plan"] = e.target.value;
+					}
+				}))
+		
+				// check for personalized product
+				if (personalizedProduct && personalizedProduct.selling_plan_groups) {
+					let cremaSpGroup = personalizedProduct.selling_plan_groups[0] ?? [];
+					if (cremaSpGroup && cremaSpGroup.selling_plans && cremaSpGroup.selling_plans.length > 0) {
+						let spl = null;
+						await Promise.all(cremaSpGroup.selling_plans.map((sp) => {
+							if (sp.name && sp.name === e.target.value) {
+								spl = sp;
+							}
+						}));
+						console.log("cream SPLLLL", spl)
+						if (spl) {
+							await Promise.all(cartItems.map((ci) => {
+								if (ci.properties && ci.properties._skinId) {
+									ci["selling_plan"] = spl.id;
+								}
+							}));
+						}
+					}
+				}
+
+				// check for standard products
+				if (standardProducts) {
+					await standardProducts.map(async (sprod) => {
+						let spSpGroup = sprod.selling_plan_groups[0] ?? [];
+						if (spSpGroup && spSpGroup.selling_plans) {
+							let spl = null;
+							await Promise.all(spSpGroup.selling_plans.map((sp) => {
+								if (sp.name && sp.name === e.target.value) {
+									spl = sp
+								}
+							}));
+							console.log("standard SPLLLL", spl)
+							if (spl) {
+								console.log("SPLLLL CI", sprod)
+								if (sprod && sprod.variants) {
+									await Promise.all(sprod.variants.map(async (spv) => {
+										await Promise.all(cartItems.map((ci) => {
+											if (ci.id === spv.id) {
+												ci["selling_plan"] = spl.id;
+											}
+										}));
+									}));
+								}
+							}
+						}
+					});
+				}
+				console.log(cartItems)
+			});
+		}
+	}
+
+	async function handleClickVariantOption() {
+		let variantOptions = document.querySelectorAll('.pdp-product__variant_option');
+		if (variantOptions) {
+			variantOptions.forEach((option) => {
+				option.addEventListener("click", async () => {
+					let detailsParent = option.closest('.pdp-product__details');
+					let priceParent = detailsParent.querySelector('.pdp-product__price');
+					let strikePrice = detailsParent.querySelector('.pdp-product__price h2.struck-out-price');
+					let optionFormParent = option.closest('.pdp-product__form');
+					let qtyInput = optionFormParent.querySelector(".pdp-product__quantity__selector__input");
+					let _variantFor = option.getAttribute("data-varaint-for");
+                    let _variantSku = option.getAttribute("data-variant-sku");
+
+                    // hide strike price for 30ml if 50ml is selected
+                    if (strikePrice && _variantSku && (_variantSku.includes('day50') || _variantSku.includes('night50'))) {
+                      strikePrice.classList.add("hidden");
+                      priceParent.querySelector("h3").style.color = "#000";
+                    } else {
+                      priceParent.querySelector("h3").style.color = "#fb5250";
+                      strikePrice.classList.remove("hidden");
+                    }
+                  
+					if (qtyInput) {
+						let optionParent = option.closest('.pdp-product__form__variants');
+						if (option.classList.contains("selected")) {
+							option.classList.remove("selected");
+							removeFromCart(option.getAttribute("data-variant-id"));
+							console.log(cartItems);
+						} else {
+							let otherOptions = optionParent.querySelectorAll('.pdp-product__variant_option');
+							await otherOptions.forEach((oo) => {
+								let __variantFor = oo.getAttribute("data-variant-for")
+								if (oo.getAttribute("data-variant-id") === option.getAttribute("data-variant-id")) {
+									oo.classList.add("selected");
+								} else {
+									oo.classList.remove("selected")
+									removeFromCart(oo.getAttribute("data-variant-id"));
+								}
+							});
+							if (parseInt(qtyInput.value) <= 0) {
+								qtyInput.value = 1;
+							}
+							priceParent.querySelector('h3').innerText = theme.formatMoney(parseFloat(option.getAttribute("data-variant-price") * parseFloat(qtyInput.value)), theme.money_format);
+							addToCart([
+								{
+									id: Number(option.getAttribute("data-variant-id")),
+									quantity: parseInt(qtyInput.value),
+									properties: personalizedCreamCartProperties[option.getAttribute('data-variant-for')],
+									price: option.getAttribute('data-variant-price')
+								}
+							]);
+							handleStickyCheckoutUpsellText('inc');
+							console.log(cartItems);
+						}
+					}
+				});
+			});
+		}
+	}
+
+	async function handleClickQtySelector() {
+		let qtySelectors = document.querySelectorAll('.pdp-product__quantity__selector');
+		if (qtySelectors) {
+			qtySelectors.forEach((selector) => {
+				let detailsParent = selector.closest('.pdp-product__details');
+				let priceParent = detailsParent.querySelector('.pdp-product__price');
+				selector.addEventListener("click", async () => {
+					let formParent = selector.closest(".pdp-product__form");
+					let selectedVariantOption = formParent.querySelector(".pdp-product__variant_option.selected");
+					if (selectedVariantOption) {
+						let selectorParent = selector.closest(".pdp-product__quantity");
+						let qtyInput = selectorParent.querySelector(".pdp-product__quantity__selector__input");
+						let qtyCurrVal = parseInt(qtyInput.value);
+						if (selector.classList.contains("pdp-product__quantity__selector__dec")) {
+							if (qtyCurrVal > 0) {
+								qtyInput.value = qtyCurrVal - 1;
+								await updateCartItem({
+									id: Number(selectedVariantOption.getAttribute("data-variant-id")),
+									quantity: parseInt(qtyInput.value),
+									price: selectedVariantOption.getAttribute('data-variant-price'),
+									//properties: {"_Set": "Personalized Set"}
+								});
+								handleStickyCheckoutUpsellText('dec');
+							}
+						} else if (selector.classList.contains("pdp-product__quantity__selector__inc")) {
+							qtyInput.value = qtyCurrVal + 1;
+							await updateCartItem({
+								id: Number(selectedVariantOption.getAttribute("data-variant-id")),
+								quantity: parseInt(qtyInput.value),
+								price: selectedVariantOption.getAttribute('data-variant-price'),
+								//properties: {"_Set": "Personalized Set"}
+							});
+							handleStickyCheckoutUpsellText('inc');
+						}
+						priceParent.querySelector('h3').innerText = theme.formatMoney(parseFloat(selectedVariantOption.getAttribute("data-variant-price") * parseFloat(qtyInput.value)), theme.money_format);
+					}
+					console.log(cartItems);
+				});
+			});
+		}
+	}
+
+	async function toggleDescriptionShow() {
+		let descriptionToggles = document.querySelectorAll('.pdp-product__description__show__toggle');
+		if (descriptionToggles) {
+			descriptionToggles.forEach((toggle) => {
+				toggle.addEventListener("click", () => {
+					let toggleDescriptionParent = toggle.closest(".pdp-product__description");
+					let toggleDescriptionShort = toggleDescriptionParent.querySelector(".pdp-product__description__short");
+					let toggleDescriptionLong = toggleDescriptionParent.querySelector(".pdp-product__description__long");
+					if (toggleDescriptionParent) {
+						if (toggle.classList.contains("pdp-product__description__show__toggle__more")) {
+							toggleDescriptionShort.classList.add("hidden");
+							toggleDescriptionLong.classList.remove("hidden");
+						} else if (toggle.classList.contains("pdp-product__description__show__toggle__less")) {
+							toggleDescriptionShort.classList.remove("hidden");
+							toggleDescriptionLong.classList.add("hidden");
+						}
+					}
+				});
+			});
+		}
+	}
+
+	async function handleMoreResultBtnClickEvent() {
+		let btn = document.querySelectorAll('.pdp-product__more_result');
+		if (btn) {
+			btn.forEach((el) => {
+				el.addEventListener('click', async () => {
+					if (el.classList.contains('pdp-product__more_result__lifestyle')) {
+						let inciTab = document.querySelector('#HeroInciTab');
+						let inciTabContent = document.querySelector('#HeroInciTabContent');
+						inciTab.innerHTML = lifestyleButtonText;
+						inciTab.style.fontSize = "1.7rem";
+						inciTab.style.fontWeight = "700";
+						document.querySelector(`#ApplicationTab`).classList.add('hidden');
+						document.querySelector(`#InciTab`).classList.add('hidden');
+
+						if (!lifeStyle) {
+							el.innerHTML = `
+								<div style="display:inline-flex;gap:10px;">
+									<?xml version="1.0" encoding="utf-8"?>
+									<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+									<circle cx="50" cy="50" fill="none" stroke="#fff" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+									<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+									</circle>
+									</svg>
+									<span style="font-weight:700;">${lifestyleButtonLoadingText}</span>
+								</div>`
+							lifeStyle = await loadLifeStyleData();
+							el.innerHTML = lifestyleButtonText;
+						}
+
+						let skinConditionType = lifeStyle.skinCondition.skinType;
+						let reddeningType = lifeStyle.skinCondition.reddening;
+						let flyingFreqType = lifeStyle.lifestyle.flyingFrequency;
+						let sunExpositionType = lifeStyle.lifestyle.sunExposition;
+						let glassWaterType = lifeStyle.lifestyle.glassWaterIntake;
+						let weeklySports = lifeStyle.lifestyle.weeklySports;
+						let stressLevelType = lifeStyle.lifestyle.stressLevel;
+						let smokingType = lifeStyle.lifestyle.smoking;
+						let blueLightType = lifeStyle.lifestyle.bluelightExposition;
+						let urbanEnvironmentType = lifeStyle.lifestyle.urbanEnvironment;
+						let sleepType = lifeStyle.lifestyle.sleep;
+						let nutritionType = lifeStyle.lifestyle.nutrition.sort();
+						let weeklySportsType = lifeStyle.lifestyle.weeklySports.sort();
+						let skinInfo = organizeLifestyleData(skinConditionType, "skintype");
+						if (typeof reddeningType !== "undefined")
+							skinInfo += organizeLifestyleData(reddeningType, "reddening");
+							skinInfo += organizeLifestyleData(flyingFreqType, "flyingFrequency");
+							skinInfo += organizeLifestyleData(sunExpositionType, "sunExposition");
+							skinInfo += organizeLifestyleData(glassWaterType, "glassWaterIntake");
+							skinInfo += organizeLifestyleData(stressLevelType, "stressLevel");
+							skinInfo += organizeLifestyleData(smokingType, "smoking");
+							skinInfo += organizeLifestyleData(blueLightType, "bluelightExposition");
+							skinInfo += organizeLifestyleData(urbanEnvironmentType, "urbanEnvironment");
+							skinInfo += organizeLifestyleData(sleepType, "sleep");
+							skinInfo += organizeLifestyleData(nutritionType.toString(), "nutrition");
+							skinInfo += organizeLifestyleData(weeklySportsType.toString(), "weeklySports");
+
+							inciTabContent.innerHTML = skinInfo;
+
+							popSlide.classList.remove('hidden');
+							popSlide.classList.remove('slide_down');
+							popSlide.classList.add('slide_up');
+					} else {
+						let inciTab = document.querySelector('#HeroInciTab');
+						let inciTabContent = document.querySelector('#HeroInciTabContent');
+						if (el.getAttribute('data-result-for') === 'daycream' || el.getAttribute('data-result-for') === 'nightcream') {
+							if (!inciData) {
+								let oldElText = el.innerText;
+								el.innerHTML = `
+									<div style="display:inline-flex;gap:10px;">
+										<?xml version="1.0" encoding="utf-8"?>
+										<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+										<circle cx="50" cy="50" fill="none" stroke="#000" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+											<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+										</circle>
+										</svg>
+										<h5>LOADING MORE CREAM DATA</h5>
+									</div>`;
+									inciData = await loadInciData({
+										creamId: {
+											day: quizData.cream.day.id,
+											night: quizData.cream.night.id
+										},
+										locale: siteLocale,
+										creamVersion: 21
+									});
+								el.innerHTML = `<h5>${oldElText}</h5>`;
+							}
+
+							inciData.ingredients.map((i) => {
+								if (i.ofCream) {
+									if (el.getAttribute('data-result-for') === 'daycream') {
+										if (i.ofCream[0] === 'day') {
+											if (inciTabContent) {
+												let inciContainer = document.createElement('div');
+												inciContainer.classList.add('pdp-main_more_result__incis__item');
+												let inciImage = document.createElement('img');
+												inciImage.width = "70";
+												inciImage.height = "70";
+												inciImage.src = `${i.imageUrl
+													}?w=50`;
+												inciImage.alt = `${i.name
+													}`;
+												let inciDetailContainer = document.createElement('div');
+												inciDetailContainer.classList.add('pdp-main_product__more_result__incis__details');
+												let inciTitle = document.createElement('h6');
+												inciTitle.classList.add('pdp-main_product__more_result__incis__item__title');
+												inciTitle.innerText = `${i.name
+													}`;
+												let inciDesc = document.createElement('p');
+												inciDesc.innerText = `${i.description
+													}`;
+												inciContainer.appendChild(inciImage);
+												inciDetailContainer.appendChild(inciTitle);
+												inciDetailContainer.appendChild(inciDesc);
+												inciContainer.appendChild(inciDetailContainer);
+												inciTabContent.appendChild(inciContainer);
+											}
+										}
+									} else if (el.getAttribute('data-result-for') === 'nightcream') {
+										if (i.ofCream[0] === 'night') {
+											if (inciTabContent) {
+												let inciContainer = document.createElement('div');
+												inciContainer.classList.add('pdp-main_more_result__incis__item');
+												let inciImage = document.createElement('img');
+												inciImage.width = "70";
+												inciImage.height = "70";
+												inciImage.src = `${i.imageUrl
+													}?w=50`;
+												inciImage.alt = `${i.name
+													}`;
+												let inciDetailContainer = document.createElement('div');
+												inciDetailContainer.classList.add('pdp-main_product__more_result__incis__details');
+												let inciTitle = document.createElement('h6');
+												inciTitle.classList.add('pdp-main_product__more_result__incis__item__title');
+												inciTitle.innerText = `${i.name
+													}`;
+												let inciDesc = document.createElement('p');
+												inciDesc.innerText = `${i.description
+													}`;
+												inciContainer.appendChild(inciImage);
+												inciDetailContainer.appendChild(inciTitle);
+												inciDetailContainer.appendChild(inciDesc);
+												inciContainer.appendChild(inciDetailContainer);
+												inciTabContent.appendChild(inciContainer);
+											}
+										}
+									}
+								}
+							});
+						}
+
+						popSlide.classList.remove('hidden');
+						popSlide.classList.remove('slide_down');
+						popSlide.classList.add('slide_up');
+						inciTab.innerText = popupHeroinciHeaderText;
+						inciTab.style.fontSize = ".8rem";
+						document.querySelector(`#ApplicationTab`).classList.remove('hidden');
+						document.querySelector(`#InciTab`).classList.remove('hidden');
+
+						if (el.getAttribute('data-result-for') === 'standardproduct') {
+							let parentItem = el.closest('.pdp-recommendations_container');
+							let parentProductGridItem = el.closest('.pdp-product__grid__item');
+							let recommendationItem = parentItem.querySelector(`#Recommendation__${parentProductGridItem.getAttribute('data-product-id')}`)
+							if (recommendationItem) {
+								let metafields = recommendationItem.querySelector('.pdp-recommendation__metafields');
+								if (metafields) {
+									let metaObject = metafields.querySelectorAll('.pdp-recommendation__incis');
+									if (metaObject) {
+										metaObject.forEach((mo) => {
+											let metaName = mo.querySelector('.metaobjectName');
+											let metaImg = mo.querySelector('.metaobjectImg');
+											let metaDesc = mo.querySelector('.metaobjectDesc');
+											if (inciTabContent) {
+												let inciContainer = document.createElement('div');
+												inciContainer.classList.add('pdp-main_more_result__incis__item');
+												let inciImage = document.createElement('img');
+												inciImage.width = "70";
+												inciImage.height = "70";
+												inciImage.src = `${metaImg.innerText}?w=50`;
+												inciImage.alt = `${metaName.innerText}`;
+												let inciDetailContainer = document.createElement('div');
+												inciDetailContainer.classList.add('pdp-main_product__more_result__incis__details');
+												let inciTitle = document.createElement('h6');
+												inciTitle.classList.add('pdp-main_product__more_result__incis__item__title');
+												inciTitle.innerText = `${metaName.innerText}`;
+												let inciDesc = document.createElement('p');
+												inciDesc.innerText = `${metaDesc.innerText}`;
+												inciContainer.appendChild(inciImage);
+												inciDetailContainer.appendChild(inciTitle);
+												inciDetailContainer.appendChild(inciDesc);
+												inciContainer.appendChild(inciDetailContainer);
+												inciTabContent.appendChild(inciContainer);
+											}
+										});
+									}
+									let standardApplication = metafields.querySelector('.pdp-recommendation__application');
+									if (standardApplication) {
+										document.querySelector(`#ApplicationTabContent`).innerText = standardApplication.innerText;
+									}
+									let standardIngredients = metafields.querySelector('.pdp-recommendation__ingredients');
+									if (standardIngredients) {
+										document.querySelector(`#InciTabContent`).innerText = standardIngredients.innerText;
+									}
+								}
+							}
+						}
+
+						if (el.getAttribute('data-result-for') === 'daycream') {
+							document.querySelector(`#InciTabContent`).innerText = inciData.ingredientsText.day;
+							document.querySelector(`#ApplicationTabContent`).innerHTML = {{ section.settings.day_cream_application | json }};
+						} else if (el.getAttribute('data-result-for') === 'nightcream') {
+							document.querySelector(`#InciTabContent`).innerText = inciData.ingredientsText.night;
+							document.querySelector(`#ApplicationTabContent`).innerHTML = {{ section.settings.night_cream_application | json }};
+						}
+					}
+				});
+			});
+	  }
+	}
+
+
+
+	async function handleMoreResultTabClickEvent() {
+		let tabs = document.querySelectorAll('.pdp-more_result__tab__links');
+		let tabContents = document.querySelectorAll('.pdp-more_result__tabcontent');
+		if (tabs) {
+			tabs.forEach((tab) => {
+				tab.addEventListener('click', (e) => {
+					tabs.forEach((tab) => {
+						tab.classList.remove('selected');
+					});
+					tab.classList.add('selected');
+
+
+					tabContents.forEach((tabContent) => {
+						tabContent.classList.add('hidden');
+					});
+					document.querySelector(`#${tab.getAttribute('id')
+						}Content`).classList.remove('hidden');
+				});
+			});
+	  }
+	}
+
+
+	async function handleMoreResultCloseClickEvent() {
+		let closeBtn = document.querySelector('.pdp-more_result__x');
+		let tabs = document.querySelectorAll('.pdp-more_result__tab__links');
+		let tabContents = document.querySelectorAll('.pdp-more_result__tabcontent');
+		if (closeBtn) {
+			closeBtn.addEventListener('click', () => {
+				popSlide.classList.remove('slide_up');
+				popSlide.classList.add('slide_down');
+				document.querySelector(`#HeroInciTabContent`).innerText = "";
+				document.querySelector(`#ApplicationTabContent`).innerText = "";
+				document.querySelector(`#InciTabContent`).innerText = "";
+
+				// default selected tab and tabContent to HeroInci
+				if (tabs) {
+					tabs.forEach((tab) => {
+						if (tab.getAttribute('id') === "HeroInciTab") {
+							tab.classList.add('selected');
+						} else {
+							tab.classList.remove('selected');
+						}
+					});
+				}
+				if (tabContents) {
+					tabContents.forEach((tab) => {
+						if (tab.getAttribute('id') === "HeroInciTabContent") {
+							tab.classList.remove('hidden');
+						} else {
+							tab.classList.add('hidden');
+						}
+					});
+				}
+			});
+	  }
+	}
+
+
+
+	async function translateCustomerInfo() {
+		let matchIdEl = document.querySelector(".pdp-customer_info__matchid .pdp-customer_info__value");
+        let parentMatchIdEl = matchIdEl.closest(".pdp-customer_info__matchid");
+		let skinTypeEl = document.querySelector(".pdp-customer_info__skintype .pdp-customer_info__value");
+		let skinGoalsEl = document.querySelector(".pdp-customer_info__skingoals .pdp-customer_info__value");
+		if (siteLocale) {
+			if (quizData && quizData.quizData) {
+				if (quizData.quizData.skinType) {
+					skinTypeEl.innerText = skinTypeTranslation[quizData.quizData.skinType][siteLocale];
+				}
+				if (quizData.quizData.skinGoals && quizData.quizData.skinGoals.length > 0) {
+					let translatedSkinGoals = [];
+					await Promise.all(quizData.quizData.skinGoals.map((sg) => {
+						translatedSkinGoals.push(skinGoalsTranslation[sg][siteLocale]);
+					}));
+					skinGoalsEl.innerText = translatedSkinGoals.join(", ");
+				}
+                if (quizData.short_skin_id) {
+                  parentMatchIdEl.classList.remove("hidden");
+                  matchIdEl.innerText = quizData.short_skin_id;
+                } else {
+                  parentMatchIdEl.classList.add("hidden");
+                }
+			}
+		}
+	}
+
+
+	async function loadPersonalizedCreamInciDataSummary(inciData) {
+		let inciListDay = document.querySelector(".pdp-product__incis__personalized__day");
+	let inciListNight = document.querySelector(".pdp-product__incis__personalized__night");
+			if (inciData && inciData.ingredients && inciData.ingredients.length > 0) {
+		await Promise.all(inciData.ingredients.map((inci) => {
+			if (inci.ofCream.includes('day')) {
+				inciListDay.insertAdjacentHTML('beforeend', `
+							<div class="pdp-product__incis__item">
+								<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
+								<p class="pdp-product__inci__title">${inci.name}</p>
+							</div>
+						`);
+			}
+			if (inci.ofCream.includes('night')) {
+				inciListNight.insertAdjacentHTML('beforeend', `
+							<div class="pdp-product__incis__item">
+								<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
+								<p class="pdp-product__inci__title">${inci.name}</p>
+							</div>
+						`);
+			}
+		}));
+			}
+		}
+
+
+
+	async function loadPersonalizedProducts() {
+		console.log(standardProducts)
+			let dayLabel = ""
+	let nightLabel = "";
+	let description = "";
+
+	if (personalizedProduct) {
+		let targetParent = document.querySelector('.pdp-personalized_container');
+	let labelName = {
+		day: '',
+	night: ''
+				}
+	let creams = { };
+	let variants = {
+		day: {
+		"30ml": null,
+	"50ml": null,
+					},
+	night: {
+		"30ml": null,
+	"50ml": null,
+					},
+				}
+
+	if (quizData) {
+					if (quizData.cream && quizData.cream.day) {
+		creams['day'] = quizData.cream.day.id;
+	labelName['day'] = quizData.cream.day.name ?? '';
+					}
+	if (quizData.cream && quizData.cream.night) {
+		creams['night'] = quizData.cream.night.id;
+	labelName['night'] = quizData.cream.night.name ?? '';
+					}
+				}
+	
+				await Promise.all(Object.keys(creams).map((cream) => {
+		let found = "";
+	if (cream.includes('day')) {
+		description = dayCreamDescription;
+					} else if (cream.includes('night')) {
+		description = nightCreamDescription;
+					}
+					personalizedProduct.variants.map(async (variant) => {
+						if (variant.sku.includes(cream) && variant.sku.includes(creams[cream])) {
+							if (cream.includes('day')) {
+								if (variant.sku.includes('day30')) {
+		variants['day']['30ml'] = variant;
+		let _dayCreamInActualCart = await personalizedCreamExistsInActualCart('day');
+		console.log("PC SPlan", personalizedProduct.selling_plan_groups)
+		if (!_dayCreamInActualCart) {
+			cartItems.push({
+				id: variant.id,
+			quantity: 1,
+			properties: personalizedCreamCartProperties['day'],
+			price: variant.price,
+			//selling_plan: personalizedProduct.selling_plan_groups[0].selling_plans[0].id
+											});
+		}
+	console.log(cartItems)
+								} else if (variant.sku.includes('day50')) {
+		variants['day']['50ml'] = variant;
+								}
+							} else if (cream.includes('night')) {
+								if (variant.sku.includes('night30')) {
+									variants['night']['30ml'] = variant;
+		let _nightCreamInActualCart = await personalizedCreamExistsInActualCart('night');
+		if (!_nightCreamInActualCart) {
+			cartItems.push({
+				id: variant.id,
+				quantity: 1,
+				properties: personalizedCreamCartProperties['night'],
+				price: variant.price,
+			//selling_plan: personalizedProduct.selling_plan_groups[0].selling_plans[0].id
+			});
+		}
+	console.log(cartItems)
+								} else if (variant.sku.includes('night50')) {
+		variants['night']['50ml'] = variant;
+								}
+							}
+						}
+					});
+	productCount += 1;
+	pdpProductCount.innerText = `${productCount} ${productCountText}`;
+				}));
+
+				Object.keys(variants).map((cream) => {
+		let inciSection = '';
+	inciSection = `
+	<div class="pdp-product__incis pdp-product__incis__personalized__${cream.includes('day') ? 'day' : 'night'}"></div>
+	`;
+	if (inciData && inciData.ingredients && inciData.ingredients.length) {
+		inciData.ingredients.map((inci) => {
+			if (inci.ofCream.includes(cream)) {
+				inciItems += `
+									<div class="pdp-product__incis__item">
+										<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
+										<p class="pdp-product__inci__title">${inci.name}</p>
+									</div>
+								`;
+			}
+		});
+	inciSection = `
+	<div class="pdp-product__incis">
+		${inciItems}
+	</div>
+	`;
+					}
+	targetParent.insertAdjacentHTML('beforeend', `
+	<div class="pdp-product_group__container">
+		<div class="pdp-product_group__container__header">
+			<h2>${cream.includes('day') ? dayCreamHeaderText : nightCreamHeaderText}</h2>
+			<div class="pdp-product__header__cream_label">
+				${labelName[cream] && `
+											<img src="${creamLabelImgSrc}" alt="cream_label" class="pdp-product__cream_label__image" />
+											<span>${labelName[cream]}</span>
+										`}
+			</div>
+		</div>
+
+		<div class="pdp-product__grid">
+			<div class="pdp-product__grid__item">
+				<div class="pdp-product__info">
+					<div class="pdp-product__media">
+						<img
+							src="${personalizedProduct.featured_image}&width=150"
+							alt="${personalizedProduct.title}"
+							width="150"
+						/>
+					</div>
+					<div class="pdp-product__details">
+						<div class="pdp-product__price">
+                            <h3 style="color:#fb5250;" class="${window.location.pathname.includes('/ar-') ? 'ar-price-text-reduced' : ''}">${theme.formatMoney(variants[cream]['30ml'].price, theme.money_format)}</h3>
+							<h2 class="struck-out-price ${window.location.pathname.includes('/ar-') && 'ar-price-text-reduced'}">${theme.formatMoney(variants[cream]['50ml'].price, theme.money_format)}</h2>
+							<span>50ml</span>
+						</div>
+						<div class="pdp-product__review">
+							<div class="pdp-product__review_badge">
+								${personalizedProductJudgemeBadge}
+							</div>
+							<span class="pdp-product__review_rating">
+								${parseFloat(personalizedProductRating).toFixed(1)}/5.0
+							</span>
+						</div>
+						<div class="pdp-product__form">
+							<div class="pdp-product__form__variants">
+								<div
+									class="pdp-product__variant_option variant_option_personalized selected"
+									data-variant-id="${variants[cream]['30ml'].id}"
+									data-variant-price="${variants[cream]['30ml'].price}"
+                                    data-variant-sku="${variants[cream]['30ml'].sku}"
+									data-variant-for="${cream}"
+								>
+									${dispenserButtonText}
+								</div>
+								<div
+									class="pdp-product__variant_option variant_option_personalized"
+									data-variant-id="${variants[cream]['50ml'].id}"
+									data-variant-price="${variants[cream]['50ml'].price}"
+                                    data-variant-sku="${variants[cream]['50ml'].sku}"
+									data-variant-for="${cream}"
+								>
+									${jarButtonText}
+								</div>
+							</div>
+							<div class="pdp-product__quantity">
+								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__dec" data-qty-for="${cream}">-</div>
+								<input class="pdp-product__quantity__selector pdp-product__quantity__selector__input" type="number" value="1" readonly />
+								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc" data-qty-for="${cream}">+</div>
+							</div>
+							<div class="pdp-product__form__qty"></div>
+						</div>
+						<div class="pdp-product__description">
+							<div class="pdp-product__description__short">
+								${description.length > 250 ? `${description.substring(0, 250)}...<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">[${descriptionShowMoreText}]</span>` : description}
+							</div>
+							<div class="pdp-product__description__long hidden">
+								${description}...<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
+							</div>
+						</div>
+						<div class="pdp-product__more_result pdp-product__more_result__cream" data-result-for="${cream.includes('day') ? 'day' : 'night'}cream">
+							<h5>${cream.includes('day') ? moreDayCreamButtonText : moreNightCreamButtonText}</h5>
+						</div>
+					</div>
+				</div>
+				${inciSection}
+			</div>
+		</div>
+	</div>
+	`
+	);
+				});
+			}
+		}
+
+
+
+	async function loadStandardProducts() {
+		let standarProductsSteps = [
+	{
+		id: "cleanser",
+	step: 1,
+	exps: [
+	"@C",
+	],
+	title: 'CLEANSER',
+	headerText: step1HeaderText,
+				},
+	{
+		id: "toner",
+	step: 2,
+	exps: [
+	"@T",
+	],
+	title: 'TONER',
+	headerText: step2HeaderText,
+				},
+	{
+		id: "serum",
+	step: 3,
+	exps: [
+	"@S",
+	"@O",
+	],
+	title: 'SERUM',
+	headerText: step3HeaderText,
+				},
+	{
+		id: "eyecream",
+	step: 4,
+	exps: [
+	"@E",
+	],
+	title: 'EYE CREAM',
+	headerText: step4HeaderText,
+				},
+	];
+			if (quizData && quizData.recommendation && quizData.recommendation.length > 0) {
+				if (standardProducts && standardProducts.length > 0) {
+		let targetParent = document.querySelector(".pdp-recommendations_container");
+	let recommendationEls = targetParent.querySelectorAll(".pdp-recommendation");
+	let parsedRecommendations = [];
+					await Promise.all(quizData.recommendation.map(async (r) => {
+		parsedRecommendations.push(`${r}`.replaceAll(".", "@"));
+					}));
+					standarProductsSteps.map(async (step) => {
+		await targetParent.insertAdjacentHTML('beforeend', `
+							<div class="pdp-product_group__container exp__${step.id}">
+								<div class="pdp-product_group__container__header">
+									<h2>${step.headerText}</h2>
+								</div>
+								<div class="pdp-product__grid product__grid__compressed">
+								</div>
+							</div>
+						`);
+	let productGroupContainer = targetParent.querySelector(`.pdp-product_group__container.exp__${step.id}`);
+						parsedRecommendations.map((pR) => {
+							if (recommendationEls) {
+		recommendationEls.forEach((el) => {
+			let inciSection = '';
+			let inciItems = '';
+			let featureItems = '';
+			let inciMetafields = el.querySelectorAll('.pdp-recommendation__metafields .pdp-recommendation__incis');
+			let featureMetafields = el.querySelectorAll('.pdp-recommendation__metafields .pdp-recommendation__features');
+			if (inciMetafields) {
+				inciMetafields.forEach((iM) => {
+					inciItems += `
+												<div class="pdp-product__incis__item">
+													<img width="50" height="50" src="${iM.querySelector('.metaobjectImg').innerText}?w=50" alt="${iM.querySelector('.metaobjectName').innerText}" />
+													<p class="pdp-product__inci__title">${iM.querySelector('.metaobjectName').innerText}</p>
+												</div>
+											`;
+				});
+			}
+			if (featureMetafields) {
+				featureMetafields.forEach((fM) => {
+					console.log("FFFFFFFFFFFFF", fM.innerText)
+					featureItems += `
+												<span class="pdp-main-tag">${fM.innerText}</span>
+											`;
+				});
+			}
+			let expParents = el.querySelectorAll(".pdp-recommendation__exps");
+			if (expParents) {
+				expParents.forEach((expP) => {
+					let exps = expP.querySelectorAll(".pdp-recommendation__exp");
+					if (exps) {
+						let processedExps = [];
+						exps.forEach((exp) => {
+							if (!processedExps.includes(exp.innerText)) {
+								if (step.exps) {
+									step.exps.map((sExp) => {
+										if (exp.innerText === pR && pR.includes(sExp)) {
+											productCount += 1;
+											pdpProductCount.innerText = `${productCount}  ${productCountText}`;
+											cartItems.push({
+												id: Number(exp.getAttribute("data-id")),
+												quantity: 1,
+											});
+											let productGrid = productGroupContainer.querySelector(".pdp-product__grid");
+											if (productGrid) {
+												let recommendationCommons = el.querySelector(".pdp-recommendation__commons");
+												productGrid.insertAdjacentHTML('beforeend', `
+																			<div class="pdp-product__grid__item" data-product-id="${el.getAttribute('data-product-id')}">
+
+																				<div class="pdp-main_product__tags">
+																					${featureItems}
+																				</div><br/>
+
+																				<div class="pdp-product__info">
+																					<div class="pdp-product__media">
+																						<img
+																							src="${recommendationCommons.querySelector(".pdp-recommendation__featured_image").innerText}"
+																							alt="${recommendationCommons.querySelector(".pdp-recommendation__featured_image").innerText}"
+																							width="150"
+																						/>
+																					</div>
+																					<div class="pdp-product__details">
+																						<div class="pdp-product__title">
+																							${recommendationCommons.querySelector(".pdp-recommendation__title").innerHTML}
+																						</div>
+																						<div class="pdp-product__review">
+																							<div class="pdp-product__review_badge">
+																								${recommendationCommons.querySelector(".pdp-recommendation__review_badge").innerHTML}
+																							</div>
+																							<div class="pdp-product__review_rating">
+																								${recommendationCommons.querySelector(".pdp-recommendation__review_rating").innerText}
+																							</div>
+																						</div>
+																						<div class="pdp-product__description">
+																							<div class="pdp-product__description__short hidden">
+																								${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.substring(0, 250)}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.length > 250 ? `...[${descriptionShowMoreText}]` : ""}</span>
+																							</div>
+																							<div class="pdp-product__description__long hidden">
+																								${recommendationCommons.querySelector(".pdp-recommendation__description").innerText}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
+																							</div>
+																							<div class="pdp-product__description__short">
+																								${recommendationCommons.querySelector(".pdp-recommendation__short_description").innerText}
+																							</div>
+																						</div>
+																						<div class="pdp-product__more_result pdp-product__more_result__standard" data-result-for="standardproduct">
+																							<h5>${moreStandardProductButtonText}</h5>
+																						</div>
+																						<div class="pdp-product__form"> 
+																							<div class="pdp-product__form__variants hidden">
+																								<div
+																									class="pdp-product__variant_option selected"
+																									data-variant-id="${exp.getAttribute("data-id")}"
+																									data-variant-price="${exp.getAttribute("data-prc")}"
+																								>
+																									${exp.getAttribute("data-title")}
+																								</div>
+																							</div>
+																							<div class="pdp-product__quantity">
+																								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__dec">-</div>
+																								<input class="pdp-product__quantity__selector pdp-product__quantity__selector__input" type="number" value="1" readonly />
+																								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc">+</div>
+																							</div>
+																							<div class="pdp-product__form__qty"></div>
+    																						<div class="pdp-product__price">
+    																							<h3>${theme.formatMoney(exp.getAttribute("data-prc"), theme.money_format)}</h3>
+    																							<span hidden>${recommendationCommons.querySelector(".pdp-recommendation__product_size").innerText}</span>
+    																						</div>
+																						</div>
+																						<div class="pdp-product__incis product__incis__desktop">
+																							${inciItems}
+																						</div>
+																					</div>
+																				</div>
+																				<div class="pdp-product__incis product__incis__mobile">
+																					${inciItems}
+																				</div>
+																			</div>
+																		`);
+											}
+										}
+									});
+								}
+								processedExps.push(exp.innerText);
+							}
+						});
+					}
+				});
+			}
+		});
+							}
+						});
+					});
+				}
+			}
+		}
+
+
+
+
+	async function loadGoBeyondProducts() {
+		let targetParent = document.querySelector(".pdp-recommendations_container.pdp-gobeyond");
+	let recommendationEls = targetParent.querySelectorAll(".pdp-recommendation");
+	await targetParent.insertAdjacentHTML('beforeend', `
+	<div class="pdp-product_group__container">
+		<div class="pdp-product_group__container__header">
+			<h2>${goBeyondHeaderText}</h2>
+		</div>
+		<div class="pdp-product__grid product__grid__compressed">
+		</div>
+	</div>
+	`);
+	let productGroupContainer = targetParent.querySelector(`.pdp-product_group__container`);
+	if (recommendationEls) {
+		recommendationEls.forEach((el) => {
+			let inciSection = '';
+			let inciItems = '';
+			let inciMetafields = el.querySelectorAll('.pdp-recommendation__metafields .pdp-recommendation__incis');
+			if (inciMetafields) {
+				inciMetafields.forEach((iM) => {
+					inciItems += `
+								<div class="pdp-product__incis__item">
+									<img width="50" height="50" src="${iM.querySelector('.metaobjectImg').innerText}?w=50" alt="${iM.querySelector('.metaobjectName').innerText}" />
+									<p class="pdp-product__inci__title">${iM.querySelector('.metaobjectName').innerText}</p>
+								</div>
+							`;
+				});
+			}
+			let expParents = el.querySelectorAll(".pdp-recommendation__exps");
+			if (expParents) {
+				expParents.forEach((expP) => {
+					let exps = expP.querySelectorAll(".pdp-recommendation__exp");
+					if (exps) {
+						let processedExps = [];
+						exps.forEach((exp, idx) => {
+							cartItems.push({
+								id: Number(exp.getAttribute("data-id")),
+								quantity: 0,
+							});
+							if (!processedExps.includes(exp.innerText)) {
+								let productGrid = productGroupContainer.querySelector(".pdp-product__grid");
+								if (productGrid) {
+									let recommendationCommons = el.querySelector(".pdp-recommendation__commons");
+									productGrid.insertAdjacentHTML('beforeend', `
+												<div class="pdp-product__grid__item" data-product-id="${el.getAttribute('data-product-id')}">
+													<div class="pdp-product__info">
+														<div class="pdp-product__media">
+															<img
+																src="${recommendationCommons.querySelector(".pdp-recommendation__featured_image").innerText}"
+																alt="${recommendationCommons.querySelector(".pdp-recommendation__featured_image").innerText}"
+																width="150"
+															/>
+														</div>
+														<div class="pdp-product__details">
+															<div class="pdp-product__title">
+																${recommendationCommons.querySelector(".pdp-recommendation__title").innerHTML}
+															</div>
+															<div class="pdp-product__review">
+																<div class="pdp-product__review_badge">
+																	${recommendationCommons.querySelector(".pdp-recommendation__review_badge").innerHTML}
+																</div>
+																<div class="pdp-product__review_rating">
+																	${recommendationCommons.querySelector(".pdp-recommendation__review_rating").innerText}
+																</div>
+															</div>
+															<div class="pdp-product__description">
+																<div class="pdp-product__description__short hidden">
+																	${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.substring(0, 250)}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.length > 250 ? `...[${descriptionShowMoreText}]` : ""}</span>
+																</div>
+																<div class="pdp-product__description__long hidden">
+																	${recommendationCommons.querySelector(".pdp-recommendation__description").innerText}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
+																</div>
+                                                                <div class="pdp-product__description__short">
+                                                                    ${recommendationCommons.querySelector(".pdp-recommendation__short_description").innerText}
+                                                                </div>
+															</div>
+															<div class="pdp-product__more_result pdp-product__more_result__standard" data-result-for="standardproduct">
+																<h5>${moreStandardProductButtonText}</h5>
+															</div>
+															<div class="pdp-product__form">
+																<div class="pdp-product__form__variants hidden">
+																	<div
+																		class="pdp-product__variant_option selected"
+																		data-variant-id="${exp.getAttribute("data-id")}"
+																		data-variant-price="${exp.getAttribute("data-prc")}"
+																	>
+																		${exp.getAttribute("data-title")}
+																	</div>
+																</div>
+																<div class="pdp-product__quantity">
+																	<div class="pdp-product__quantity__selector pdp-product__quantity__selector__dec">-</div>
+																	<input class="pdp-product__quantity__selector pdp-product__quantity__selector__input" type="number" value="0" readonly />
+																	<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc">+</div>
+																</div>
+																<div class="pdp-product__form__qty"></div>
+    															<div class="pdp-product__price">
+    																<h3>${theme.formatMoney(exp.getAttribute("data-prc"), theme.money_format)}</h3>
+    																<span></span>
+    															</div>
+															</div>
+															<div class="pdp-product__incis product__incis__desktop">
+																${inciItems}
+															</div>
+														</div>
+													</div>
+													<div class="pdp-product__incis product__incis__mobile">
+														${inciItems}
+													</div>
+												</div>
+											`);
+								}
+								processedExps.push(exp.innerText);
+							}
+						});
+					}
+				});
+			}
+		});
+			}
+		}
+
+
+
+
+	async function toggleCheckout() {
+		let btn = document.querySelector(".pdp-cta__checkout_btn");
+	btn.innerHTML = await `
+	<div style="display:inline-flex;gap:10px;align-items:center;">
+		<?xml version="1.0" encoding="utf-8"?>
+		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto; width:20px; height:20px;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+			<circle cx="50" cy="50" fill="none" stroke="#fff" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+				<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+			</circle>
+		</svg>
+		<span>CHECKING OUT</span>
+	</div>
+	`;
+	  //let formData = {
+		//  items: cartItems
+		//}
+		//console.log(formData)
+		//await updateProductQtyInputFromActualCart();
+		let cart = await getCart();
+	const {matchingItems, nonMatchingItems} = cartItems.reduce((r, ci) =>  {
+				const matchingItm = cart.items.find((c) => {
+					if (c.id === ci.id) {
+						if (c.quantity === ci.quantity) {
+		c["cartResolve"] = "ignore";
+						} else if (ci.quantity > c.quantity || ci.quantity < c.quantity) {
+		c["cartResolve"] = "update";
+	c.quantity = ci.quantity
+						} else {
+		c["cartResolve"] = "add";
+						}
+	return c;
+					}
+	return undefined;
+				});
+	if (matchingItm && matchingItm.cartResolve === "update") {
+		r.matchingItems.push(ci)
+	} else if (!matchingItm || (matchingItm && matchingItm.cartResolve === "add")) {
+		r.nonMatchingItems.push(ci)
+	}
+	return r
+			}, {matchingItems: [], nonMatchingItems: [] })
+	console.log("matching", matchingItems)
+	console.log("non matching", nonMatchingItems)
+	if (matchingItems) {
+		let formData = { }
+	let updates = { }
+				await Promise.all(matchingItems.map((d) => {
+		updates[d.id] = d.quantity
+	}))
+	formData = {
+		updates,
+				}
+	await fetch('/cart/update.js', {
+		method: 'POST',
+	headers: {
+		'Content-Type': 'application/json'
+					},
+	body: JSON.stringify(formData)
+				})
+			}
+	if (nonMatchingItems) {
+		let formData = {
+		items: nonMatchingItems
+				}
+				//fetch('/cart/add.js', {
+		//	method: 'POST',
+		//	headers: {
+		//		'Content-Type': 'application/json'
+		//	},
+		//	body: JSON.stringify(formData)
+		//}).then(response => response.json()).then(async (data) => {
+		//await theme.updateCartSummaries(true, true, true);
+		//window.location.href = "{{ routes.cart_url | string }}"
+		//window.location.href = "/checkout"
+		//});
+		await fetch('/cart/add.js', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(formData)
+		})
+	}
+	window.location.href = "/checkout"
+	}
+
+		document.querySelector(".pdp-cta__checkout_btn").addEventListener("click", () => {
+		toggleCheckout();
+		});
+
+	// CALLS
+	// *
+	// *
+	// *
+
+	window.onscroll = function() {
+			var stickyCheckoutContainer = document.querySelector('.pdp-cta__sticky');
+	if (stickyCheckoutContainer) {
+				if (window.scrollY >= 100) {
+		stickyCheckoutContainer.classList.remove('hidden');
+				} else {
+		stickyCheckoutContainer.classList.add('hidden');
+				}
+			}
+		}
+
+	//togglePageLoadingIndicator();
+	await toggleSubscriptionOption();
+	toggleSubscriptionSelect();
+	quizData = await loadQuizData();
+	await presetPersonalizedCreamProperties(quizData);
+	//togglePageLoadingIndicator();
+
+	let inciDataCalled = false;
+	var stickyCheckoutContainer = document.querySelector('.pdp-cta__sticky');
+	window.onscroll = async function() {
+			if (window.scrollY >= 50 && !inciData && !inciDataCalled) {
+		inciDataCalled = true;
+	inciData = await loadInciData({
+		creamId: {
+		day: quizData.cream.day.id,
+	night: quizData.cream.night.id
+					},
+	locale: siteLocale,
+	creamVersion: 21
+				});
+	await loadPersonalizedCreamInciDataSummary(inciData);
+			}
+
+	if (stickyCheckoutContainer) {
+				if (window.scrollY >= 100) {
+		stickyCheckoutContainer.classList.remove('hidden');
+				} else {
+		stickyCheckoutContainer.classList.add('hidden');
+				}
+			}
+		}
+
+	translateCustomerInfo();
+	actualCart = await getCart();
+	await loadPersonalizedProducts();
+    await jsonifyLifestyleMetaobject();
+	await loadStandardProducts();
+	await loadGoBeyondProducts();
+	await updateProductQtyInputFromActualCart();
+	await handleStickyCheckoutUpsellText('inc');
+	handleClickVariantOption();
+	handleClickQtySelector();
+	toggleDescriptionShow();
+	handleMoreResultBtnClickEvent();
+	handleMoreResultCloseClickEvent();
+	handleMoreResultTabClickEvent();
+  });
+</script>

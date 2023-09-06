@@ -1,0 +1,306 @@
+{%- capture url -%}{% if collection %}{{ product.url | within: collection }}{% else %}{{ product.url }}{% endif %}{%- endcapture -%}
+
+{%- liquid
+  unless max_cols
+    assign max_cols = section.settings.products_per_row | default: 4
+  endunless
+
+  unless min_cols
+    assign min_cols = section.settings.mobile_products_per_row | default: 2
+  endunless
+
+  if settings.prod_thumb_shape == 'natural'
+    assign aspect_ratio = false
+  else
+    assign aspect_ratio = settings.prod_thumb_shape | times: 1.0
+  endif
+
+  if settings.prod_quick_buy_show and settings.prod_quick_buy_type == 'in-page'
+    assign show_quickbuy = true
+  else
+    assign show_quickbuy = false
+  endif
+
+  unless show_vendor
+    assign show_vendor = section.settings.grid_show_vendor
+  endunless
+
+  assign primary_image = product.featured_media.preview_image
+  assign secondary_image = product.media[1].preview_image
+
+  assign cheapest_variant = product.variants | sort: 'price' | first
+  if cheapest_variant.metafields.secomapp.freegifts 
+    assign cheapest_variant = product.variants[0] 
+  endif
+
+  assign current_variant = product.selected_or_first_available_variant
+  if current_variant.metafields.secomapp.freegifts 
+    assign current_variant = product.variants[0] 
+  endif
+
+-%}
+
+<div class="product-block pdp-{{ current_variant.sku |replace: ".", "-" }}  checkRecomm
+    layout-align-{{ settings.prod_block_layout }}
+    {% if settings.label_soldout_show and product.available == false %}sold-out {% endif %}{{ product-block | default: 'flex column' }}
+    max-cols-{{ max_cols }}
+    min-cols-{{ min_cols }}
+    product-block--gutter-{{ settings.prod_thumb_gutter }}
+    product-block--gap-{{ settings.prod_thumb_gap }}
+    product-block--border-{{ settings.prod_thumb_show_border }}
+    {% if is_last %}product-block--last{% endif %}
+    {% unless settings.prod_quick_buy_show and settings.prod_quick_buy_type == 'in-page' %}
+      product-block--no-quickbuy
+   {% endunless %}
+   {% if show_quickbuy and product.variants.size > 1 and product.available == true %}product-block--with-quickbuy{% endif %}
+  "
+  id="{{ section.id }}_{{ product.id }}"
+  style="flex-grow: unset;">
+  <div class="product-block__inner">
+     {% if product.tags contains "label-limited" %}
+      <div class="label-new"><div class="inner-div">Limited</div></div>
+   {% endif%}
+   {% if product.tags contains "badge-prod" %}
+      <div class="label-new"><div class="inner-div">Limited Edition</div></div>
+   {% endif%}
+    <div class="image image--shape-{{ settings.prod_thumb_shape }} {% if settings.product_grid_hover_image and product.media.size > 1 %}image--with-secondary{% endif %}">
+      <div class="inner">
+        <a href="{% if unclickable_grid_item %}#{% else %}{{ url }}{% endif %}" aria-label="{{ product.title | escape }}">
+          <div class="image__primary">
+            {% render 'responsive-image', image: primary_image, aspect_ratio: aspect_ratio %}
+          </div>
+          {% if settings.product_grid_hover_image and product.media.size > 1 %}
+            {% assign img_url = secondary_image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+            <div class="image__secondary">
+              <div class="rimage-outer-wrapper rimage-background" data-lazy-bg="{{ img_url }}" data-parent-fit="{% if settings.prod_quick_buy_type == "hover" and settings.prod_quick_buy_pos == "bottomcorner" %}cover{% else %}contain{% endif %}">
+                <noscript>
+                  <div class="rimage-wrapper" style="padding-top:{{ 1 | divided_by: secondary_image.aspect_ratio | times: 100 }}%">
+                    <img src="{{ secondary_image | img_url: '1024x1024' }}" alt="{{ secondary_image.alt | escape }}" class="rimage__image">
+                  </div>
+                </noscript>
+              </div>
+            </div>
+          {% endif %}
+        </a>
+
+        {% if settings.prod_quick_buy_show and settings.prod_quick_buy_type == 'hover' %}
+            <a class="quick-buy round-button pos-{{ settings.prod_quick_buy_pos }}" href="{{ url }}" data-product-id="{{ product.id }}">
+              <span aria-label="{{ 'products.quick_buy.launch' | t | escape }}">
+                {% render 'svg-search' %}
+              </span>
+            </a>
+
+          {% render 'quick-buy-placeholder', product: product %}
+        {% endif %}
+      </div>
+      {% render 'product-label', product: product, cheapest_variant: cheapest_variant %}
+    </div>
+
+    {%- if settings.product_grid_show_weight -%}
+      <div class="product-block__weight">
+        <div class="product-block__weight-value">
+          {%- if product.variants.first.weight > 0 -%}
+            {%- assign a_weight = product.variants.first.weight -%}
+            {%- for variant in product.variants -%}
+              {% unless variant.metafields.secomapp.freegifts %}
+              {% unless variant.title contains '% off)' %}
+              
+              {%- if variant.weight != a_weight -%}
+                {%- assign a_weight = false -%}
+              {%- endif -%}
+  
+              {% endunless %}
+              {% endunless %}
+            {%- endfor -%}
+            {%- if a_weight -%}
+              {{ product.variants.first.weight | weight_with_unit: product.variants.first.weight_unit }}
+            {%- endif -%}
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div class="product-block__title-price">
+      <a class="title" href="{% if unclickable_grid_item %}#{% else %}{{ url }}{% endif %}">
+        {% if show_vendor %}
+          <div class="vendor">{{ product.vendor }}</div>
+        {% endif %}
+        {{ product.title }}
+      </a>
+      {% unless clean_details %}
+      {% unless without_stars %}
+      {% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge', jm_style: '', concierge_install: true, product: product %}
+      {% endunless %}
+      <span style="word-break: break-word;"> {{ product.metafields.my_fields.product_short_description }}</span>
+      {% if settings.prod_block_layout != "beside" %}
+      <div class="themed-product-reviews">
+        <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+      </div>
+      {% endif %}
+      {% endunless %}
+    </div>
+    
+    <div class="price {% if cheapest_variant.compare_at_price > cheapest_variant.price %}on-sale{% endif %}">
+      {% if sca_price_varies %}
+       <span class="from">{{ 'products.general.from' | t }}</span>
+      {% endif %}
+
+      <span class="{% if discounted_price %}struck-out-price{% else %} amount {% endif %} theme-money">{% render 'price', price: cheapest_variant.price %}</span>
+      {% if discounted_price %}
+        <span class="reduced-price theme-money">{% render 'price', price: discounted_price %}</span>
+      {% endif %}
+
+      {% if cheapest_variant.compare_at_price > cheapest_variant.price %}
+        <del><span class="theme-money">{% render 'price', price: cheapest_variant.compare_at_price %}</span></del>
+      {% endif %}
+
+      {% render 'unit-price', variant: cheapest_variant %}
+    </div>
+    
+    {%- assign current_variant = product.selected_or_first_available_variant -%}
+    {% if current_variant.metafields.secomapp.freegifts %}
+      {% assign current_variant = product.variants[0] %}
+    {% endif %}
+
+  {% unless hide_form %}
+    {% form 'product', product, data-productid: product.id, class: 'product-form', data-ajax-add-to-cart: 'true', data-productid: product.id, novalidate: 'novalidate', data-enable-history-state: 'true', data-open-cart-drawer: 'true' %}
+
+  <input type="hidden" name="id" data-productid="{{ product.id }}" value="{{ current_variant.id }}" />
+  {% if product.type == "Cream" and product.available and product.metafields.custom.product_block_cta %}
+  <div class="product-form__item product-form__item--submit disp_flex" >
+    <a style="display: flex; align-items: center; justify-content: center; width: 92%;" href="{{ product.url | within: collection }}" class=" skin-test btn  btn-white btn-fntstyle btn-white-small-screen  btn-fntstyle-small-screen product-form__cart-submit {% if block.settings.black_btn %}  {% endif %}">
+      Discover now
+    </a>
+  </div>
+  {% else %}
+  <div class="product-form__item product-form__item--submit disp_flex {% if section.settings.enable_payment_button %} product-form__item--payment-button{% endif %}{% if product.has_only_default_variant %} product-form__item--no-variants{% endif %}">
+    <span class="payment-and-quantity__add">
+      <button type="submit" name="add" data-btn-type="add-to-cart"
+              class="btn product-add mini-form alt outline {% if section.settings.enable_payment_button and product.selling_plan_groups == empty %}alt outline{% endif %}">
+        <!--<span class="button-text">{% if product.available %}{{ 'products.grid.add_to_cart' | t }}{% else %}{{ 'products.product.unavailable' | t }}{% endif %}</span>-->
+        <span class="button-text">{% if product.available %}{{ 'products.grid.add_to_cart' | t }}{% else %}{{ 'products.product.unavailable' | t }}{% endif %}</span>
+        <span class="loading-spinner" aria-label="{{ 'products.product.adding_to_cart' | t }}"></span>
+        <span class="added-to-cart-check" aria-label="{{ 'products.product.added_to_cart' | t }}"></span>
+      </button>
+    </span>
+    {% if section.settings.enable_payment_button %}
+    {{ form | payment_button }}
+    {% endif %}
+  </div>
+  {% endif %} 
+  {% endform %}
+  {% endunless %}
+
+  {% if custom_atc == true %}
+    {% if cart.items == empty %}
+      {% assign product_in_cart = false %}
+    {% else %}
+      {% for item in cart.items %}
+        {% assign reqSet = "Mother's Day Set" | escape | json %}
+        {% assign set = item.properties.set | escape | json %}
+        {% if item.product.id == product.id and set == reqSet %}
+          {% assign product_in_cart = true %}
+          {% break %}
+        {% else %}
+          {% assign product_in_cart = false %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+    <div class="product-form__item product-form__item--submit disp_flex {% if section.settings.enable_payment_button %} product-form__item--payment-button{% endif %}{% if product.has_only_default_variant %} product-form__item--no-variants{% endif %}">
+      <span class="payment-and-quantity__add">
+        <button type="submit" name="add" data-btn-type="add-to-cart" data-step="{{ step }}" data-set="{{ set }}" data-collection-id="{{ collection_id }}" data-collection-title="{{ collection_title }}" data-product-id="{{ product.id }}" data-current-variant-id="{{ current_variant.id }}"
+                class="btn custom-atc product-add {% if product_in_cart == false %}alt outline{% endif %} {% if section.settings.enable_payment_button and product.selling_plan_groups == empty %}alt outline{% endif %}">
+          <span class="button-text {% if product_in_cart %}button-text__hidden{% endif %}">{% if product.available %}{{ 'products.grid.add_to_set' | t }}{% else %}{{ 'products.product.unavailable' | t }}{% endif %}</span>
+          <span class="loading-spinner"></span>
+          <span class="added-to-cart" aria-label="{{ 'products.grid.added_to_set' | t }}"></span>
+          <span class="button-text {% if product_in_cart == false %}product-in-set__hidden{% endif %}">{{ 'products.grid.product_in_set' | t }}</span>
+        </button>
+      </span>
+      {% if section.settings.enable_payment_button %}
+      {{ form | payment_button }}
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if settings.prod_block_layout == "beside" %}
+    <div class="themed-product-reviews themed-product-reviews--bottom">
+      <span class="shopify-product-reviews-badge" data-id="{{ product.id }}"></span>
+    </div>
+  {% endif %}
+
+  {% if show_quickbuy %}
+    {% if product.variants.size > 1 %}
+      <div class="product-form">
+        <a class="quick-buy btn {% unless product.available %}disabled{% endunless %}" href="{{ url }}" data-product-id="{{ product.id }}">
+          {% if product.available %}{{ 'products.grid.choose_options' | t }}{% else %}{{ 'products.product.unavailable' | t }}{% endif %}
+        </a>
+        {% render 'quick-buy-placeholder', product: product %}
+      </div>
+    {% else %}
+      {%- assign current_variant = product.selected_or_first_available_variant -%}
+      {%- if settings.cart_type contains 'drawer' -%}
+        {%- assign enable_ajax = true -%}
+      {%- else -%}
+        {%- assign enable_ajax = false -%}
+      {%- endif -%}
+
+      {%- if settings.cart_type == 'drawer-dynamic' -%}
+        {%- assign open_cart_drawer = true -%}
+      {%- else -%}
+        {%- assign open_cart_drawer = false -%}
+      {%- endif -%}
+
+      {% form 'product', product, data-productid: product.id, class: 'product-form product-form--mini', data-ajax-add-to-cart: enable_ajax, data-open-cart-drawer: open_cart_drawer, data-product-id: product.id %}
+        <input type="hidden" name="quantity" value="1" />
+        <input type="hidden" name="id" data-productid="{{ product.id }}" value="{{ current_variant.id }}" />
+        <button type="submit" name="add" class="btn product-add" {% unless product.available %}disabled="disabled"{% endunless %} aria-live="polite">
+          <span class="button-text">{% if product.available %}{{ 'products.grid.add_to_cart' | t }}{% else %}{{ 'products.product.unavailable' | t }}{% endif %}</span>
+          <span class="loading-spinner" aria-label="{{ 'products.product.adding_to_cart' | t }}"></span>
+          <span class="added-to-cart-check" aria-label="{{ 'products.product.added_to_cart' | t }}"></span>
+        </button>
+      {% endform %}
+      <div class="qty-adjuster-container">
+        <div class="qty-adjuster qty-adjuster--ajax" {% if current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny' %}data-limit="{{ current_variant.inventory_quantity }}"{% endif %}>
+          <div class="qty-adjuster__inner">
+            <button class="btn qty-adjuster__down" aria-label="{{ 'cart.label.decrease' | t | escape }}">{% render 'svg-minus' %}</button>
+            <input class="qty-adjuster__value" type="text" pattern="[0-9]*" name="quantity" value="" aria-label="{{ 'cart.label.quantity' | t | escape }}">
+            <button class="btn qty-adjuster__up" aria-label="{{ 'cart.label.increase' | t | escape }}">{% render 'svg-plus' %}</button>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+    {% endif %}
+    {%- liquid
+      assign description_title = 'products.product.description' | t
+    -%}
+    {% if with_details %}
+      {% comment %}
+      <div class="product-detail-accordion" data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}">
+        {% render 'accordion', allow_multi_open: false, add_content_class: 'rte', first_item_open: false, item1_title: description_title, item1_content: product.description %}
+      </div>
+      {% if product.metafields.my_fields.inhaltsstoffe_produkt %}
+      <div class="product-detail-accordion" data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}">
+        {% render 'accordion', allow_multi_open: false, add_content_class: 'rte', first_item_open: false, item1_title: 'Ingredients', item1_content: product.metafields.my_fields.inhaltsstoffe_produkt %}
+      </div>
+      {% endif %}
+      {% endcomment %}
+      {% comment %}
+      <ul class="product-grid__details-list" style="margin:0;padding:0;">
+        <li class="cc-accordion-item__title" style="text-align:left;padding:8px 0 8px 0;font-size:.9rem">DESCRIPTION</li>
+        {% if product.metafields.my_fields.inhaltsstoffe_produkt %}
+          <li class="cc-accordion-item__title" style="text-align:left;padding:8px 0 8px 0;">INGREDIENTS</li>
+        {% endif %}
+      </ul>
+      {% endcomment %}
+      <ul class="product-grid__details-list">
+        <li class="product-detail__lnk lnk-description" data-header="DESCRIPTION" data-content="{{ product.description | escape }}">DESCRIPTION</li>
+        {% if product.metafields.my_fields.inhaltsstoffe_produkt %}
+          <li>|</li>
+          <li class="product-detail__lnk lnk-ingredients" data-header="INGREDIENTS" data-content="{{ product.metafields.my_fields.inhaltsstoffe_produkt }}">INGREDIENTS</li>
+        {% endif %}
+      </ul>
+    {% endif %}
+  </div>
+</div>
+
+{% assign forloop_index = false %}

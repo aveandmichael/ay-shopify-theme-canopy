@@ -1,0 +1,60 @@
+{% comment %}
+  View Cart (Cart Drawer)
+{% endcomment %}
+
+<script>
+
+  window.addEventListener("DOMContentLoaded", (event) => {
+    function addCartDrawerClassNameListener(elemId, callback) {
+        var elem = document.querySelector(elemId);
+        var lastClassName = elem.className;
+        window.setInterval( function() {   
+           var className = elem.className;
+            if (className !== lastClassName) {
+                callback();   
+                lastClassName = className;
+            }
+        },10);
+    }
+
+    window.dataLayer = window.dataLayer || [];
+    window.appStart = function(){
+      window.eventHandle = function(){
+        var cartItems = {{ cart.items | json }};
+        var itemsArr = [];
+  
+        if (cartItems) {
+          cartItems.map((ci) => {
+            itemsArr.push({
+              item_id: ci.product_id,
+              item_name: ci.title,
+              discount: ci.total_discount,
+              item_brand: ci.vendor,
+              item_category: ci.product_type,
+              price: theme.formatMoney(ci.final_price, `${theme.money_format}`.replace(" €", "")),
+            })
+          });
+        }
+        dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+        dataLayer.push({
+          event: "view_cart",
+          ecommerce: {
+            currency: "{{ shop.currency }}",
+            value: {{ cart.total_price | money_without_currency | default: 0 | json }},
+            items: itemsArr
+          }
+        });
+      }
+      
+      addCartDrawerClassNameListener("body", function(){
+        let x = document.querySelector("body.show-cart-summary");
+        if (x) {
+          console.log("view_cart");
+          console.log("dataLayer pushed")
+          eventHandle();
+        }
+      });
+    }
+    appStart();
+  })
+</script>

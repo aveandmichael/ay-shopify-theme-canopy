@@ -1,0 +1,143 @@
+<div class="position-fixed h-100 top-0" style="background: white; margin-left: -100%; z-index: 9999999"" id="account_nav_toggler">
+  <div class="row border-bottom p-3">
+    <div class="col-10"><b style="line-height: 32px;">Hi! {{ customer.name }}</b></div>
+    <div class="col-2">
+      <a href="#" class="d-lg-none d-block text-center" onclick="hideSidebar()"><svg xmlns="http://www.w3.org/2000/svg" class="acc-icons" viewBox="0 0 512 512">><title><ly-as-861629>Close</ly-as-861629></title><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M368 368L144 144M368 144L144 368"/></svg></a>
+    </div>
+  </div>
+  <ul class="nav nav-pills flex-column mb-auto px-3 pb-5" style="min-height: 70vh; height: 100%">
+      <!-- Account Nav Section -->
+      <li class="nav-item px-3 mb-3 mt-5">
+        <b><ly-as-861630>ACCOUNT</ly-as-861630></b>
+      </li>
+      <!-- ------------------- -->
+      <li class="nav-item">
+        <a class="nav-link text-dark nav-details rounded-0 py-0" href="{{ routes.account_url }}"><ly-as-861631>Details</ly-as-861631></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark nav-address rounded-0 py-0" href="{{ routes.account_addresses_url }}"><ly-as-861632>Addresses</ly-as-861632></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark nav-skin rounded-0 py-0" href="#" onclick="openTestResultPopUp();"><ly-as-861633>Skin Test Result</ly-as-861633></a>
+      </li>
+  
+      <!-- Orders Nav Section -->
+      <li class="nav-item px-3 mb-3 mt-5">
+        <b><ly-as-861634>ORDERS</ly-as-861634></b>
+      </li>
+      <!-- ------------------- -->
+      <li class="nav-item">
+        <a class="nav-link text-dark nav-orders rounded-0 py-0" href="/pages/order-history"><ly-as-861635>Order History</ly-as-861635></a>
+      </li>
+  
+      <!-- Orders Nav Section -->
+      <!--<li class="nav-item px-3 mb-3 mt-5">
+        <b><ly-as-861636>CUSTOMER SERVICE</ly-as-861636></b>
+      </li>-->
+      <!-- ------------------- -->
+      <!--<li class="nav-item">
+        <a class="nav-link text-dark nav-questions rounded-0 py-0" href="https://aveandyou.com/en/pages/faq"><ly-as-861637>Questions</ly-as-861637></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark nav-questions rounded-0 py-0" href="#"><ly-as-861638>Ingredients</ly-as-861638></a>
+      </li>-->
+  
+      <!-- Bottom navs -->
+      <li class="nav-item my-4"></li>
+      <!--<li class="nav-item">
+        <a class="nav-link text-dark nav-refer rounded-0 py-0" href="#"><ly-as-861639>Refer a Friend</ly-as-861639></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-dark nav-return rounded-0 py-0" href="#"><ly-as-861640>Return Information</ly-as-861640></a>
+      </li>-->
+      <li class="nav-item">
+        <a class="nav-link text-dark nav-out rounded-0 py-0" href="{{ routes.account_logout_url }}"><ly-as-861641>Sign out</ly-as-861641></a>
+      </li>
+  </ul>
+</div>
+
+<script>
+function showSidebar() {
+  $("#account_nav_toggler").animate({ 'margin-left':'0%'});
+}
+
+function hideSidebar() {
+  $("#account_nav_toggler").animate({ 'margin-left':'-100%'});
+}
+</script>
+<style>
+  .acc-icons {
+    width: 28px;
+    height: 28px;
+  }
+  .toggleSidebar {
+    position: relative;
+    animation: toggleSidebar 1.2s linear infinite;
+  }
+  @keyframes toggleSidebar {
+    0% {left: -3px;}
+    50% {left: 3px;}
+    100% {left: -3px;}
+  }
+</style>
+
+<div class="col-2" id="account_sidebar" style="background: #fff;">
+  <a href="#" class="d-lg-none d-block text-center py-3" onclick="showSidebar()"><svg xmlns="http://www.w3.org/2000/svg" class="toggleSidebar acc-icons" viewBox="0 0 512 512"><title><ly-as-861642>Arrow Forward</ly-as-861642></title><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32" d="M268 112l144 144-144 144M392 256H100"/></svg></a>
+  <ul class="nav nav-pills d-none d-lg-flex flex-column mb-auto px-3 pb-5" style="min-height: 70vh; height: 100%">
+    
+    <!-- Profile & Name -->
+    <li class="nav-item px-3 mt-5">
+      <b>Hi! {{ customer.name }}</b>
+    </li>
+    
+    <!-- Account Nav Section -->
+    <li class="nav-item px-3 mb-3 mt-5">
+      <b><ly-as-861630>ACCOUNT</ly-as-861630></b>
+    </li>
+    <!-- ------------------- -->
+    <li class="nav-item">
+      <a class="nav-link text-dark nav-details rounded-0 py-0" href="{{ routes.account_url }}"><ly-as-861631>Details</ly-as-861631></a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link text-dark nav-address rounded-0 py-0" href="{{ routes.account_addresses_url }}"><ly-as-861632>Addresses</ly-as-861632></a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link text-dark nav-skin rounded-0 py-0" href="#" onclick="openTestResultPopUp();"><ly-as-861633>Skin Test Result</ly-as-861633></a>
+    </li>
+
+    <!-- Orders Nav Section -->
+    <li class="nav-item px-3 mb-3 mt-5">
+      <b><ly-as-861634>ORDERS</ly-as-861634></b>
+    </li>
+    <!-- ------------------- -->
+    <li class="nav-item">
+      <a class="nav-link text-dark nav-orders rounded-0 py-0" href="/pages/order-history"><ly-as-861635>Order History</ly-as-861635></a>
+    </li>
+
+    <!-- Orders Nav Section -->
+    <li class="nav-item px-3 mb-3 mt-5">
+      <b><ly-as-861636>CUSTOMER SERVICE</ly-as-861636></b>
+    </li>
+    <!-- ------------------- -->
+    <li class="nav-item">
+      <a class="nav-link text-dark nav-questions rounded-0 py-0" href="https://aveandyou.com/en/pages/faq"><ly-as-861637>Questions</ly-as-861637></a>
+    </li>
+    <!--<li class="nav-item">
+      <a class="nav-link text-dark nav-questions rounded-0 py-0" href="#"><ly-as-861638>Ingredients</ly-as-861638></a>
+    </li>-->
+
+    <!-- Bottom navs -->
+    <li class="nav-item mt-auto"></li>
+    <!--<li class="nav-item">
+      <a class="nav-link text-dark nav-refer rounded-0 py-0" href="#"><ly-as-861639>Refer a Friend</ly-as-861639></a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link text-dark nav-return rounded-0 py-0" href="#"><ly-as-861640>Return Information</ly-as-861640></a>
+    </li>-->
+    <li class="nav-item">
+      <a class="nav-link text-dark nav-out rounded-0 py-0" href="{{ routes.account_logout_url }}"><ly-as-861641>Sign out</ly-as-861641></a>
+    </li>
+    
+  </ul>
+  
+</div>

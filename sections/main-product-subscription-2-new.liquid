@@ -1,0 +1,1840 @@
+<style>
+
+.container-pdp.container--s-pdp {
+    max-width: 768px;
+}
+  .container-pdp {
+    margin: 0 auto;
+    position: relative /* width: calc(100% - 40px); */ /* @media (--xs) { width: calc(100% - 80px); } @media (--m) { width: calc(100% - 160px); } */;
+}
+
+  .container-pdp {
+    max-width: 1220px;
+    margin: 0 auto;
+    padding-right: 0.625rem;
+    padding-left: 0.625rem;
+}
+  
+  .color-box-selector-type {
+    margin-bottom: 0px;
+}
+
+  button.color-box-selector-type-header {
+    height: auto!important;
+    width: 100%;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: 0;
+    cursor: pointer;
+    text-align: left;
+    position: relative;
+    background-color: #E0E0E0;
+    padding: 15px;
+    border: 2px solid #E0E0E0;
+    border-radius: 0;
+}
+
+  .color-box-selector-type-header-wrapper {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    gap: 15px;
+    -webkit-box-align: start;
+    -webkit-align-items: flex-start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+}
+
+  .color-box-selector-type-header-wrapper .header-main {
+    width: 60%;
+    -webkit-flex-shrink: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+}
+    .color-box-selector-type-header-wrapper>div {
+    position: relative;
+    padding-left: 15px;
+}
+
+   .color-box-selector-type-header-wrapper .price-wrap {
+    width: 40%;
+    -webkit-flex-shrink: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+    -webkit-box-pack: end;
+    -webkit-justify-content: flex-end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+}
+
+  .color-box-selector-type .price-wrap {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    padding-left: 0;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+  .color-box-selector-type .price-wrap>span {
+    margin-right: 5px;
+}
+
+  .color-box-selector-type .h3 {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 0;
+}
+
+  .color-box-selector-type .h3, .color-box-selector-type .p2 {
+    color: #0e0f14!important;
+    text-transform: initial;
+}
+
+  .color-box-selector-type .p4 {
+    color: #0e0f14!important;
+    font-weight:bold;
+    font-size:20px;
+    
+}
+
+  .color-box-selector-type-props {
+    background-color: #f1f1f1;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 5px;
+    display: grid;
+    grid-template-columns: 1fr;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    text-align: center;
+}
+
+  .color-box-selector-type-props span.h4, .color-box-selector-type-props span.label {
+    margin: 3px 10px;
+}
+
+   .color-box-selector-type .h4 {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 0;
+}
+  
+
+  .color-box-selector-type-props span.h4:before, .color-box-selector-type-props span.label:before {
+    content: "";
+    display: inline-block;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+    height: 10px;
+    width: 5px;
+    border-bottom: 2px solid currentColor;
+    border-right: 2px solid currentColor;
+    margin-right: 8px;
+}
+  .color-box-selector-type-props span.h4, .color-box-selector-type-props span.label {
+    margin: 3px 10px;
+}
+  .color-box-selector-type-body {
+    position: relative;
+    border: 2px solid #f1f1f1;
+    padding: 15px;
+    padding-left: 30px;
+    padding-bottom: 25px;
+}
+  .color-box-selector-type-body .wrapper.double-feature {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+  .color-box-selector-type-body .image {
+    margin-bottom: 10px;
+}
+
+  .color-box-selector-type-body .image img {
+    width: auto;
+    height: 165px;
+}
+
+  .color-box-selector-type .p2 {
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 0;
+}
+
+  .color-box-selector-type .h3, .color-box-selector-type .p2 {
+    color: #0e0f14!important;
+}
+
+  .color-box-selector-type-body .wrapper.single-feature .feature {
+    width: 100%;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
+
+  .color-box-selector-type-body .wrapper.single-feature .feature .image {
+    padding-right: 10px;
+    -webkit-flex-shrink: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+}
+
+  .color-box-selector-type-header-wrapper .header-main.full {
+    width: 70%;
+}
+   .color-box-selector-type-header-wrapper .header-main {
+    width: 60%;
+}
+
+    .color-box-selector-type.is-active button.color-box-selector-type-header {
+    border-color: #A0A0A0;
+}
+
+  button.color-box-selector-type-header .header-main>span {
+    position: absolute;
+    top: 3px;
+    left: -2px;
+    display: inline-block;
+    background-color: #fff;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #A0A0A0;
+}
+
+  .color-box-selector-type.is-active button.color-box-selector-type-header .header-main>span {
+    background-color: #A0A0A0;
+}
+
+  .purchase-form__buttons-row {
+    padding: 30px 0;
+}
+
+  .purchase-form__buttons-row>.cell {
+    max-width: 650px;
+}
+  .purchase-form__button {
+    width: 100%;
+}
+
+  purchase-form__buttons-row button {
+    width: 100%;
+}
+  .product-form button {
+    height: 45px;
+}
+
+  .subscription-duration {
+    position: relative;
+    margin-bottom: 15px;
+    border: 1px solid #333;
+}
+
+  .f {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+  .subscription-duration__label {
+    font-size: 12px;
+}
+
+  .subscription-duration__label {
+    font-size: 10px;
+    position: absolute;
+    z-index: 2;
+    top: 5px;
+    color: #000;
+    line-height: 1;
+    left: 8px;
+}
+.subscription-duration__duration {
+    width: 100%;
+}
+  .subscription-duration__duration select {
+    border: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    height: 45px;
+    font-size: 14px;
+    background-color: #fff;
+    padding-top: 18px;
+    margin-bottom: 0;
+    width:inherit;
+}
+  @media (min-width: 768px) {
+.color-box-selector-type {
+    margin-bottom: 0px;
+}
+    .color-box-selector-type-header-wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+    .color-box-selector-type-header-wrapper {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+}
+   
+    .color-box-selector-type-header-wrapper .header-main {
+     width: 60%; 
+    -webkit-flex-shrink: 0;
+    -ms-flex-negative: 0;
+    flex-shrink: 0;
+}
+    .color-box-selector-type-header-wrapper>div {
+    padding-left: 20px;
+}
+    .color-box-selector-type .h3 {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.2;
+
+      margin-bottom: 0;
+}
+
+    .color-box-selector-type-header-wrapper .price-wrap {
+    width: 100%;
+}
+
+     .color-box-selector-type-header-wrapper .header-main {
+    width: 100%;
+}
+
+    .color-box-selector-type .price-wrap>span {
+    margin-right: 5px;
+}
+
+    .color-box-selector-type-props {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+}
+
+    .color-box-selector-type-body .wrapper.double-feature {
+    gap: 25px;
+}
+
+    .color-box-selector-type-body .wrapper.single-feature .feature .image {
+    padding-right: 30px;
+}
+
+    .purchase-form__buttons-row {
+    padding: 20px;
+}
+  
+  
+  }
+
+  @media (min-width: 1000px){
+.color-box-selector-type .h3 {
+    font-size: 18px;
+}
+ 
+
+    .color-box-selector-type-body .image img {
+    height: 250px;
+}
+    .color-box-selector-type .h4 {
+    font-size: 14px;
+}
+
+    button.color-box-selector-type-header .header-main>span {
+    left: 0;
+    width: 12px;
+    height: 12px;
+    top: 5px;
+}
+    .purchase-form__button {
+    padding: 0 20px;
+}
+   
+  }
+
+  .DN{
+    display:none;
+  }
+
+      .jdgm-prev-badge__text {
+    visibility: visible !important;
+    color: #000;
+    display: block!important;
+}
+</style>
+
+{%- assign is_featured_product = false -%}
+
+{%- liquid
+  assign show_single_variant_details = true
+  assign current_variant = product.selected_or_first_available_variant
+  assign featured_image = current_variant.featured_media.preview_image | default: product.featured_media.preview_image
+-%}
+
+
+<div style="margin-top:20px;"></div>
+
+<div class="container-pdp container--s-pdp">
+
+  <div class="color-box-selector-type relative is-active" data-attr="subscription-box">
+       {% for product in collections.all.products %}
+             {% if product.tags contains 'funnel-variant' %}
+        
+    <button type="button" for="product_box_type_subscription" class="color-box-selector-type-header">
+      <div class="color-box-selector-type-header-wrapper">
+       
+        <div class="header-main"><span></span>
+          <p class="h3">{{ product.metafields.custom.headingbox_funnel }}</p> <!----></div>
+        <div class="price-wrap">
+          <span class="h3 sans">{{ product.price | money }}</span>
+          <span class="h3 sans"> (-100% Discount)</span></div></div>
+         <div class="color-box-selector-type-header-wrapper">
+          <div class="header-main full">
+            <p class="p2">{{ product.metafields.custom.subtitle_funnel }}</p>
+            
+               <!----></div>
+           
+               </div></button><div class="color-box-selector-type-props"><span class="h4 sans">NO MINIMUM DURATION</span> <span class="h4 sans">DELIVERY INTERVAL FREELY SELECTABLE</span> <span class="h4 sans">FREE SHIPPING IN GER</span></div>
+                      <div class="color-box-selector-type-body">
+          <div class="wrapper  single-feature">
+            <div class="feature">
+              <div class="image">
+                <img src="https://cdn.shopify.com/s/files/1/0057/5268/4611/files/cream_day_30ml_copy_300x.jpg?v=1663226346" alt="Day cream" data-ll-status="observed"></div> 
+                <div class="details">
+                  <p class="p4">Your personalized day cream</p>
+                <p >   {% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge', jm_style: '', concierge_install: false, product: product %}  </p>
+                <p class="p2">{{ product.metafields.my_fields.new_and_old_label_note }}</p></div></div>
+               <div class="feature">
+                
+             
+       {% for variant in product.variants %}
+          {% if variant.sku contains "day30" %}
+             <div data-attr="{{ variant.sku }}" data-variant-id="{{ variant.id }}" class="DN pdIDs"></div>
+          {% endif %}
+       {% endfor %}
+                 
+                </div>
+            </div>
+          </div>
+                {% endif %}
+  {% endfor %}
+        </div>
+
+        <div class="btn_mre_info btn_new btn_flex btn_mre_info_fntstyle CP DN" style="margin:20px auto;" onclick="openPopup();">Mehr zu deinem Ergebnis</div>
+ 
+
+  <div class="color-box-selector-type relative " data-attr="non-subscription-box">
+    {% for product in collections.all.products %}
+    {% if product.tags contains 'original_product_funnel' %}
+     
+    <button type="button" for="product_box_type_standard-box" class="color-box-selector-type-header">
+      <div class="color-box-selector-type-header-wrapper">
+        <div class="header-main"><span></span>
+          <p class="h3 v3">{{ product.metafields.custom.headingbox_funnel  }}</p></div>
+      <div class="price-wrap">
+          <span class="h3 sans">{{ product.price | money }}</span></div></div> 
+         <div class="color-box-selector-type-header-wrapper">
+            <div class="header-main full">
+              <p class="p2">{{ product.metafields.custom.subtitle_funnel }}</p>
+          
+      </div>
+    
+          </div>
+    </button>
+
+         <div class="color-box-selector-type-body">
+                <div class="wrapper single-feature">
+                  <div class="feature">
+                  <div class="image">
+                  <img src="https://cdn.shopify.com/s/files/1/0057/5268/4611/files/cream_day_30ml_copy_300x.jpg?v=1663226346" alt="Day cream" data-ll-status="observed"></div>
+                  <div class="details">
+       {% for variant in product.variants %}
+          {% if variant.sku contains "day30" %}
+                 <div data-attr="{{ variant.sku }}" data-variant-id="{{ variant.id }}" class="DN pdIDs"></div>
+          {% endif %}
+       {% endfor %}
+        <p class="p4">Your personalized day cream</p>
+      <p >   {% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge', jm_style: '', concierge_install: false, product: product %}  </p>
+                    <p class="p2">{{ product.metafields.my_fields.new_and_old_label_note }}</p>
+                  </div>
+                </div>
+                </div>
+    </div>
+  
+       {% endif %}
+     
+  {% endfor %}
+
+  </div>
+
+ 
+</div>
+
+  <div id="add-Cart-pdp-new" class="grid-x align-center purchase-form__buttons-row">
+    <div class="cell medium-10 small-12 align-center grid-x grid-margin-x" style="margin: 0 auto;"><!----> 
+      <div class="w1 purchase-form__button"><div class="subscription-duration f">
+        <div class="subscription-duration__label dark-grey p3">Alle</div>
+        <div class="subscription-duration__duration p3">
+          <select id="subscription_selected" name="subscription-frequency" aria-label="Subscription Frequency">
+            <option data-plan-option="Delivery every 1 Month" value="6010241292" >Delivery every 1 Month</option>
+            <option value="5994283276" data-plan-option="Delivery every 2 Months" selected >Delivery every 2 months (Bestseller)</option>
+            <option value="5994316044" data-plan-option="Delivery every 3 Months">Delivery every 3 Months</option>
+        <!--    <option value="5994348812" data-plan-option="Delivery every 4 Months">Delivery every 4 Months</option>
+            <option value="5994381580" data-plan-option="Delivery every 5 Months" >Delivery every 5 Months</option>-->
+          </select> <i class="select-input__icon"></i>
+        </div></div> 
+        <button type="button" class="btn is-active btn-payment" onclick="addCartFunnel()">Zum Warenkorb hinzufügen <span id="price-selected">0,00 €</span></button></div></div></div>
+
+      <input type="hidden" id="display-skinid" name="display-skinid" >
+      <input type="hidden" id="display-name" name="display-name" >
+      <input type="hidden" id="display-daycreamid" name="display-daycreamid" >
+      <input type="hidden" id="display-fragrance" name="display-fragrance" >
+      <input type="hidden" id="display-fragrance_duft" name="display-fragrance_duft" >
+      <input type="hidden" id="display-answer_ID" name="display-answer_ID" >
+
+      {% include 'Popup_pdp' %}
+
+<div class="section container product-container product-container--{{ section.settings.page_width }} {% if is_featured_product %}border-top featured-product-section{% endif %}"
+     data-section-type="product-template" data-components="accordion">
+  
+ 
+
+  {% if collection and is_featured_product == false %}
+    <div class="inline-row product-collection-links" data-cc-animate>
+      {% if collection %}
+        <div class="next-prev inline-item left links-row desktop">
+        <span class="back-link">
+          <span>{{ 'products.product.back_to' | t }}</span>
+          <a href="{{ collection.url }}" title="{{ collection.title | escape }}" class="standard-link">{{ collection.title }}</a>
+        </span>
+        </div>
+
+        <div class="inline-item right last desktop">
+          {% if collection.previous_product %}
+            <a class="standard-link" href="{{ collection.previous_product }}">{{ 'products.product.previous' | t }}</a>
+            {% if collection.next_product %} <span class="divider">/</span> {% endif %}
+          {% endif %}
+
+          {% if collection.next_product %}
+            <a class="standard-link" href="{{ collection.next_product }}">{{ 'products.product.next' | t }}</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+  
+  <!-- Moved from below product information -->
+  {% if collection %}
+      <div class="links-row mobile-flex section border-top product-mob-collection-links" data-cc-animate>
+        <a class="back-link" href="{{ collection.url }}" title="{{ collection.title | escape }}">
+          {% render 'svg-chevron-left' %} <span class="beside-svg standard-link">{{ collection.title }}</span>
+        </a>
+
+        <div>
+          {% if collection.previous_product %}
+            <a class="standard-link" href="{{ collection.previous_product }}">{{ 'products.product.previous' | t }}</a>
+            {% if collection.next_product %} <span class="divider">/</span> {% endif %}
+          {% endif %}
+
+          {% if collection.next_product %}
+            <a class="standard-link" href="{{ collection.next_product }}">{{ 'products.product.next' | t }}</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+  {% if product != blank %}
+    <div class="row product-container">
+      {%- assign animate = true -%}
+
+      
+
+      {%- liquid
+        if settings.cart_type contains 'drawer'
+          assign enable_ajax = true
+        else
+          assign enable_ajax = false
+        endif
+
+        if settings.prod_quantity_controls == "realtime" and enable_ajax
+          assign use_ajax_quantities = true
+        else
+          assign use_ajax_quantities = false
+        endif
+
+        if use_ajax_quantities
+          assign form_class = "product-form product-form--mini product-form--not-quickbuy half column"
+        else
+          assign form_class = "product-form half column"
+        endif
+
+        if settings.cart_type == 'drawer-dynamic'
+          assign open_cart_drawer = true
+        else
+          assign open_cart_drawer = false
+        endif
+      -%}
+
+      {% form 'product', product, data-productid: product.id, class: form_class, data-ajax-add-to-cart: enable_ajax, data-product-id: product.id, data-enable-history-state: true, data-open-cart-drawer: open_cart_drawer %}
+<!-- Begin ReCharge code -->
+{% if product.available %}{% render 'subscription-product' with product as product %}{% endif %}
+<!-- End ReCharge code -->
+
+        <!-- begin product form and details -->
+        <div class="product-details" data-cc-animate data-cc-animate-delay="0.5s">
+          {%- liquid
+            assign is_variant_picker = false
+            for block in section.blocks
+              if block.type == "variant_picker"
+                assign is_variant_picker = true
+                break
+              endif
+            endfor
+          -%}
+
+          {%- for block in section.blocks -%}
+            {%- case block.type -%}
+            {%- when '@app' -%}
+              {% render block %}
+
+            {%- when 'vendor_and_type' -%}
+              {% if block.settings.prod_show_brand or block.settings.prod_show_type %}
+                  <div class="brand-and-type feature-col product-detail__gap-sm" {{ block.shopify_attributes }}>
+                    {% if block.settings.prod_show_brand %}
+                      {%- comment -%}
+                      Do we have a collection that has the same name as our product vendor name?
+                      If we do, let's have the vendor link point to it.
+                      If not, we will point to the automatic vendor collection.
+                      {%- endcomment -%}
+                      {%- liquid
+                        assign product_vendor_handle = product.vendor | handle
+                        if collections[product_vendor_handle].handle == product_vendor_handle
+                          assign vendor_url = collections[product_vendor_handle].url
+                        else
+                          assign vendor_url = product.vendor | url_for_vendor
+                        endif
+                      -%}
+                      <span class="brand">{{ product.vendor | link_to: vendor_url }}</span>
+                    {% endif %}
+
+                    {% if block.settings.prod_show_type and product.type != blank %}
+                      {% if block.settings.prod_show_brand %}/{% endif %}
+
+                      {%- assign product_type_handle = product.type | handle -%}
+                      {%- if collections[product_type_handle].handle == product_type_handle -%}
+                        {%- assign type_url = collections[product_type_handle].url -%}
+                      {%- else -%}
+                        {%- assign type_url = product.type | url_for_type -%}
+                      {%- endif -%}
+                      <span class="type">{{ product.type | link_to: type_url }}</span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+
+            {%- when 'title' -%}
+              {%- liquid
+                assign heading_tag = "h2"
+                if block.settings.heading_h1
+                  assign heading_tag = "h1"
+                endif
+              -%}
+              <{{ heading_tag }} class="product-title product-detail__gap-sm" {{ block.shopify_attributes }}>
+                {{ product.title }}
+              </{{ heading_tag }}>
+
+            {%- when 'weight' -%}
+              {% if current_variant.weight != blank and current_variant.weight > 0 %}
+                <div class="product-weight product-detail__gap-sm {% if current_variant.weight == blank or current_variant.weight <= 0 %}product-weight--no-weight{% endif %}" {{ block.shopify_attributes }}>
+                  <span class="product-weight__value">{% if current_variant.weight != blank and current_variant.weight > 0 %}{{ current_variant.weight | weight_with_unit: current_variant.weight_unit }}{% endif %}</span>
+                </div>
+              {% endif %}
+ 
+            {%- when 'price' -%}
+        
+              <div id="price"
+                   class="product-price product-detail__gap-sm {% if current_variant.compare_at_price > current_variant.price %}on-sale{% endif %}" {{ block.shopify_attributes }}>
+                <span class="current-price theme-money">{% render 'price', price: current_variant.price %}</span>
+                {% if current_variant.compare_at_price > current_variant.price %}
+                  <span class="was-price theme-money">{% render 'price', price: current_variant.compare_at_price %}</span>
+                {% endif %}
+                 
+                {% render 'unit-price', variant: current_variant %}
+              </div>
+<div class="rc-widget-injection-parent"></div>
+              {{ form | payment_terms }}
+
+              {%- if block.settings.show_tax_and_shipping -%}
+                {%- if cart.taxes_included or shop.shipping_policy.body != blank -%}
+                  <div class="product-policies product-detail__gap-sm rte" {{ block.shopify_attributes }}>
+                    {%- if cart.taxes_included -%}
+                      {{ 'products.general.include_taxes' | t }}
+                    {%- endif -%}
+                    {%- if shop.shipping_policy.body != blank -%}
+                      {{ 'products.general.shipping_policy_html' | t: link: shop.shipping_policy.url }}
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+
+            {%- when 'review_summary' -%}
+              <div class="themed-product-reviews product-detail__gap-sm" {{ block.shopify_attributes }}>
+                <div class="shopify-product-reviews-badge" data-id="{{ product.id }}"></div>
+              </div>
+
+            {%- when 'sku' -%}
+              {% if current_variant.sku %}
+                <div class="sku product-detail__gap-sm {% if current_variant.sku == blank %}sku--no-sku{% endif %}" {{ block.shopify_attributes }}>
+                  {{ 'products.product.sku' | t }} <span class="sku__value">{{ current_variant.sku }}</span>
+                </div>
+              {% endif %}
+
+            {%- when 'description' -%}
+              {% if product.description != blank %}
+                {% if block.settings.display == "tab_open" or block.settings.display == "tab_closed" %}
+                  {%- liquid
+                    assign description_title = 'products.product.description' | t
+                    assign description_is_open = false
+                    if block.settings.display == "tab_open"
+                      assign description_is_open = true
+                    endif
+                  -%}
+
+                  <div class="product-detail-accordion" data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}">
+                    {% render 'accordion', allow_multi_open: true, add_content_class: 'rte', first_item_open: description_is_open, item1_title: description_title, item1_content: product.description %}
+                  </div>
+                {% else %}
+                  <div class="product-description rte product-detail__gap-lg"
+                       data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}" {{ block.shopify_attributes }}>{{ product.description }}</div>
+                {% endif %}
+              {% endif %}
+{% when 'Custom'  %}
+ 
+
+<div class="cst-icons" style="    margin-top: 15px;"> 
+<div class="cst-row" style="display:flex;align-items:center;">
+
+
+<img style="max-width:30px;margin-right:15px;" src="{{ block.settings.img1 | img_url : 'master' }} " />
+
+{{ block.settings.txt1 }}
+
+</div> 
+
+</div>
+            {%- when 'variant_picker' -%}
+              {% if product.variants.size > 1 %}
+                <div class="option-selectors product-detail__gap-lg"
+                     data-box-options="{{ block.settings.prod_clicky_opt_names | escape }}" {{ block.shopify_attributes }}>
+                  {% for option in product.options_with_values %}
+                    <div class="selector-wrapper cf">
+                      {% if block.settings.show_size_chart and option.name == block.settings.size_chart_variant and block.settings.size_chart_page != blank %}
+                        <div class="opposing-items">
+                          <label class="left" for="option-{{ option.name | handle }}">{{ option.name }}</label>
+                          <span class="size-chart-container">
+                            <a href="#size-chart-content" class="size-chart-link">
+                              {{ 'products.product.size_chart' | t }}
+                              {% render 'svg-chevron-right' %}
+                            </a>
+                            <div id="size-chart-content" class="hidden">
+                              <div class="size-chart">
+                                <div class="size-chart__inner rte">
+                                  {{ pages[block.settings.size_chart_page].content }}
+                                </div>
+                              </div>
+                            </div>
+                          </span>
+                        </div>
+                      {% else %}
+                        <label {% if option.name == 'default' %}class="hidden"{% endif %}
+                               for="option-{{ option.name | handle }}">{{ option.name }}</label>
+                      {% endif %}
+
+                      <select id="option-{{ option.name | handle }}">
+                        {% for value in option.values %}
+                          <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>
+                            {{ value }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  {% endfor %}
+                </div>
+
+              {% else %}
+                {% unless show_single_variant_details == false or product.has_only_default_variant %}
+                  {%- assign opt_idx = '' -%}
+                  {%- capture option_list -%}
+                    {%- for option in product.options -%}
+                      {%- if option != 'Title' -%}
+                        {%- assign opt_idx = 'option' | append: forloop.index -%}
+                        <div class="product-detail__gap-xsm">
+                          {% if block.settings.show_size_chart and option == block.settings.size_chart_variant and block.settings.size_chart_page != blank %}
+                            <div class="opposing-items">
+                              <label class="left" for="option-{{ option | handle }}">{{ option }}</label>
+                              <span class="size-chart-container">
+                                <a href="#size-chart-content" class="size-chart-link">
+                                  {{ 'products.product.size_chart' | t }}
+                                  {% render 'svg-chevron-right' %}
+                                </a>
+                                <div id="size-chart-content" class="hidden">
+                                  <div class="size-chart">
+                                    <div class="size-chart__inner rte">
+                                      {{ pages[block.settings.size_chart_page].content }}
+                                    </div>
+                                  </div>
+                                </div>
+                              </span>
+                            </div>
+                            <div>{{ product.variants.first[opt_idx] }}</div>
+                          {% else %}
+                            <label>{{ option }}:</label> {{ product.variants.first[opt_idx] }}
+                          {% endif %}
+                        </div>
+                      {%- endif -%}
+                    {%- endfor -%}
+                  {%- endcapture -%}
+                  {%- if opt_idx != blank -%}
+                    <div class="selector-wrapper single-option" {{ block.shopify_attributes }}>{{ option_list }}</div>
+                  {%- endif -%}
+                {% endunless %}
+              {% endif %}
+
+              <select name="id" data-productid="{{ product.id }}" class="original-selector{% if product.variants.size == 1 %} hidden{% endif %}"
+                      aria-label="{{ 'products.product.selector_label' | t | escape }}">
+                {%unless variant.metafields.secomapp.freegifts %}
+                {% for variant in product.variants %}
+                  <option value="{{ variant.id }}"
+                          {% if variant == current_variant %} selected="selected"{% endif %}
+                          data-stock="{% if variant.inventory_management == 'shopify' and variant.inventory_quantity <= 0 %}out{% endif %}"
+                          {% if block.settings.stock_warning_show and variant.inventory_management == 'shopify' and variant.inventory_quantity > 0 %}
+                            {% if block.settings.stock_warning_limit == 0 or variant.inventory_quantity <= block.settings.stock_warning_limit %}
+                              data-inventory="{{ variant.inventory_quantity }}"
+                            {% endif %}
+                          {% endif %}
+                    {% if variant.weight != blank and variant.weight > 0 %}data-weight="{{ variant.weight | weight_with_unit: variant.weight_unit }}"{% endif %}>
+                    {{ variant.title | escape }}
+                  </option>
+                {% endfor %}
+                {%endunless%}
+              </select>
+
+              {% if product.available and block.settings.stock_warning_show %}
+                {%- if current_variant.inventory_management == 'shopify' and current_variant.inventory_quantity > 0 -%}
+                  {% if block.settings.stock_warning_limit == 0 or variant.inventory_quantity <= block.settings.stock_warning_limit %}
+                    <div class="product-inventory-notice product-detail__gap-sm">
+                      {{ 'products.labels.only_x_left' | t: quantity: current_variant.inventory_quantity }}
+                    </div>
+                  {%- else -%}
+                    <div class="product-inventory-notice product-inventory-notice--no-inventory product-detail__gap-sm"></div>
+                  {%- endif -%}
+                {%- else -%}
+                  <div class="product-inventory-notice product-inventory-notice--no-inventory product-detail__gap-sm"></div>
+                {%- endif -%}
+              {% endif %}
+
+            {%- when 'buy_buttons' -%}
+              {% if product.available %}
+                {% if is_variant_picker == false %}
+                  <input type="hidden" name="id" data-productid="{{ product.id }}" value="{{ product.selected_or_first_available_variant.id }}">
+                {% endif %}
+                <div class="payment-and-quantity
+                        product-detail__gap-lg
+                        payment-and-quantity--buttons-active
+                        {% if settings.prod_quantity_controls != "none" %}payment-and-quantity--with-quantity{% endif %}
+                         {{ block.shopify_attributes }}
+                        ">
+
+                  {% if settings.prod_quantity_controls != "none" %}
+                    <div class="quantity">
+                      <div class="qty-adjuster {% if use_ajax_quantities %}qty-adjuster--ajax{% endif %}"
+                           data-limit="{% if current_variant.inventory_management == 'shopify' and current_variant.inventory_policy == 'deny' %}{{ current_variant.inventory_quantity }}{% endif %}">
+                        <div class="qty-adjuster__inner">
+                          <button class="qty-adjuster__down" disabled
+                                  aria-label="{{ 'cart.label.decrease' | t | escape }}">{% render 'svg-minus' %}</button>
+                          <input class="qty-adjuster__value" type="text" pattern="[0-9]*" id="quantity" name="quantity"
+                                 value="1" aria-label="{{ 'cart.label.quantity' | t | escape }}">
+                          <button class="qty-adjuster__up"
+                                  aria-label="{{ 'cart.label.increase' | t | escape }}">{% render 'svg-plus' %}</button>
+                        </div>
+                      </div>
+                    </div>
+                  {% else %}
+                    <input type="hidden" name="quantity" value="1"/>
+                  {% endif %}
+
+                  <span class="payment-and-quantity__add">
+                          <button type="submit" name="add"
+                                  class="btn product-add mini-form {% if block.settings.enable_payment_button and product.selling_plan_groups == empty %}alt outline{% endif %}">
+                            <span class="button-text">{% if product.available %}{{ 'products.grid.add_to_cart' | t }}{% else %}{{ 'products.product.unavailable' | t }}{% endif %}</span>
+                            <span class="loading-spinner" aria-label="{{ 'products.product.adding_to_cart' | t }}"></span>
+                          </button>
+                        </span>
+
+                  {% if block.settings.enable_payment_button and product.selling_plan_groups == empty %}
+                    {{ form | payment_button }}
+                  {% endif %}
+                </div>
+              {% else %}
+                <div class="rte product-detail__gap-lg" {{ block.shopify_attributes }}>
+                  {{ 'products.product.product_unavailable_html' | t }}
+                </div>
+              {% endif %}
+
+              {% unless block.settings.show_pickup_availability == false %}
+                {% render 'store-availability', product: product, current_variant: current_variant %}
+              {% endunless %}
+
+              {% if product.available and block.settings.show_backorder_text == true %}
+                {% render 'backorder', product: product, variant: current_variant %}
+              {% endif %}
+
+            {%- when 'social' -%}
+              {% render 'social-sharing', share_title: product.title, share_permalink: product.url, share_image: product %}
+
+            {%- when 'text' -%}
+              {%- if block.settings.text != blank -%}
+                <div class="product-detail__gap-sm rte product-area__rte"
+                     data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}" {{ block.shopify_attributes }}>
+                  {{ block.settings.text }}
+                </div>
+              {%- endif -%}
+
+            {%- when 'link' -%}
+              {%- if block.settings.text != blank -%}
+                <div class="product-detail__gap-sm {% if block.settings.text_style == "link" %}rte{% endif %}"
+                     data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}" {{ block.shopify_attributes }}>
+                  <a href="{{ block.settings.url }}"
+                     {% if block.settings.open_new_window %}target="_blank"{% endif %}
+                     class="product-area__link {% if block.settings.text_style == "button_primary" %}btn{% elsif block.settings.text_style == "button_secondary" %}btn alt{% endif %}">
+                    {{ block.settings.text }}
+                  </a>
+                </div>
+              {%- endif -%}
+
+            {% when 'image' %}
+              {% if block.settings.image != blank %}
+                <div class="product-detail__gap-sm inline-width-container"
+                     data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}"
+                     style="max-width: {{ block.settings.image_width }}px" {{ block.shopify_attributes }}>
+                {% if block.settings.url != blank %}<a href="{{ block.settings.url }}">{% endif %}
+                    {% render 'responsive-image', image: block.settings.image %}
+                    {% if block.settings.url != blank %}</a>{% endif %}
+                </div>
+              {% endif %}
+
+            {% when 'custom_liquid' %}
+              {% if block.settings.custom_liquid %}
+                <div class="product-detail__gap-sm"
+                     data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}" {{ block.shopify_attributes }}>{{ block.settings.custom_liquid }}</div>
+              {% endif %}
+
+            {% when 'accordion' %}
+              {%- liquid
+                assign content = block.settings.content
+                if block.settings.page != blank
+                  assign content = pages[block.settings.page].content
+                endif
+              -%}
+              {%- if content != blank -%}
+                <div class="product-detail-accordion" data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}" {{ block.shopify_attributes }}>
+                  {% render 'accordion', allow_multi_open: true, add_content_class: 'rte', first_item_open: block.settings.open, item1_title: block.settings.title, item1_content: content %}
+                </div>
+              {%- endif -%}
+
+            {%- when 'divider' -%}
+              <hr class="divider__line-{{ block.settings.show_line }} divider__gap-above-{{ block.settings.spacing_above }} divider__gap-below-{{ block.settings.spacing_below }}"
+                  data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}" {{ block.shopify_attributes }}/>
+
+            {%- endcase -%}
+          {%- endfor -%}
+
+          {% if is_featured_product %}
+            <div class="more-link-row product-detail__gap-sm">
+              <a class="more-link" href="{{ product.url }}">{{ 'products.general.full_details' | t }}</a>
+            </div>
+          {% endif %}
+        </div>
+   {% if product.tags contains 'bunte-logo1' %}
+      
+      <div style="margin-bottom:10px">
+        <div style="font-weight: 600; margin-bottom:5px"><span><b>Free shipping</b></span></div>
+        <div style="font-weight: 600; margin-bottom:5px"><span>EXCLUSIVE SPECIAL OFFER FOR</span></div>
+        <img src={{ 'Logo-Bunte_new.png' | asset_img_url: '300x' }} alt="/" />
+ </div>
+      
+       {% endif %}
+  
+  {% if product.tags contains 'free_shipping' %}
+      
+      <div style="margin-bottom:10px">
+        <div style="font-weight: 600; margin-bottom:5px"><span><b>Free shipping</b></span></div>
+     </div>
+      
+       {% endif %}
+      <!-- end product form and details -->
+      {% endform %}
+    </div>
+
+    <script type="application/json" id="ccProductJson-{{ product.id }}">
+      {{ product | json }}
+    </script>
+
+  {% else %}
+    <div class="row product-container">
+      <div class="product-gallery half column">
+        <div class="main">
+          <div class="placeholder-image">{{ 'product-1' | placeholder_svg_tag }}</div>
+        </div>
+        {% if section.settings.prod_show_thumbnails %}
+          <div class="thumbnails slick-slider--indented-side-icons">
+            <span class="thumbnail">
+              <div class="placeholder-image">{{ 'product-2' | placeholder_svg_tag }}</div>
+            </span>
+            <span class="thumbnail">
+              <div class="placeholder-image">{{ 'product-3' | placeholder_svg_tag }}</div>
+            </span>
+            <span class="thumbnail">
+              <div class="placeholder-image">{{ 'product-4' | placeholder_svg_tag }}</div>
+            </span>
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="product-form product-form--placeholder half column">
+        <div class="product-details">
+          <div class="brand-and-type feature-col product-detail__gap-sm">
+            <span class="brand">{{ 'homepage.onboarding.product_vendor' | t | link_to: '#' }}</span>
+            /
+            <span class="type">{{ 'homepage.onboarding.product_type' | t | link_to: '#' }}</span>
+          </div>
+
+          <h2 class="product-title product-detail__gap-sm">{{ 'homepage.onboarding.product_title' | t }}</h2>
+          <div id="price" class="product-price product-detail__gap-sm">
+            <span class="current-price theme-money">{% render 'price', price: 2999 %}</span>
+            <span class="was-price theme-money">{% render 'price', price: 1999 %}</span>
+          </div>
+
+          <div class="payment-and-quantity product-detail__gap-lg payment-and-quantity--buttons-active payment-and-quantity--with-quantity">
+            <div class="quantity">
+              <div class="qty-adjuster">
+                <div class="qty-adjuster__inner">
+                  <button class="qty-adjuster__down"
+                          aria-label="{{ 'cart.label.decrease' | t | escape }}">{% render 'svg-minus' %}</button>
+                  <input class="qty-adjuster__value" type="text" pattern="[0-9]*" id="quantity-{{ section.id }}"
+                         name="quantity" value="1" aria-label="{{ 'cart.label.quantity' | t | escape }}">
+                  <button class="qty-adjuster__up"
+                          aria-label="{{ 'cart.label.increase' | t | escape }}">{% render 'svg-plus' %}</button>
+                </div>
+              </div>
+            </div>
+            <span class="payment-and-quantity__add">
+              <button type="submit" name="add"
+                      class="btn product-add {% if section.settings.enable_payment_button and product.selling_plan_groups == empty %}alt outline{% endif %}">
+                <span class="button-text">{% if product.available %}{{ 'products.grid.add_to_cart' | t }}{% else %}{{ 'products.product.unavailable' | t }}{% endif %}</span>
+                <span class="loading-spinner" aria-label="{{ 'products.product.adding_to_cart' | t }}"></span>
+                <span class="added-to-cart-check" aria-label="{{ 'products.product.added_to_cart' | t }}"></span>
+              </button>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if is_featured_product == false  %}
+    {% if section.settings.description_below %}
+      <div class="rte section reading-column product-description-below" data-cc-animate data-cc-animate-delay="0.2s">{{ product.description | replace: 'fullwidth"', '" data-fullwidth="true"' }}</div>
+    {% endif %}
+
+    {% if section.settings.show_reviews %}
+      <div class="theme-product-reviews-full section" data-cc-animate data-cc-animate-delay="0.2s">
+        <div id="shopify-product-reviews" data-id="{{product.id}}">{{ product.metafields.spr.reviews }}</div>
+      </div>
+    {% endif %}
+
+ 
+
+    <!-- Moved above main image
+	{% if collection %}
+      <div class="links-row mobile-flex section border-top product-mob-collection-links" data-cc-animate>
+        <a class="back-link" href="{{ collection.url }}" title="{{ collection.title | escape }}">
+          {% render 'svg-chevron-left' %} <span class="beside-svg standard-link">{{ collection.title }}</span>
+        </a>
+
+        <div>
+          {% if collection.previous_product %}
+            <a class="standard-link" href="{{ collection.previous_product }}">{{ 'products.product.previous' | t }}</a>
+            {% if collection.next_product %} <span class="divider">/</span> {% endif %}
+          {% endif %}
+
+          {% if collection.next_product %}
+            <a class="standard-link" href="{{ collection.next_product }}">{{ 'products.product.next' | t }}</a>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}-->
+
+
+  {% endif %}
+
+  {% render 'structured-data-product', product: product, current_variant: current_variant %}
+</div>
+
+
+{% schema %}
+  {
+    "name": "Product pages",
+    "class": "section-product-template",
+    "blocks": [
+      {
+         "type": "@app"
+      },
+      {
+        "type": "title",
+        "name": "Title",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "heading_h1",
+            "label": "Set as the primary page heading",
+            "info": "Uses <h1> tag. One per page recommended. [Learn more](https://cleancanvas.co.uk/support/canopy/seo)",
+            "default": true
+          }
+        ]
+      },
+      {
+        "type": "weight",
+        "name": "Weight",
+        "limit": 1
+      },
+      {
+        "type": "price",
+        "name": "Price",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "show_tax_and_shipping",
+            "label": "Show tax status and shipping policy link",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "vendor_and_type",
+        "name": "Vendor/type",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "prod_show_brand",
+            "label": "Show vendor",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "prod_show_type",
+            "label": "Show product type",
+            "default": true
+          }
+        ]
+      },
+      {
+        "type": "sku",
+        "name": "SKU",
+        "limit": 1
+      },
+      {
+        "type": "review_summary",
+        "name": "Review stars",
+        "limit": 1
+      },
+          {
+        "type": "Custom",
+        "name": "Custom Icons",
+        "settings": [
+          {
+            "type": "richtext",
+            "id": "txt1",
+            "label": "Text" 
+          },
+          {
+            "type": "image_picker",
+            "id": "img1",
+            "label": "Icon" 
+          }
+        ]
+      },
+      {
+        "type": "description",
+        "name": "Description",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "show_in_quickbuy",
+            "label": "Show in quick buy",
+            "default": false
+          },
+          {
+            "type": "select",
+            "id": "display",
+            "default": "standard",
+            "label": "Display style",
+            "options": [
+              {
+                "value": "standard",
+                "label": "Standard"
+              },
+              {
+                "value": "tab_open",
+                "label": "Open tab"
+              },
+              {
+                "value": "tab_closed",
+                "label": "Closed tab"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "variant_picker",
+        "name": "Variant picker",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "text",
+            "id": "prod_clicky_opt_names",
+            "label": "Options to show as boxes",
+            "info": "Separate with commas, no spaces. E.g. Size,Color"
+          },
+          {
+            "type": "checkbox",
+            "id": "stock_warning_show",
+            "label": "Show inventory notice",
+            "default": false
+          },
+          {
+            "type": "range",
+            "id": "stock_warning_limit",
+            "min": 0,
+            "max": 100,
+            "step": 1,
+            "label": "Low inventory limit",
+            "default": 5,
+            "info": "Show inventory quantities below this threshold. Choose 0 to always show the quantity in stock."
+          },
+          {
+            "type": "header",
+            "content": "Size chart"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_size_chart",
+            "label": "Enable",
+            "default": false
+          },
+          {
+            "type": "text",
+            "id": "size_chart_variant",
+            "label": "Option name",
+            "default": "Size",
+            "info": "Enter the name of the option which changes the size of the product. For example, 'Size' or 'Length'. [Learn more](https://cleancanvas.co.uk/support/general/size-chart)"
+          },
+          {
+            "type": "page",
+            "id": "size_chart_page",
+            "label": "Page containing size chart"
+          }
+        ]
+      },
+      {
+        "type": "buy_buttons",
+        "name": "Buy buttons/quantity",
+        "limit": 1,
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "enable_payment_button",
+            "label": "Show dynamic checkout button",
+            "info": "Each customer will see their preferred payment method from those available on your store, such as PayPal or Apple Pay. [Learn more](https://help.shopify.com/manual/using-themes/change-the-layout/dynamic-checkout)",
+            "default": true
+          },
+          {
+            "type": "checkbox",
+            "id": "show_pickup_availability",
+            "label": "Show pickup availability",
+            "default": true,
+            "info": "Show customers where they can pick up the product. [Learn more](https://help.shopify.com/en/manual/shipping/setting-up-and-managing-your-shipping/local-methods/local-pickup)"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_backorder_text",
+            "label": "Show backorder text",
+            "default": true,
+            "info": "Only shows for products which use Shopify inventory tracking and are available to purchase when out of stock."
+          }
+        ]
+      },
+      {
+        "type": "social",
+        "name": "Social sharing links",
+        "limit": 1
+      },
+      {
+        "type": "text",
+        "name": "Text",
+        "settings": [
+          {
+            "type": "richtext",
+            "id": "text",
+            "label": "Text"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_in_quickbuy",
+            "label": "Show in quick buy",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "link",
+        "name": "Link",
+        "settings": [
+          {
+            "type": "text",
+            "id": "text",
+            "default": "Link",
+            "label": "Text"
+          },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "Url"
+          },
+          {
+            "type": "select",
+            "id": "text_style",
+            "default": "link",
+            "label": "Style",
+            "options": [
+              {
+                "value": "link",
+                "label": "Link"
+              },
+              {
+                "value": "button_primary",
+                "label": "Primary button"
+              },
+              {
+                "value": "button_secondary",
+                "label": "Secondary button"
+              }
+            ]
+          },
+          {
+            "type": "checkbox",
+            "id": "open_new_window",
+            "label": "Open in a new window",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "show_in_quickbuy",
+            "label": "Show in quick buy",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "image",
+        "name": "Image",
+        "settings": [
+          {
+            "type": "image_picker",
+            "id": "image",
+            "label": "Image"
+          },
+          {
+            "type": "range",
+            "id": "image_width",
+            "min": 60,
+            "max": 700,
+            "step": 10,
+            "unit": "px",
+            "label": "Image width",
+            "default": 700
+          },
+          {
+            "type": "url",
+            "id": "url",
+            "label": "Link"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_in_quickbuy",
+            "label": "Show in quick buy",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "custom_liquid",
+        "name": "Custom Liquid",
+        "settings": [
+          {
+            "type": "liquid",
+            "id": "custom_liquid",
+            "label": "Custom Liquid"
+          },
+          {
+            "type": "checkbox",
+            "id": "show_in_quickbuy",
+            "label": "Show in quick buy",
+            "default": false
+          }
+        ]
+      }, {
+        "type": "accordion",
+        "name": "Collapsible tab",
+        "settings": [
+          {
+            "type": "text",
+            "id": "title",
+            "label": "Heading",
+            "default": "Collapsible tab"
+          },
+          {
+            "type": "richtext",
+            "id": "content",
+            "label": "Tab content",
+            "default": "<p>Collapsible tab content</p>"
+          },
+          {
+            "type": "page",
+            "id": "page",
+            "label": "Tab content from page"
+          },
+          {
+            "type": "checkbox",
+            "id": "open",
+            "label": "Open",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "show_in_quickbuy",
+            "label": "Show in quick buy",
+            "default": false
+          }
+        ]
+      },
+      {
+        "type": "divider",
+        "name": "Divider",
+        "settings": [
+          {
+            "type": "checkbox",
+            "id": "show_line",
+            "label": "Show line",
+            "default": true,
+            "info": "Turn this off to making this just a spacing element"
+          },
+          {
+            "type": "select",
+            "id": "spacing_above",
+            "default": "small",
+            "label": "Spacing above",
+            "options": [
+              {
+                "value": "small",
+                "label": "Small"
+              },
+              {
+                "value": "medium",
+                "label": "Medium"
+              },
+              {
+                "value": "large",
+                "label": "Large"
+              }
+            ]
+          },
+          {
+            "type": "select",
+            "id": "spacing_below",
+            "default": "small",
+            "label": "Spacing below",
+            "options": [
+              {
+                "value": "small",
+                "label": "Small"
+              },
+              {
+                "value": "medium",
+                "label": "Medium"
+              },
+              {
+                "value": "large",
+                "label": "Large"
+              }
+            ]
+          },
+          {
+            "type": "checkbox",
+            "id": "show_in_quickbuy",
+            "label": "Show in quick buy",
+            "default": false
+          }
+        ]
+      }
+    ],
+    "settings": [
+      {
+        "type": "select",
+        "id": "page_width",
+        "default": "medium",
+        "label": "Page width",
+        "options": [
+          {
+            "value": "narrow",
+            "label": "Narrow"
+          },
+          {
+            "value": "medium",
+            "label": "Medium"
+          },
+          {
+            "value": "wide",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "type": "checkbox",
+        "id": "description_below",
+        "label": "Show product description below images/product form",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "show_reviews",
+        "label": "Show product reviews below product images/information",
+        "info": "Requires the free [Shopify Product Reviews](https://apps.shopify.com/product-reviews?ref=cleancanvas) app.",
+        "default": true
+      },
+      {
+        "type": "header",
+        "content": "Media"
+      },
+      {
+        "type": "paragraph",
+        "content": "Learn more about [media types](https://help.shopify.com/en/manual/products/product-media)"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_video_looping",
+        "label": {
+          "en": "Enable video looping"
+        },
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_product_image_zoom",
+        "label": "Enable hover zoom",
+        "default": true
+      }
+    ]
+  }
+{% endschema %}
+
+{% render "wiremo-script", product: product %}{% render "wiremo-microdata", product: product %}
+
+<script
+  src="https://code.jquery.com/jquery-3.6.0.min.js"
+  integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+  crossorigin="anonymous"></script>
+
+           
+
+<script>
+
+  var dayId = "9.1.D";
+  
+  $( document ).ready(function() {
+     setTimeout(() => {$(".rc-container-wrapper").addClass("DN");}, 15000);
+        $(".btn_mre_info").css({"cursor": "none"})
+$(".btn-payment").css({"cursor": "none"})
+    fetchDataAndDisplay();
+   
+    
+});
+
+    $(".container--s-pdp").find(".color-box-selector-type").click(function(){
+      $(".container--s-pdp").find(".color-box-selector-type").each(function(){
+        $(this).removeClass("is-active");
+      })
+    $(this).addClass("is-active");
+      $("#price-selected").text($(this).find(".price-wrap").children('.h3').first().text())
+    console.log($("#add-Cart-pdp-new").offset().top);
+    console.log($("#add-Cart-pdp-new").position().top);
+        if ($(this).data("attr") === "non-subscription-box" ){
+           $(".subscription-duration").addClass("DN")
+        }else {
+          $(".subscription-duration").removeClass("DN")
+        }
+    
+       $('html, body').animate({
+        scrollTop: $("#pdp-subscription-new").position().top
+    }, 200);
+ });
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+
+
+  function getProperties(){
+      let properties ={}; 
+      properties["_Fragrance"] = $("#display-fragrance_duft").val(); 
+      properties["_Duft"] = $("#display-fragrance_duft").val();
+      properties["_answerId"] = $("#display-answer_ID").val();
+      properties["_Cream IDDay"] = $("#display-daycreamid").val();
+      properties["Name"] =   $("#display-name").val();
+      properties["_skinId"] =  $("#display-skinid").val();
+    return properties;
+  }
+
+
+  function getFormData(){
+   const dayId = $("#display-daycreamid").val();
+   const subscriptionContainerSelected = $(".container--s-pdp").find(".color-box-selector-type.is-active");
+   const subscriptionBox = subscriptionContainerSelected.data("attr");
+   let sunscriptionType;
+    if(subscriptionBox.toLowerCase() == "subscription-box") {
+      sunscriptionType = true;
+    }else{
+      sunscriptionType = false;
+    }
+    
+   const productSku = "day30-"+dayId;
+   const getVariant = subscriptionContainerSelected.find('.pdIDs[data-attr="'+productSku+'"]').data("variant-id");
+   let itemsCart;
+   const selingPlan = parseInt($("#subscription_selected").val())
+   if(sunscriptionType) {
+       itemsCart = { items: [ { id: getVariant,  quantity: 1, selling_plan:selingPlan, properties:getProperties()   } ] }
+   }else {
+       itemsCart = { items: [ { id: getVariant,  quantity: 1, properties:getProperties()   } ] }
+   }
+   
+   console.log(itemsCart);
+    
+  return itemsCart;
+ }
+
+  
+  function addCartFunnel(){
+    let formData = getFormData();
+    fetch('/cart/add.js', {   method: 'POST',   headers: {     'Content-Type': 'application/json'   },
+    body: JSON.stringify(formData)
+})
+.then(response => {
+   console.log("true ");
+   theme.updateCartSummaries(true, true, true);
+})
+.catch((error) => {
+  console.log("true ");
+        theme.updateCartSummaries(true, true, true); 
+  console.error('Error:', error);
+});
+  }
+
+  function fetchDataAndDisplay(){
+     var skinIdCust= getUrlVars()["skinid"];
+		$.ajax({
+			url:"https://europe-west1-metrics-production-1.cloudfunctions.net/getDataForOrder/" + skinIdCust ,
+			method:"GET"
+		}).done(function(response){
+           $(".btn_mre_info").css({"cursor": "pointer"})
+$(".btn-payment").css({"cursor": "pointer"})
+		     console.log(response);
+          let dayCream = response.cream.day.id;
+          let nightCream = response.cream.night.id;
+            $("#display-daycreamid").val(response.cream.day.id);
+            $("#display-skinid").val(skinIdCust);
+            $("#display-answer_ID").val(response.answerId);
+            $("#display-fragrance").val(response.cream.day.fragrance);
+            $("#display-fragrance_duft").val(response.cream.day.fragranceName);
+            $("#display-name").val(response.cream.day.name);
+          fetchCreamIngredientsData(dayCream, nightCream);
+	 });          
+  }
+
+   function fetchCreamIngredientsData(daycreamid, nightcreamid ){
+     console.log(daycreamid);
+     console.log(nightcreamid)
+    let locale =  window.location.host.split('.')[1] ? window.location.host.split('.')[0] : false;
+    
+    var obj = {"creamId":{"day":daycreamid,"night":nightcreamid},"locale": locale === "en" ? "en" : "de"}
+   $.ajax({
+  type: "POST",
+  url: "https://europe-west1-metrics-production-1.cloudfunctions.net/getCreamIngredients",
+  data: obj,
+  success: function(response) {
+	  // A function to be called if the request succeeds.
+        
+    var IngredientsDataday = response.ingredientsText.day;
+    var IngredientsDatanight = response.ingredientsText.night;
+    $("#slideDayCream").html(IngredientsDataday);
+   
+   var heroIngredients = response.ingredients;
+    let dayCreamHero = heroIngredients.filter(item => item.ofCream.includes("day"));
+    let nightCreamHero = heroIngredients.filter(item => item.ofCream.includes("night"));
+
+    let dayStr = "";
+    let nightStr = "";
+
+    for (var ingr of dayCreamHero ) {
+      console.log("ingr "+ingr.name)
+      dayStr += "<div><b>"+ingr.name+"</b>: "+ingr.description+"</div>";
+    }
+
+    $("#slideDayCreamHero").append(dayStr);
+     for (var ingr of nightCreamHero ) {
+      console.log("ingr "+ingr.name)
+      nightStr += "<div><b>"+ingr.name+"</b>: "+ingr.description+"</div>";
+    }
+     $(".slidesNightContent").remove();
+      
+      $("#skin_result_popup").find(".checkRecomm").remove();
+   
+    fetchLifestyleData();
+  }
+});
+  }
+
+
+  //skinType    
+    var lifestyleAllData = [{"title":"My skin type is","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/sk.svg?v=14728403771609218710","type":"skintype","skinType":[{"id":1,"type":"Dry","description":"Your skin is dry, but fear not! We have an easy solution for you: our day and night creams contain ingredients to soothe and soften your skin, keeping it moisturized at all times."},{"id":2,"type":"VeryDry","description":"Your skin is dry, but fear not! We have an easy solution for you: our day and night creams contain ingredients to soothe and soften your skin, keeping it moisturized at all times."},{"id":3,"type":"Oily","description":"Sebum is secreted by your skin as a natural moisturizer. But excess sebum can clog your pores and cause acne. Luckily your personalized cream is tailored for your skin to find its perfect balance."},{"id":4,"type":"Mischhaut","description":"With combination skin it can be difficult to find the right product tackling both your dry and oily areas at the same time. Luckily your personalized cream contains ingredients to  soothe your dry areas, and keep you oily areas balanced."},{"id":5,"type":"normal","description":"With combination skin it can be difficult to find the right product tackling both your dry and oily areas at the same time. Luckily your personalized cream contains ingredients to  soothe your dry areas, and keep you oily areas balanced."}]},{"title":"My skin tends to show redness","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/redness.svg?v=16201943310377837805","type":"reddening","skinType":[{"id":1,"type":"0","description":"Your skin doesn't have redness, which means that it's moisturized and hydrated. Keep up the good work!"},{"id":2,"type":"1","description":"Sometimes, your skin shows redness due to lifestyle and environmental factors, e.g. climate changes. Ensure that your skin stays hydrated and protected."},{"id":3,"type":"2","description":"To prevent redness we only use hypoallergenic fragrances.If you often have redness, a dermatologist could help you find the cause.Ensure that your skin stays hydrated and protected."}]},{"title":"Your travel habits","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/plane.svg?v=3308805964373302485","type":"flyingFrequency","skinType":[{"id":1,"type":"0","description":"Amazing - Your skin is safe from the low humidity and recycled air of air travel! Not to mention the great contribution you're making to protecting the environment."},{"id":2,"type":"1","description":"You only fly a few times a year, so your skin is relatively safe from the low humidity and recycled air on planes. Make sure to take care of your skin before, during, and after the flight by using moisturizer and you should be fine!"},{"id":3,"type":"2","description":"You fly 4-8 times a year, which is good news for your skin as it doesn't get exposed too often to the low humidity and recycled air on planes. Make sure that you're taking care of your skin before, during, and after your flight by applying a good amount of moisturizer."},{"id":4,"type":"3","description":"Wow, you fly every month! It is important that you keep your skin hyrdated so that it is best protected from the low humidity and recycled air on planes. Your AVE & YOU cream will contain the right amount of Hyaluronic acid to compensate for the dehydration of your skin during your flights."},{"id":5,"type":"4","description":"Wow, you are a busy bee! Your skin is exposed a lot to the low humidity and recycled air on planes. The resulting dehydration and stress your skin experiences during air travel is best compensated by applying a good amount of moisturizer to your skin before, during, and after flight.  Your AVE & YOU cream will contain a high level of Hyaluronic acid that helps your skin to compensate for moisture loss and have a calming effect on stressed skin."}]},{"title":"Your daily sun exposure","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/sun.svg?v=12683879583288890766","type":"sunExposition","skinType":[{"id":1,"type":"0","description":"You are keeping away from direct sunlight. That is great news for your skin, because long exposure can cause a variety of issues, including premature aging, wrinkles and sunburn. Continue to stay in the shade and don't forget to use sun protection according to your skin type!"},{"id":2,"type":"1","description":"You are exposed to sunlight 2-4 hours a day. Make sure that you are well protected, as prolonged exposure to the sun can damage your skin and cause premature aging. Your AVE & YOU cream will ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"},{"id":3,"type":"2","description":"You spend a lot of time in the sun. This may have negative effects on your skin (e.g. premature aging, wrinkles, dark spots, loss of elasticity). Try to stay more in the shade and don't forget to use sun protection according to your skin type! Your AVE & YOU cream will also ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"},{"id":4,"type":"3","description":"You spend a lot of time in the sun. This may have negative effects on your skin (e.g. premature aging, wrinkles, dark spots, loss of elasticity). Try to stay more in the shade and don't forget to use sun protection according to your skin type! Your AVE & YOU cream will also ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"},{"id":5,"type":"4","description":"You spend a lot of time in the sun. This may have negative effects on your skin (e.g. premature aging, wrinkles, dark spots, loss of elasticity). Try to stay more in the shade and don't forget to use sun protection according to your skin type! Your AVE & YOU cream will also ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"}]},{"title":"Your daily water intake","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/water.svg?v=16637081063602910020","type":"glassWaterIntake","skinType":[{"id":1,"type":"0","description":"The amount of water you drink during the day is below average. Drinking water can help to prevent premature aging, as well as impurities and helps to keep a good complexion. You should try to increase your water intake while we make sure that your cream is giving your skin the right level of hydration."},{"id":2,"type":"1","description":"The amount of water you drink during the day is below average. Drinking water can help to prevent premature aging, as well as impurities and helps to keep a good complexion. You should try to increase your water intake while we make sure that your cream is giving your skin the right level of hydration."},{"id":3,"type":"2","description":"Your daily water intake is right about average, but we recommend to drink a little more water to improve the health of your skin. Drinking water can help to prevent premature aging, as well as impurities and helps to keep a good complexion. We will make sure that your formula is supporting the right level of hydration of your skin."},{"id":4,"type":"3","description":"Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."},{"id":5,"type":"4","description":"Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."},{"id":5,"type":"6","description":"Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."},{"id":5,"type":"8","description":"Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."},{"id":5,"type":"9+","description":"Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."}]},{"title":"Your stress level","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/meditate.svg?v=4086451458156057167","type":"stressLevel","skinType":[{"id":1,"type":"0","description":"Great, most of the time you feel relaxed and this should also be visible in your skin! Stress hormones can slow down the collagen synthesis, which influences the elasticity of the skin and can lead to premature aging. So being relaxes is great for your skin!"},{"id":2,"type":"1","description":"Great, most of the time you feel relaxed and this should also be visible in your skin! Stress hormones can slow down the collagen synthesis, which influences the elasticity of the skin and can lead to premature aging. So being relaxed is great for your skin! Make sure you keep taking a break from time to time and let your body rest."},{"id":3,"type":"2","description":"Great, most of the time you feel relaxed and this should also be visible in your skin! Stress hormones can slow down the collagen synthesis, which influences the elasticity of the skin and can lead to premature aging. So being relaxed is great for your skin! Make sure you keep taking a break from time to time and let your body rest."},{"id":4,"type":"3","description":"You are under stress and this can have negative effects on your skin. Try to take a break from time to time and let your body rest. Stress hormones can slow down the collagen synthesis, which influences the elasticity of your skin and can lead to premature aging. Your AVE & YOU cream contains the right level of active ingredients which strengthen the elasticity of your skin and counteract premature skin aging."},{"id":5,"type":"4","description":"You are under stress and this can have negative effects on your skin. Try to take a break from time to time and let your body rest. Stress hormones can slow down the collagen synthesis, which influences the elasticity of your skin and can lead to premature aging. Your AVE & YOU cream contains the right level of active ingredients which strengthen the elasticity of your skin and counteract premature skin aging."}]},{"title":"Your smoking habits","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/cigarette.svg?v=14965223516095436119","type":"smoking","skinType":[{"id":1,"type":"0","description":"You never smoke. That is great news for your skin! Smoking can cause a dull complexion and premature aging, so keep up the great work!"},{"id":2,"type":"1","description":"Your smoking habits can have negative effects on your skin, such as a dull complexion and premature aging. Good skincare can help to maintain a fresh complexion and reduce premature aging. Your AVE & YOU cream will contain active ingredients such as vitamin C and Hyaluronic acid which aim to counterbalance the effects of smoking on your skin."},{"id":3,"type":"2","description":"Your smoking habits can have negative effects on your skin, such as a dull complexion and premature aging. Good skincare can help to maintain a fresh complexion and prevent premature aging. Your AVE & YOU cream will contain active ingredients such as Vitamin C and Hyaluronic Acid which aim to counterbalance the effects that smoking has on your skin."},{"id":4,"type":"3","description":"Smoking causes a deterioration of collagen in the skin, which can lead to sagging skin and wrinkles. You can slow down these signs of aging by having a good skincare routine. Your AVE & YOU cream will contain a high level of active ingredients such as Vitamin C and Hyaluronic Acid which aim to counterbalance the effects of smoking on your skin."},{"id":5,"type":"4","description":"Smoking causes a deterioration of collagen in the skin, which can lead to sagging skin and wrinkles. You can slow down these signs of aging by having a good skincare routine. Your AVE & YOU cream will contain a high level of active ingredients such as Vitamin C and Hyaluronic Acid which aim to counterbalance the effects of smoking on your skin."}]},{"title":"Your blue light exposure","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/Blue_light.svg?v=4139393738149125852","type":"bluelightExposition","skinType":[{"id":1,"type":"0","description":"You spend a few hours a day in front of a screen. If this time increases we recommend a blue light protection filter in your skincare."},{"id":2,"type":"1","description":"You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."},{"id":3,"type":"2","description":"You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."},{"id":4,"type":"3","description":"You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."},{"id":4,"type":"4","description":"You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."}]},{"title":"Your blue light exposure","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/Blue_light.svg?v=4139393738149125852","type":"bluelightExposition","skinType":[{"id":1,"type":"0","description":"You spend a few hours a day in front of a screen. If this time increases we recommend a blue light protection filter in your skincare."},{"id":2,"type":"1","description":"You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."},{"id":3,"type":"2","description":"You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."},{"id":4,"type":"3","description":"You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."}]},{"title":"Your environment","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/location-village.svg?v=10120292450964336639","type":"urbanEnvironment","skinType":[{"id":1,"type":"0","description":"You live rather rural. Great, your skin shouldn't have any problems with air pollution!"},{"id":2,"type":"1","description":"You live rather rural. Great, your skin shouldn't have any problems with air pollution!"},{"id":3,"type":"2","description":"You live in a small town. Dirt particles in the air will be limited but nevertheless can stress your skin. With an Anti- Pollution Filter in your skincare you are on the safe side. It helps to protect your skin."},{"id":4,"type":"3","description":"You live in a city. Dirt particles in the air can stress your skin. With an Anti- Pollution Filter in your skincare you are on the safe side. It helps to protect your skin."},{"id":5,"type":"4","description":"You live in a big city. Dirt particles in the air can stress your skin. With an Anti- Pollution Filter in your skincare you are on the safe side. It helps to protect your skin."}]},{"title":"Your sleeping patterns","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/Sleep.svg?v=16607544554478506459","type":"sleep","skinType":[{"id":1,"type":"4","description":"Your're not sleeping a lot. Getting sufficient rest is important for your skin and body to regenerate and skin is prone to looking older if you're consistently missing sleep. Try to get at least 7 hours of rest every night. We understand only too well that sometimes there just aren't enough hours in the day. Hence our night cream ingredients DNA Night Boost and Teloplex help to compensate for a lack of sleep and support your skin's regeneration overnight."},{"id":2,"type":"6","description":"You sleep less than average. Getting sufficient rest is important for your skin and body to regenerate and skin is prone to looking older if you're consistently missing sleep. Try to get at least 7 hours of rest every night. We understand only too well that sometimes there just aren't enough hours in the day. Hence our night cream ingredients DNA Night Boost and Teloplex help to compensate for a lack of sleep and support your skin's regeneration overnight."},{"id":3,"type":"8","description":"Great! Your skin gets enough time to regenerate and repair itself. Keep up your great sleeping habit! Our night cream ingredients DNA Night Boost and Teloplex support your skin's regeneration overnight."},{"id":4,"type":"9+","description":"Great! Your skin gets enough time to regenerate and repair itself. Keep up your great sleeping habit! Our night cream ingredients DNA Night Boost and Teloplex support your skin's regeneration overnight."}]},{"title":"Your diet","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/Nutrition.svg?v=1593229808194931899","type":"nutrition","skinType":[{"id":1,"type":"alcohol","description":"Cheers! You drink a glass now and then and to be honest, life is too short to do without these pleasures! However, alcohol leads to dehydration. Wrinkles and pores can become more visible and your skin may lose it's natural plumpness and healthy glow. Your AVE & YOU cream will contain a high level of active ingredients aiming to counterbalance any potential deficits."},{"id":2,"type":"junkfood","description":"Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it."},{"id":3,"type":"coffee","description":"Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."},{"id":4,"type":"alcohol,junkfood","description":"Cheers! You drink a glass now and then and to be honest, life's too short to do without these pleasures! However, alcohol leads to dehydration and can make wrinkles and pores more visible. Furthermore, your skin may lose its natural plumpness and healthy glow. Your AVE & YOU cream will contain a high level of active ingredients aiming to counterbalance any potential deficits. Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it."},{"id":5,"type":"alcohol,coffee","description":"Cheers! You drink a glass now and then and to be honest, life's too short to do without these pleasures! However, alcohol leads to dehydration and can make wrinkles and pores more visible. Furthermore, your skin may lose its natural plumpness and healthy glow. Your AVE & YOU cream will contain a high level of active ingredients aiming to counterbalance any potential deficits. Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."},{"id":6,"type":"coffee,junkfood","description":"Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it. Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."},{"id":7,"type":"alcohol,coffee,junkfood","description":"Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it. Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."},{"id":8,"type":"none","description":"You eat healthy, which is a fantastic start for great skin! While your personalized cream does not need to counter balance any nutrition insufficiencies our personalized AVE & YOU cream will nevertheless keep your skin in balance and improve its overall appearance."}]},{"title":"Your exercise habits","img":"//cdn.shopify.com/s/files/1/0057/5268/4611/files/fitness.svg?v=16840573649037471049","type":"weeklySports","skinType":[{"id":1,"type":"IndoorWorkout","description":"Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs."},{"id":2,"type":"OutdoorWorkout","description":"Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores.Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs."},{"id":3,"type":"WaterSports","description":"You spend a lot of time in the water. Chlorine and sea salt residues can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin. We will make sure your formula provides."},{"id":4,"type":"IndoorWorkout,OutdoorWorkout","description":"Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs."},{"id":5,"type":"IndoorWorkout,WaterSports","description":"Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs. You spend a lot of time in the water. Chlorine and sea salt residue can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin - we will make sure that your day and night cream formulas do just that."},{"id":6,"type":"OutdoorWorkout,WaterSports","description":"Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs. You spend a lot of time in the water. Chlorine and sea salt residue can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin - we will make sure that your day and night cream formulas do just that."},{"id":7,"type":"IndoorWorkout,OutdoorWorkout,WaterSports","description":"Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs. You spend a lot of time in the water. Chlorine and sea salt residue can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin - we will make sure that your day and night cream formulas do just that."},{"id":8,"type":"NoSports","description":"You are not exercising and your skin is missing out. Working out increases blood flow to your skin and helps nourish and oxygenate the cells. But don't worry, your AVE & YOU cream will contain the right level of active ingredients to keep your skin looking healthy and balanced."}]}]
+  
+  function prepareLifestyleHtml(headerTitle, img, val){
+    var str = "";
+    str += '<article class="skin-section__body-item show" data-notation="skinType">';
+    str += '<div class="skin-section__body-item-icon"><img src="'+img+'" alt=""></div>';
+    str += '<input type="hidden" value="Dry">'
+    str +=  '<h2 class="h6 skin-section__body-item-title text-left">'+headerTitle+'</h2>'
+    str +=  '<div class="skin-section__body-item-iwr">'
+    str +=  ' <div class="skin-section__body-item-text show">'                         
+    str +=   '<span>'+val[0].description+'</span>'                           
+    str +=   '<input type="hidden" value="<-Dry->">';                      
+    str +=   ' </div>';                      
+    str +=   '</div>';            
+    str +=    '</article>' ;        
+    return str;
+  }
+
+
+   
+  function skinTypeInfo(val, lifestyleType){
+    var typedata = lifestyleAllData.filter(function(item){
+     return item.type === lifestyleType;
+  })
+
+  if( typedata.length !== 0){
+  let skinTypeSel = typedata[0].skinType.filter(function(item){
+     return item.type === val;
+  })
+   if (skinTypeSel.length !== 0) return prepareLifestyleHtml(typedata[0].title, typedata[0].img, skinTypeSel); else return "";
+  }else{
+    return "";
+  }
+  }
+
+
+  function fetchLifestyleData(){
+    let skinIdCustLife= getUrlVars()["skinid"];
+     let tokenLife = getUrlVars()["token"];
+     $.ajax({
+  type: "POST",
+  url: "https://europe-west1-metrics-production-1.cloudfunctions.net/getAnswers/"+skinIdCustLife+"/"+tokenLife,
+  success: function(response) {
+   console.log(response)
+    // $("#slideLifestyle").append("")
+    let skinConditionType = response.skinCondition.skinType;
+    let reddeningType = response.skinCondition.reddening;
+    let flyingFreqType = response.lifestyle.flyingFrequency;
+    let sunExpositionType = response.lifestyle.sunExposition;
+    let glassWaterType = response.lifestyle.glassWaterIntake;
+    let weeklySports = response.lifestyle.weeklySports;
+    let stressLevelType = response.lifestyle.stressLevel;
+    let smokingType = response.lifestyle.smoking;
+    let blueLightType = response.lifestyle.bluelightExposition;
+    let urbanEnvironmentType = response.lifestyle.urbanEnvironment;
+    let sleepType = response.lifestyle.sleep;
+    let nutritionType = response.lifestyle.nutrition.sort();
+    let weeklySportsType = response.lifestyle.weeklySports.sort();
+
+    
+    let skinInfo =  skinTypeInfo(skinConditionType, "skintype");
+    if(typeof reddeningType !== "undefined")  skinInfo +=  skinTypeInfo(reddeningType, "reddening");
+    
+    skinInfo +=  skinTypeInfo(flyingFreqType, "flyingFrequency");
+    skinInfo +=  skinTypeInfo(sunExpositionType, "sunExposition");
+    skinInfo +=  skinTypeInfo(glassWaterType, "glassWaterIntake");
+    skinInfo +=  skinTypeInfo(stressLevelType, "stressLevel");
+    skinInfo +=  skinTypeInfo(smokingType, "smoking");
+
+    skinInfo +=  skinTypeInfo(blueLightType, "bluelightExposition");
+    skinInfo +=  skinTypeInfo(urbanEnvironmentType, "urbanEnvironment");
+
+    skinInfo +=  skinTypeInfo(sleepType, "sleep");
+    skinInfo +=  skinTypeInfo(nutritionType.toString(), "nutrition");
+    skinInfo +=  skinTypeInfo(weeklySportsType.toString(), "weeklySports");
+    
+    
+    $("#slideLifestyle").append(skinInfo);
+  }
+
+  });
+  }
+                
+
+</script>

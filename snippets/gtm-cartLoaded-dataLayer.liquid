@@ -1,0 +1,48 @@
+{% comment %}
+  Product Page Loaded - View Item Data Layer
+{% endcomment %}
+
+<script type="text/javascript">
+  window.addEventListener("DOMContentLoaded", (event) => {
+    window.dataLayer = window.dataLayer || [];
+    
+    window.appStart = function(){
+      var template_name = "{{ template.name }}";
+      console.log("TEMPLATE NAME", "{{ template.name }}")
+      
+      if (template_name === "cart") {
+        window.eventHandle = function(){
+          console.log("CART", {{ cart | json }})
+          console.log("CART ITEMS", {{ cart.items | json }})
+          var cartItems = {{ cart.items | json }};
+          var itemsArr = [];
+          console.log(theme)
+    
+          if (cartItems) {
+            cartItems.map((ci) => {
+              itemsArr.push({
+                item_id: ci.product_id,
+                item_name: ci.title,
+                discount: ci.total_discount,
+                item_brand: ci.vendor,
+                item_category: ci.product_type,
+                price: theme.formatMoney(ci.final_price, `${theme.money_format}`.replace(" €", "")),
+              })
+            });
+          }
+          dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+          dataLayer.push({
+            event: "view_cart",
+            ecommerce: {
+              currency: "{{ shop.currency }}",
+              value: {{ cart.total_price | money_without_currency | default: 0 | json }},
+              items: itemsArr
+            }
+          });
+        }
+        eventHandle();
+      }
+    }
+    appStart();
+  });
+</script>

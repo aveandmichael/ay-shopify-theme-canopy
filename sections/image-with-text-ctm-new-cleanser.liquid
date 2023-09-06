@@ -1,0 +1,442 @@
+{% style %}
+
+/*OS Adjustments*/
+
+  .image-with-text.bg__grey {
+    background-color:#f1f1f1
+  }
+
+  
+  .image-with-text__image__inner__productdata {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    top:33%;
+    position: absolute;
+    text-align: left;
+    padding-left:66%;
+  }
+
+  .image-with-text__image__inner__productdata__inner {
+    flex:1;
+  }
+
+  .product__cst__title {
+    font-weight:bold;
+  }
+
+  .product__cst__price {
+    margin-top:-15px;
+  }
+
+  .image-with-text__image__inner__productdata__inner .product__link {
+    display:block !important;
+  }
+
+  .image-with-text__image__inner__productdata__inner .price {
+    font-family: Montserrat,sans-serif;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 1.6em;
+    color: #000;
+    margin: 0;
+    padding: 0;
+    line-height: 1em;
+    text-decoration: line-through;
+  }
+
+  .price.price__crossed, .price.priced__ml {
+    color:#707070;
+  }
+  
+  .price__ml {
+    font-size:12px !important;
+  }
+  
+  .price.price__discounted {
+    xcolor:red;
+    text-decoration: none;
+  }
+  
+  .image-with-text__text.iwt__cst .rte {
+    font-size:20px;
+  }
+
+  .lsa__cst a {
+    display:unset !important;
+    flex:unset !important;
+    font-size:18px;
+  }
+
+  .lsa__cst__asterisk__wrapper {
+    padding-top:20px;
+  }
+
+  .lsa__cst__asterisk__inner {
+    font-size:0.8em;
+  }
+
+
+  @media(min-width: 767px) {
+    
+  .image-with-text__text.iwt__cst {
+    margin-left: -10%;
+  }
+  }
+  
+
+ @media(max-width: 767px) {
+
+   
+   .image-with-text__image__cst {
+      margin-left:-20px;
+    }
+   
+    .image-with-text__image__inner__productdata {
+      width: 95%;
+    }
+
+   .image-with-text__image__inner__productdata__inner .price {
+     font-size:1.4em;
+   }
+   
+    .image-with-text__text.iwt__cst {
+      padding-top:20px;
+    }
+   
+   .image-with-text__text.iwt__cst .h1.align-center, .image-with-text__text.iwt__cst .rte.align-center {
+    text-align:left;
+  }
+
+   .image-with-text__text.iwt__cst .h1.align-center {
+     xpadding-top:20px;
+     padding-bottom:10px;
+   }
+
+   .image-with-text__image__inner__productdata {
+     top:18%;
+   }
+   
+ }
+  
+/*OS Adjustments*/
+
+  
+  @media(min-width: 768px) {
+    .section-id-{{ section.id }} .image-with-text__image__inner {
+      {% if section.settings.media_size == "cover" %}
+        transform: scale({{ section.settings.image_width | times: 0.01 }});
+      {% elsif section.settings.media_size == "contain" %}
+        height: auto !important;
+        width: {{ section.settings.image_width }}% !important;
+      {% endif %}
+    }
+
+    .section-id-{{ section.id }} .image-with-text__text {
+      flex-basis: {{ section.settings.text_width }}%;
+    }
+
+    .section-id-{{ section.id }} .image-with-text__image__inner .rimage-outer-wrapper {
+      background-size: {{ section.settings.media_size }};
+    }
+  }
+  @media(max-width: 767px) {
+    .section-id-{{ section.id }} .image-with-text__image__inner {
+      {% if section.settings.media_size == "cover" %}
+        transform: scale({{ section.settings.image_width_mobile | times: 0.01 }});
+      {% elsif section.settings.media_size == "contain" %}
+        height: auto !important;
+        width: {{ section.settings.image_width_mobile }}% !important;
+      {% endif %}
+    }
+  }
+{% endstyle %}
+
+{% capture image_html %}
+  <div class="image-with-text__image image-with-text__image__cst" data-cc-animate>
+    <div class="image-with-text__image__inner lazyload--placeholder">
+
+      {%- if section.settings.image == blank and section.settings.video == blank -%}
+        <div class="placeholder-image">{{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}</div>
+      {%- elsif section.settings.video == blank -%}
+        {% assign img_url = section.settings.image | img_url: '1x1' | replace: '_1x1.', '_{width}x.' %}
+        <div class="rimage-outer-wrapper"
+            data-cc-animate="cc-zoom-out"
+            data-lazy-bg="{{ img_url }}"
+            style="max-width: {{ section.settings.image.width }}px; max-height: {{ section.settings.image.height }}px">
+          <div class="rimage-wrapper" style="padding-top:{{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%">
+            
+      <!-- OS Adjustments -->
+      <div class="image-with-text__image__inner__productdata">
+        <span class="image-with-text__image__inner__productdata__inner">
+          <p class="product__cst__title">Free Cleanser worth &nbsp; 22,99€</p>
+          <p>
+            <span class="price price__crossed">22,99 €</span><br>
+            <span class="price__ml">(22,99 € / 100ml)</span><br>
+          </p>
+          <p class="product__cst__price">
+            <span class="price price__discounted">0,00 €</span>
+          </p>
+          <a class="product__link" href="#cst__jm__reviews">
+            <p class="reviews_star">
+              {% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge', concierge_install: false, product: all_products['foamy-famous-cleanser'] %}
+            </p>
+            <p class="reviews_count" style="margin-top:-15px;">
+              {{ all_products['foamy-famous-cleanser'].metafields.reviews.rating_count }} Reviews
+            </p>
+          </a>
+        </span>
+      </div>
+      <!-- OS Adjustments END -->
+            
+            <noscript>
+              <img src="{{ section.settings.image | img_url: '1024x1024' }}" alt="{{ section.settings.image.alt | escape }}" class="rimage__image">
+            </noscript>
+          </div>
+        </div>
+      {%- else -%}
+        {% render 'inline-video', video: section.settings.video, image: section.settings.image %}
+      {% endif %}
+    </div>
+  </div>
+{% endcapture %}
+
+<section class="border-top section image-with-text bg__grey cf
+  section-id-{{ section.id }}
+  {% if section.settings.alternate_bg_color %}use-alt-bg full-width-section{% endif %}
+  {% if section.settings.image_width < 100 and section.settings.media_size == "contain" %}section-spacing-sm{% endif %}
+  image-with-text--{{ section.settings.media_size }}
+  image-with-text--image-{{ section.settings.image_position }}
+" data-section-type="image-with-text">
+
+  <div class="container">
+    {% if section.settings.image_position == 'left' %}{{ image_html }}{% endif %}
+
+
+    <!-- OS Adjustment -->
+    <div class="image-with-text__text iwt__cst align-center" data-cc-animate data-cc-animate-delay="0.2s">
+      <div class="image-with-text__text__wrap
+          {% if section.settings.media_size == "contain" %}padded-block-y{% else %}padded-block{% endif %}
+        ">
+        
+        {% if section.settings.subheading != blank %}
+          <div class="feature-subheader" data-cc-animate data-cc-animate-delay="0.2s">{{ section.settings.subheading | escape }}</div>
+        {% endif %}
+
+        <div class="rte align-center" data-cc-animate data-cc-animate-delay="0.4s">{{ section.settings.text__above }}</div>
+        
+        {% if section.settings.title != blank %}
+          <h2 class="h1 align-center" data-cc-animate data-cc-animate-delay="0.3s">
+            {{ section.settings.title | newline_to_br }}
+          </h2>
+        {% endif %}
+
+        <div class="rte align-center" data-cc-animate data-cc-animate-delay="0.4s">{{ section.settings.text__below }}</div>
+        {% if section.settings.button_label != blank %}
+
+        <!-- END OS Adjustment -->
+
+        <div class="light-space-above lsa__cst" data-cc-animate data-cc-animate-delay="0.5s">
+          {% if section.settings.button_link != blank %}
+            <a class="
+              {% if section.settings.button_style == 'link' %}link-display {% else %}btn {% if section.settings.button_style == 'secondary' %}btn--secondary{% endif %}{% endif %}"
+               href="{{ section.settings.button_link }}">
+          {% else %}
+            <span class="
+              {% if section.settings.button_style == 'link' %}link-display {% else %}btn {% if section.settings.button_style == 'secondary' %}btn--secondary{% endif %}{% endif %}">
+          {% endif %}
+
+            {{ section.settings.button_label | escape }}
+
+          {% if section.settings.button_link == blank %}
+            </span>
+          {% else %}
+            </a>
+          {% endif %}
+        </div>
+
+        <!--  OS Adjustment -->
+        <div class="lsa__cst__asterisk__wrapper">
+          {% if section.settings.button_asterisk != blank %}
+            <div class="lsa__cst__asterisk__inner">
+              {{ section.settings.button_asterisk }}
+            </div>
+          {% endif %}
+        </div>
+        <!-- END OS Adjustment -->
+        
+
+
+        {% endif %}
+      </div>
+    </div>
+
+    {% if section.settings.image_position == 'right' %}{{ image_html }}{% endif %}
+  </div>
+</section>
+
+
+{% schema %}
+  {
+    "name": "Media with text cleaner",
+    "class": "section-image-with-text",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Text"
+      },
+      {
+        "type": "text",
+        "id": "subheading",
+        "label": "Subheading"
+      },
+      {
+        "type": "textarea",
+        "id": "title",
+        "label": "Heading",
+        "default": "Media with text"
+      },
+      {
+        "type": "richtext",
+        "id": "text__above",
+        "label": "Text above",
+        "default": "<p>Use this text to share information about your store with your customers. Describe product, share announcements, or welcome customers to your store.</p>"
+      },
+      {
+        "type": "richtext",
+        "id": "text__below",
+        "label": "Text below",
+        "default": "<p>Use this text to share information about your store with your customers. Describe product, share announcements, or welcome customers to your store.</p>"
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button link"
+      },
+      {
+        "type": "text",
+        "id": "button_asterisk",
+        "label": "Button Asterisk"
+      },
+      {
+        "type": "select",
+        "id": "button_style",
+        "label": "Button style",
+        "default": "primary",
+        "options": [
+          {
+            "label": "Button - primary",
+            "value": "primary"
+          },
+          {
+            "label": "Button - secondary",
+            "value": "secondary"
+          },
+          {
+            "label": "Link",
+            "value": "link"
+          }
+        ]
+      },
+      {
+        "type": "range",
+        "id": "text_width",
+        "min": 40,
+        "max": 70,
+        "step": 1,
+        "unit": "%",
+        "label": "Text width",
+        "default": 40
+      },
+      {
+        "type": "header",
+        "content": "Media"
+      },
+      {
+        "type": "image_picker",
+        "id": "image",
+        "label": "Image"
+      },
+      {
+        "id": "video",
+        "type": "text",
+        "label": "Video URL",
+        "info": "A URL to an MP4 video. It's recommended to pick an image also as it will be shown while the video loads."
+      },
+      {
+        "type": "range",
+        "id": "image_width",
+        "min": 40,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "label": "Media scale for Desktop",
+        "default": 100
+      },
+      {
+        "type": "range",
+        "id": "image_width_mobile",
+        "min": 40,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "label": "Media scale for Mobile",
+        "default": 100
+      },
+      {
+        "type": "select",
+        "id": "image_position",
+        "label": "Media position",
+        "default": "right",
+        "options": [
+          {
+            "value": "right",
+            "label": "Right"
+          },
+          {
+            "value": "left",
+            "label": "Left"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "id": "media_size",
+        "label": "Media size",
+        "options": [
+          {
+            "value": "cover",
+            "label": "Fill"
+          },
+          {
+            "value": "contain",
+            "label": "Natural"
+          }
+        ],
+        "default": "cover"
+      },
+      {
+        "type": "header",
+        "content": "Style"
+      },
+      {
+        "type": "checkbox",
+        "id": "alternate_bg_color",
+        "label": "Use alternate section color",
+        "default": false
+      }
+    ],
+    "presets": [
+	    {
+        "name": "Media with text cleaner",
+        "category": "Image",
+        "settings": {}
+      }
+    ]
+  }
+{% endschema %}

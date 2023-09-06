@@ -1,0 +1,1023 @@
+{{ 'skintest.css' | asset_url | stylesheet_tag }}
+
+{% assign mf = page.metafields.custom.questionnaire.value %}
+{% assign current_country = localization.country.iso_code %}
+
+<div class="qtnr__page_container">
+  <div class="qtnr__page_header">
+    <button class="qtnr__page_nav_back hidden">
+      {% render 'svg-arrow-left' %}
+    </button>
+    <div class="qtnr__page_logo__contianer">
+      <a href="/">
+        <img class="qtnr__page_logo" src="{{ section.settings.logo | img_url: 'master' }}" loading="lazy">
+      </a>
+    </div>
+  </div>
+  <div class="qtnr__progress_bar"></div>
+  <div class="qtnr__main_container">
+    {% for q in mf.questions.value %}
+      {% assign market_restrictions = q.market_restriction.value %}
+      {% if market_restrictions == null
+        or market_restrictions.size == 0
+        or market_restrictions contains current_country
+      %}
+        <div
+          class="qtnr__question {% if q.question_id != 'pigmenttationType' %}q_slide_further_right{% else %}q_slide_left{% endif %}"
+          data-question-id="{{ q.question_id }}"
+          data-question-index="{{ forloop.index }}"
+          data-question-multiple-max-selection="{% if q.multiple_max_selection %}{{ q.multiple_max_selection }}{% else %}0{% endif %}"
+          {% comment %}
+          {% unless forloop.index == 1 %}
+            hidden
+          {% endunless %}
+          {% endcomment %}
+          data-question-default-answer="{% if q.type == "disclaimer" and q.default_answer %}{{ q.default_answer.value.value }}{% endif %}"
+          data-question-popup-details="{{ q.popup_details | escape }}"
+        >
+          <p class="qtnr__question__main">{{ q.question }}</p>
+          {% if q.description %}
+            <p class="qtnr__question__desc">{{ q.description }}</p>
+          {% endif %}
+          {% if q.multiple_max_selection %}
+            <div class="qtnr__answer__choice_counter">
+              <span class="qtnr__answer__choice_selection">0</span> / <span>{{ q.multiple_max_selection }} {{ section.settings.multiple_selected_text }}</span>
+            </div>
+          {% endif %}
+          <div class="qtnr__answer {% if q.type == "creamLabel" %}qtnr__answer__creamLabel{% endif %}">
+            {% if q.type == 'single' or q.type == 'multiple' %}
+              {% for c in q.choices.value %}
+                <div
+                  class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }} {% if forloop.length <= 4  %}qtnr__answer__choice__oneliner{% else %}qtnr__answer__choice__twoliner{% endif %} qtnr__answer__choice__white_bg"
+                  data-question-index="{{ forloop.index }}"
+                  data-question-type="{{ q.type }}"
+                  data-answer-id="{{ c.answer_id }}"
+                  data-answer-value="{{ c.value }}"
+                  data-answer-text="{{ c.answer }}"
+                  data-answer-type="{{ c.data_type }}"
+                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                  data-answer-isnota="{{ c.is_nota }}"
+                  data-answer-icon="{% if c.icon %}true{% else %}false{% endif %}"
+                  data-answer-image="{% if c.image %}true{% else %}false{% endif %}"
+                >
+                  {% if c.image %}
+                    <div class="qtnr__answer__choice__img">
+                      <img src="{{ c.image | image_url }}" loading="lazy">
+                    </div>
+                  {% elsif c.icon %}
+                    <div class="qtnr__answer__choice__icon">
+                      <img src="{{ c.icon | image_url }}" loading="lazy">
+                    </div>
+                  {% endif %}
+                  <div class="qtnr__answer__choice__text">
+                    {% if q.type == "multiple" %}
+                      <div class="qtnr__answer__choice__checkbox qtnr__answer__choice__checkbox__unchecked"></div>
+                    {% endif %}
+                    <div class="qtnr__answer__choice__main">{{ c.answer }}</div>
+                    {% if c.description %}
+                      <div class="qtnr__answer__choice__desc">{{ c.description }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            {% elsif q.type == 'creamLabel' %}
+              <div
+                class="qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                data-question-index="{{ forloop.index }}"
+                data-question-type="{{ q.type }}"
+                data-answer-id=""
+                data-answer-value=""
+                data-answer-type=""
+                data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+              >
+                {% if q.image %}
+                  <div class="qtnr__answer__choice__img">
+                    <img src="{{ q.image | image_url }}" loading="lazy">
+                    <label
+                      class="qtnr__answer__creamLabel__label qtnr__answer__creamLabel__{{ q.question_id }}"
+                    ></label>
+                    <input type="text" placeholder="{{ q.input_placeholder }}">
+                  </div>
+                {% endif %}
+              </div>
+            {% elsif q.type == 'boolean' %}
+              {% for c in q.choices.value %}
+                <div
+                  class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                  data-question-index="{{ forloop.index }}"
+                  data-question-type="{{ q.type }}"
+                  data-answer-value="{{ c.value }}"
+                  data-answer-text="{{ c.answer }}"
+                  data-answer-type="{{ c.data_type }}"
+                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                >
+                  <div class="qtnr__answer__choice__boolean">
+                    {% comment %}
+                      <div class="choice__boolean__outer_circle">
+                        <div class="choice__boolean__inner_circle"></div>
+                      </div>
+                    {% endcomment %}
+                    <p>{{ c.answer }}</p>
+                  </div>
+                </div>
+              {% endfor %}
+            {% elsif q.type == 'input' %}
+              <div
+                class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
+                data-question-id="{{ q.question_id }}"
+                data-question-index="{{ forloop.index }}"
+                data-question-type="{{ q.type }}"
+                data-question-regex="{{ q.regex }}"
+                data-answer-type="{{ c.data_type }}"
+                data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+              >
+                <input
+                  type="text"
+                  placeholder="{{ q.input_placeholder }}"
+                  maxlength="{% if q.question_id == 'phoneNumber' %}15{% elsif q.question_id == 'age' %}2{% else %}200{% endif %}"
+                  style="{% if q.question_id == "phoneNumber" and localization.country.iso_code == 'IN' %}background: url('{{ localization.country | image_url }}') no-repeat scroll 5px center;text-indent:30px;background-size:30px;{% endif %}"
+                >
+                <p class="qtnr__error_msg hidden">{{ q.regex_error_message }}</p>
+              </div>
+            {% elsif q.type == 'faceScan' %}
+              <div
+                class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
+                data-question-index="{{ forloop.index }}"
+                data-question-type="{{ q.type }}"
+                data-answer-type=""
+                data-answer-leads-to=""
+              >
+                {% if localization.language.iso_code == 'en' or localization.language.iso_code == 'de' %}
+                  <iframe
+                    id="faceScanFrame"
+                    src="https://metrics-staging-1.web.app/{{ localization.language.iso_code }}/session_id/21"
+                    onload="faceScanFrameLoaded( this )"
+                    style="width: 100%; height: 1024px; border: none;"
+                    allow="camera *;microphone *"
+                  ></iframe>
+                {% elsif localization.language.iso_code == 'ar' %}
+                  <iframe
+                    id="faceScanFrame"
+                    src="https://metrics-staging-1.web.app/{{ localization.language.iso_code }}-{{ localization.country.iso_code | downcase }}/session_id/21"
+                    onload="faceScanFrameLoaded( this )"
+                    style="width: 100%; height: 1024px; border: none;"
+                    allow="camera *;microphone *"
+                  ></iframe>
+                {% endif %}
+              </div>
+            {% elsif q.type == 'disclaimer' %}
+              {% for c in q.choices.value %}
+                <div
+                  class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                  data-question-index="{{ forloop.index }}"
+                  data-question-type="{{ q.type }}"
+                  data-answer-value="{{ c.value }}"
+                  data-answer-text="{{ c.answer }}"
+                  data-answer-type="{{ c.data_type }}"
+                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                >
+                  <div class="qtnr__answer__choice__main hidden">{{ c.answer }}</div>
+                </div>
+              {% endfor %}
+            {% elsif q.type == 'endScreen' %}
+              <div
+                class="qtnr__endscreen qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__single"
+                data-question-index="{{ forloop.index }}"
+                data-question-type="{{ q.type }}"
+              >
+                <button class="qtnr__endscreen__pdp_btn">VIEW RESULT</button>
+              </div>
+            {% endif %}
+          </div>
+          {% if q.popup_details %}
+          <button class="qtnr__popup_details__btn">{% render "svg-question" %}</button>
+          {% endif %}
+          {% unless q.type == 'endScreen' %}
+            <div class="qtnr__navigation {% if q.question_id == 'faceScan' %}hidden{% endif %}">
+              {% comment %}
+                <div class="qtnr__navigation__prev">{{ section.settings.back_button_text }}</div>
+              {% endcomment %}
+              <div class="qtnr__navigation__next {% if q.type != "faceScan" and q.type != "disclaimer" %}qtnr__navigation__disabled{% endif %}">
+                {{ section.settings.next_button_text }}
+                {% render 'svg-chevron-right' %}
+              </div>
+            </div>
+          {% endunless %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<div class="popup_details popup_details__desktop slide_down hidden">
+    <div class="popup_details__x">
+        {% render 'svg-x' %}
+    </div>
+    <div class="popup_details__content">
+    </div>
+</div>
+
+{% schema %}
+{
+  "name": "Skin Test Q8",
+  "settings": [
+    {
+        "type": "image_picker",
+        "id": "logo",
+        "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "back_button_text",
+      "label": "BACK Button Text",
+      "default": "BACK"
+    },
+    {
+      "type": "text",
+      "id": "next_button_text",
+      "label": "NEXT Button Text",
+      "default": "NEXT"
+    },
+    {
+      "type": "text",
+      "id": "multiple_selected_text",
+      "label": "Multiple 'selected' text",
+      "default": "selected",
+      "info": "The word that comes in multiple selection counter e.g. 1/2 'selected'"
+    }
+  ]
+}
+{% endschema %}
+
+<script>
+  let faceScanEl = document.querySelector(".qtnr__question[data-question-id='faceScan']");
+  let faceScanElPrevSibling = faceScanEl.previousSiblingElement;
+  var ay_quiz_data = {q7: {faceScan: null}};
+  var isEndScreen = false;
+  var nextBtns = {};
+  var storeLocale = {{ localization.language.iso_code | json }};
+  var storeCountry = {{ localization.country.iso_code | json }};
+  var qtnrSize = {{ mf.questions.value | json }};
+  var previousQuestion = "pigmenttationType";
+  var currentQuestion = "pigmenttationType";
+  var testJourney = [];
+  var phonePrefixes = {
+    "IN": "+91"
+  }
+  ay_quiz_data["q7"]["locale"] = storeLocale;
+  ay_quiz_data["q7"]["country"] = storeCountry;
+
+  window.dataLayer = window.dataLayer || [];
+
+  function gtmSkinTestStart() {
+    window.appStart = function(){
+      window.eventHandle = function(){
+        dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+        dataLayer.push({
+          event: "skin_test_started",
+        });
+      };
+      eventHandle();
+    }
+    appStart();
+  }
+  function gtmSkinTestFinish() {
+    window.appStart = function(){
+      window.eventHandle = function(){
+        dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+        dataLayer.push({
+          event: "skin_test_finished",
+        });
+      };
+      eventHandle();
+    }
+    appStart()
+  }
+  function gtmSkinTestAnswer(questionIdx, questionId, answerValue, answerText) {
+    window.appStart = function(){
+      window.eventHandle = function(){
+        dataLayer.push({ ecommerce: null });  // Clear the previous ecommerce object.
+        dataLayer.push({
+          event: "skin_test_answered",
+          ecommerce: {
+            question_step: `Step ${questionIdx}`,
+            question_id: questionId,
+            answer_value: answerValue,
+            answer_text: answerText,
+          }
+        });
+      };
+      eventHandle();
+    }
+    appStart()
+  }
+  function gtmSkinTestTrack(questionIdx, questionId, answerValue, answerText, questionStep) {
+    if (questionIdx === "1") {
+      gtmSkinTestStart();
+      gtmSkinTestAnswer(questionIdx, questionId, answerValue, answerText);
+    } else if (questionIdx === "37") {
+      gtmSkinTestAnswer(questionIdx, questionId, answerValue, answerText);
+      gtmSkinTestFinish();
+    } else {
+      gtmSkinTestAnswer(questionIdx, questionId, answerValue, answerText);
+    }
+  }
+  function bringScreenToTop() {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
+  }
+  // function for detecting and catching faceScan results
+  function faceScanFrameLoaded(e) {
+    let frameIsLoaded = false;
+    window.addEventListener( "message", ( event ) => {
+      if (event.origin.includes("metrics-staging-1.web.app")) {
+        const { data } = event;
+        console.log("faceScanFrameData", data);
+        if( data.label == 'skin_id' ) {
+          //skinId = data.request.id;
+        }
+        if( data.label == 'results' ) {
+          if (data.request) {
+            if (faceScanEl) {
+              let navigationEl = faceScanEl.querySelector(".qtnr__navigation");
+              if (navigationEl) {
+                navigationEl.classList.remove('hidden');
+              }
+            }
+          }
+          ay_quiz_data["q7"]["faceScan"] = data.request;
+        }
+        if( data.label === 'skip' ) {
+          bringScreenToTop()
+          testJourney.push("faceScan");
+          previousQuestion = 'faceScan';
+          console.log("Skip facescan");
+          console.log("faceScanEl", faceScanEl);
+          if (faceScanEl) {
+            faceScanEl.classList.remove("q_slide_left");
+            faceScanEl.classList.add("q_slide_further_left");
+            faceScanEl.nextElementSibling.classList.remove("q_slide_further_right");
+            faceScanEl.nextElementSibling.classList.add("q_slide_left");
+            currentQuestion = faceScanEl.nextElementSibling.getAttribute("data-question-id");
+          }
+        }
+        if( data.label === 'face_scan_loaded' ) {
+          frameIsLoaded = true;
+        }
+        
+        console.log("SSSSRRRRRRCCCCC", e.src)
+      }
+
+      if (frameIsLoaded) {
+        console.log("AWDAWDADA", faceScanEl)
+        faceScanElPrevSibling.insertAfter(faceScanEl)
+      } else {
+        faceScanEl.remove()
+      }
+    });
+  }
+  function enforcePhoneInput(e, prevVal, numPrefix, nextBtn) {
+    if (e.target.value.length <= 2) {
+      e.target.value = e.target.value.replace(/\D+/g, '')
+      .replace(/^(\d{1})/, numPrefix);
+    }
+    if (e.target.value.length >= 13 && e.target.value.length <= 15) {
+      e.target.value = e.target.value.replace(e.target.value, currVal)
+      nextBtn.classList.remove('qtnr__navigation__disabled');
+    } else {
+      nextBtn.classList.add('qtnr__navigation__disabled');
+    }
+  }
+  
+  window.addEventListener("DOMContentLoaded", async (event) => {
+    var faceScanFrame = document.querySelector("#faceScanFrame");
+    var topBackBtn = document.querySelector(".qtnr__page_nav_back");
+    var popupDetailsEl = document.querySelector(".popup_details");
+    var multiAnswerQuestions = {};
+    var savedData = {};
+    var skinId = null;
+    var matchId = null;
+    var answerAccessToken = null;
+    let progress = 1;
+
+    function progressBar(answerEl, direction) {
+      let progressBarEl = document.querySelector(".qtnr__progress_bar");
+      if (direction === "forward") {
+        let questionEl = answerEl.closest(`.qtnr__question`);
+        let leadsTo = answerEl.getAttribute("data-answer-leads-to");
+        let questionLeadEl = document.createElement("div");
+        
+        progress = parseInt(questionEl.getAttribute("data-question-index"));
+        if (leadsTo) {
+          questionLeadEl = document.querySelector(`.qtnr__question[data-question-id='${leadsTo}']`);
+          let _progress = parseInt(questionLeadEl.getAttribute("data-question-index"));
+          progress = _progress - progress;
+        }
+        if (questionEl) {
+          if (leadsTo) {
+            for (let i = 0; i < progress; i++) {
+              let width = 100 / (qtnrSize.length - 1);
+              let progressEl = document.createElement("div");
+              progressEl.setAttribute("data-question-id", questionEl.getAttribute("data-question-id"));
+              progressEl.setAttribute("data-leads-to", leadsTo);
+              progressEl.setAttribute("data-progress-value", progress);
+              progressEl.classList.add("qtnr__progress");
+              progressEl.style.width = `${width}%`;
+              progressBarEl.appendChild(progressEl);
+            }
+          } else {
+            let width = 100 / (qtnrSize.length - 1);
+            let progressEl = document.createElement("div");
+            progressEl.classList.add("qtnr__progress");
+            progressEl.style.width = `${width}%`;
+            progressBarEl.appendChild(progressEl);
+          }
+        }
+      } else {
+        let progressEls = progressBarEl.querySelectorAll(".qtnr__progress");
+        let leadsToCount = 0;
+        if (progressEls) {
+          progressEls.forEach((el) => {
+            if (el.getAttribute("data-question-id") === currentQuestion) {
+              leadsToCount += 1;
+            }
+          });
+        }
+        
+        if (leadsToCount === 0) {
+          if (progressBarEl.children.length > 1) {
+            progressBarEl.removeChild(progressBarEl.lastChild);
+          } else {
+            progressBarEl.innerHTML = null;
+          }
+        } else {
+          for (let i = 0; i < leadsToCount; i++) {
+            if (progressBarEl.children.length > 1) {
+              progressBarEl.removeChild(progressBarEl.lastChild);
+            } else {
+              progressBarEl.innerHTML = null;
+            }
+          }
+        }
+      }
+    }
+
+    function loadPopupDetails() {
+      let questionEl = document.querySelector(`.qtnr__question[data-question-id='${currentQuestion}']`)
+      let popupContentEl = document.querySelector(".popup_details__content");
+      let content = questionEl.getAttribute("data-question-popup-details");
+      if (content) {
+        popupContentEl.innerHTML = content;
+      }
+    }
+
+    function doesQuestionTriggerFirstApiCall(questionId) {
+      let triggerQtnId = {{ mf.save_trigger_question.value.question_id | json }};
+      if (triggerQtnId) {
+        if (triggerQtnId === questionId) {
+          saveSkinTestData()
+        }
+      }
+    }
+
+    function doesQuestionTriggerSecondApiCall(questionId) {
+      let triggerQtnId = {{ mf.save_remaining_trigger_question.value.question_id | json }};
+      if (triggerQtnId) {
+        if (triggerQtnId === questionId) {
+          saveRemainingSkinTestData()
+        }
+      }
+    }
+
+    function saveSkinTestData() {
+      let skinTestData = {};
+      let qtnr = JSON.parse(window.localStorage.getItem("questionnaire"));
+      
+      if (qtnr && qtnr.q7 && Object.keys(qtnr.q7).length > 0) {
+        skinTestData["main"] = false;
+        skinTestData["email"] = qtnr["q7"]["email"];
+        skinTestData["firstName"] = qtnr["q7"]["firstName"];
+        skinTestData["lastName"] = "";
+        skinTestData["quiz"] = {};
+        skinTestData["quiz"]["questionnaireId"] = "q7";
+        skinTestData["quiz"]["answers"] = qtnr["q7"];
+        skinTestData["quiz"]["utmParams"] = {};
+        skinTestData["quiz"]["country"] = {{ localization.country.iso_code | json }};
+        skinTestData["quiz"]["locale"] = {{ localization.language.iso_code | json }};
+        skinTestData["quiz"]["isDirectPurchase"] = false;
+        skinTestData["isDirectPurchase"] = false;
+        skinTestData["creamVersion"] = 21;
+        skinTestData["featureRectMS"] = true; // signals calculation of features and recommendations as pubsub operation
+
+        var tries = 0;
+
+        fetch("{{ mf.save_api_url }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json"},
+          body: JSON.stringify(skinTestData),
+        })
+        .then((res) => res.json())
+        .then((res) => {
+          // let restData = JSON.parse(res);
+          skinId = res.skinId;
+          matchId = res.matchId;
+          answerAccessToken = res.answerAccessToken;
+        })
+        .catch((err) => {
+          console.log("saveData error:", err);
+          setTimeout( function() {
+            if (tries < 5) {
+              console.log("REATTEMPT: Initially saving skin test data");
+              tries++;
+              saveSkinTestData
+            }
+          }, 500);
+        });
+      }
+    }
+
+    function saveRemainingSkinTestData() {
+      let skinTestData = {};
+      let qtnr = JSON.parse(window.localStorage.getItem("questionnaire"));
+      
+      if (qtnr && qtnr.q7 && Object.keys(qtnr.q7).length > 0) {
+        skinTestData["skinId"] = skinId;
+        skinTestData["matchId"] = matchId;
+        skinTestData["answerAccessToken"] = answerAccessToken;
+        skinTestData["scent"] = "NoFragrance" //qtnr["q7"]["scent"];
+        skinTestData["nightCremeScent"] = "NoFragrance" //qtnr["q7"]["nightCremeScent"];
+        skinTestData["main"] = true;
+        skinTestData["DirectPurchasein"] = false;
+        skinTestData["answers"] = {};
+        skinTestData["answers"]["product"] = {"name": qtnr["q7"]["product"]["name"]};
+        skinTestData["answers"]["nightCremeProduct"] = {"name": qtnr["q7"]["nightCremeProduct"]["name"]};
+        skinTestData["creamVersion"] = 21;
+
+        var tries = 0;
+        
+        fetch("{{ mf.save_remaining_api_url }}", {
+          method: "POST",
+          headers: { "Content-Type": "application/json"},
+          body: JSON.stringify(skinTestData),
+        })
+        .then((res) => res.json())
+        .then((res) => {
+          answerAccessToken = res;
+        })
+        .catch((err) => {
+          console.log("saveRemainingData error:", err);
+        });
+      }
+    }
+
+    async function goBackToQuestion(questionId) {
+      console.log("PREV QUEST", previousQuestion);
+      console.log("CURRENT QUEST", currentQuestion);
+      let prevQuestionDiv = document.querySelector(`.qtnr__question[data-question-id="${questionId}"]`);
+      let currQuestionDiv = document.querySelector(`.qtnr__question[data-question-id="${currentQuestion}"]`);
+      if (prevQuestionDiv && currQuestionDiv) {
+        // prevQuestionDiv.removeAttribute("hidden");
+        // currQuestionDiv.setAttribute("hidden", true);
+        prevQuestionDiv.classList.remove("q_slide_further_left");
+        prevQuestionDiv.classList.add("q_slide_right");
+        currQuestionDiv.classList.remove("q_slide_left");
+        currQuestionDiv.classList.add("q_slide_further_right");
+        let journeyIndex = testJourney.indexOf(questionId);
+        if (journeyIndex > -1) {
+          testJourney.splice(journeyIndex, 1);
+          currentQuestion = previousQuestion;
+          if (testJourney.length > 0) {
+            previousQuestion = testJourney[testJourney.length - 1];
+          } else {
+            previousQuestion = "pigmenttationType";
+          }
+        }
+      }
+      console.log("TEST JOURNEY", testJourney);
+      if (topBackBtn) {
+        if (testJourney.length <= 0) {
+          topBackBtn.classList.add("hidden");
+        }
+      }
+    }
+
+    function handleMultipleAnswerCounter(questionEl, val) {
+      let selectionCounterEl = questionEl.querySelector(".qtnr__answer__choice_counter");
+      let selectionCounterSelectionEl = null;
+      if (selectionCounterEl) {
+        selectionCounterSelectionEl = selectionCounterEl.querySelector(".qtnr__answer__choice_selection");
+      }
+      if (selectionCounterSelectionEl) {
+        selectionCounterSelectionEl.innerText = val;
+      }
+    }
+
+    function handleMultipleAnswers(questionEl, answerEl, answerValue, questionId, questionMultipleMaxSelection, isMultiAnswerQuestionsStore, nextBtn, isnota, a_text) {
+      if (answerEl && answerValue && questionId) {
+        let checkbox = answerEl.querySelector(".qtnr__answer__choice__checkbox");
+        // 1) manage selections
+        if (answerEl.classList.contains("multiple-selected")) {
+          answerEl.classList.remove("multiple-selected");
+          checkbox.classList.remove("qtnr__answer__choice__checkbox__checked");
+          checkbox.classList.add("qtnr__answer__choice__checkbox__unchecked");
+          if (isMultiAnswerQuestionsStore) {
+            multiAnswerQuestions[`${questionId}`] = multiAnswerQuestions[`${questionId}`].filter((i) => i !== answerValue);
+          } else {
+            multiAnswerQuestions[`${questionId}`] = []
+          }
+          if (nextBtns[questionId]) {
+            nextBtns[questionId].a_text = nextBtns[questionId].a_text.filter((v) => v!== answerEl.getAttribute("data-answer-text"));
+          }
+          handleMultipleAnswerCounter(questionEl, multiAnswerQuestions[`${questionId}`].length);
+        } else {
+          if (isMultiAnswerQuestionsStore) {
+            if (questionMultipleMaxSelection && multiAnswerQuestions[`${questionId}`].length >= questionMultipleMaxSelection) {
+              return;
+            }
+          }
+          answerEl.classList.add("multiple-selected");
+          checkbox.classList.add("qtnr__answer__choice__checkbox__checked");
+          checkbox.classList.remove("qtnr__answer__choice__checkbox__unchecked");
+          if (nextBtns[questionId]) {
+            nextBtns[questionId].a_text.push(answerEl.getAttribute("data-answer-text"));
+          }
+          if (isMultiAnswerQuestionsStore) {
+            if (!multiAnswerQuestions[`${questionId}`].includes(answerValue)) {
+              multiAnswerQuestions[`${questionId}`].push(answerValue);
+            }
+          } else {
+            multiAnswerQuestions[`${questionId}`] = [];
+            multiAnswerQuestions[`${questionId}`].push(answerValue);
+          }
+          handleMultipleAnswerCounter(questionEl, multiAnswerQuestions[`${questionId}`].length);
+        }
+        
+        // 2) enable/disable NEXT button based on number of selected answers
+        if (multiAnswerQuestions[`${questionId}`].length > 0) {
+          nextBtn.classList.remove("qtnr__navigation__disabled");
+        } else {
+          nextBtn.classList.add("qtnr__navigation__disabled");
+        }
+        // 3) update quiz data
+        // 4) manage if answer is nota
+        if (isnota) {
+          let answerSiblings = questionEl.querySelectorAll(".qtnr__answer__item");
+          if (answerSiblings) {
+            answerSiblings.forEach((el) => {
+              let el_checkbox = el.querySelector(".qtnr__answer__choice__checkbox");
+              if (el.classList.contains("multiple-selected")) {
+                el.classList.remove("multiple-selected");
+                el_checkbox.classList.remove("qtnr__answer__choice__checkbox__checked");
+                el_checkbox.classList.add("qtnr__answer__choice__checkbox__unchecked");
+              }
+            });
+          }
+          answerEl.classList.add("multiple-selected");
+          checkbox.classList.add("qtnr__answer__choice__checkbox__checked");
+          checkbox.classList.remove("qtnr__answer__choice__checkbox__unchecked");
+          multiAnswerQuestions[`${questionId}`] = [];
+          multiAnswerQuestions[`${questionId}`].push(answerValue);
+          if (nextBtns[questionId]) {
+            nextBtns[questionId].a_text = [answerEl.getAttribute("data-answer-text")];
+          }
+        } else {
+          let isNotaEl = questionEl.querySelector('[data-answer-isnota="true"]');
+          if (isNotaEl) {
+            let isNotEl_checkbox = isNotaEl.querySelector(".qtnr__answer__choice__checkbox");
+            isNotaEl.classList.remove("multiple-selected");
+            isNotEl_checkbox.classList.remove("qtnr__answer__choice__checkbox__checked");
+            isNotEl_checkbox.classList.add("qtnr__answer__choice__checkbox__unchecked");
+            let answerToRemove = multiAnswerQuestions[`${questionId}`].indexOf(isNotaEl.getAttribute("data-answer-value"));
+            if (answerToRemove !== -1) {
+              multiAnswerQuestions[`${questionId}`].splice(answerToRemove, 1);
+              if (nextBtns[questionId]) {
+                nextBtns[questionId].a_text = nextBtns[questionId].a_text.filter((v) => v!== isNotaEl.getAttribute("data-answer-text"));
+                if (!nextBtns[questionId].a_text.includes(answerEl.getAttribute("data-answer-text"))) {
+                  nextBtns[questionId].a_text.push(answerEl.getAttribute("data-answer-text"));
+                }
+              }
+            }
+          }
+        }
+        if (nextBtns[questionId]) {
+          nextBtns[questionId].a_value = multiAnswerQuestions[`${questionId}`];
+        }
+        ay_quiz_data["q7"][`${questionId}`] = multiAnswerQuestions[`${questionId}`];
+      }
+    }
+
+    function trackJourney(questionEl, questionId) {
+      if (questionEl) {
+        previousQuestion = questionId;
+        if (!testJourney.includes(questionId)) {
+          testJourney.push(questionId)
+        }
+      }
+      loadPopupDetails()
+    }
+
+    function showNextQuestion(questionEl, answerEl) {
+      let leadsTo = answerEl.getAttribute("data-answer-leads-to");
+      if (leadsTo) {
+        let questionToJump = document.querySelector(`.qtnr__question[data-question-id="${leadsTo}"]`);
+        // questionEl.setAttribute("hidden", true);
+        // questionToJump.removeAttribute("hidden");
+          questionEl.classList.remove("q_slide_left");
+          questionEl.classList.add("q_slide_further_left");
+          questionToJump.classList.remove("q_slide_further_right");
+          questionToJump.classList.add("q_slide_left");
+        currentQuestion = leadsTo;
+      } else {
+          let nextQuestionDiv = questionEl.nextElementSibling;
+          // nextQuestionDiv.removeAttribute("hidden");
+          currentQuestion = nextQuestionDiv.getAttribute("data-question-id");
+          // questionEl.setAttribute("hidden", true);
+          questionEl.classList.remove("q_slide_left");
+          questionEl.classList.add("q_slide_further_left");
+          nextQuestionDiv.classList.remove("q_slide_further_right");
+          nextQuestionDiv.classList.add("q_slide_left");
+      }
+    }
+
+    function goToQuestion(questionEl, answerEl, questionId, questionType, answerValue, answerType) {
+      let formattedAnswer = answerValue;
+
+      if (answerType === "integer") {
+        formattedAnswer = parseInt(answerValue);
+      }
+
+      showNextQuestion(questionEl, answerEl);
+      
+      // Here, the following questionType records the answers
+      // somewhere else instead of here:
+      // 1. input - handled separately through "change" event on the input field
+      // 2. faceScan - handled separately through frameLoaded() where a postMessage event is monitored for the faceScan app result
+      // 3. multiple - handled separately through handleMultipleChoices() after user is done selecting one or more answers
+      if (questionType && questionType !== "input" && questionType !== "faceScan" && questionType !== "multiple") {
+        ay_quiz_data["q7"][`${questionId}`] = formattedAnswer;
+      }
+      trackJourney(questionEl, questionId);
+      window.localStorage.setItem("questionnaire", JSON.stringify(ay_quiz_data));
+
+      // toggle back button
+      if (topBackBtn) {
+        if (testJourney.length >= 1) {
+          topBackBtn.classList.remove("hidden");
+        }
+        if (testJourney.includes("nightCreamLabel")) {
+          topBackBtn.classList.add("hidden");
+        }
+      }
+    }
+
+    function ensureFiringOnce(e, nextBtn, qtrQuestion, ac, questionId, q_type, a_value, a_type, questionIdx, a_text) {
+      e.stopPropagation();
+      bringScreenToTop();
+      if (nextBtn.classList.contains("qtnr__navigation__disabled")) {
+        return
+      }
+      
+      goToQuestion(qtrQuestion, ac, questionId, q_type, a_value, a_type);
+      if (q_type === "input") {
+        gtmSkinTestTrack(questionIdx, questionId, ay_quiz_data["q7"][`${questionId}`], ay_quiz_data["q7"][`${questionId}`]);
+      } else if (q_type === "creamLabel") {
+        if (questionId === "dayCreamLabel") {
+          gtmSkinTestTrack(questionIdx, questionId, ay_quiz_data["q7"]["product"]["name"], ay_quiz_data["q7"]["product"]["name"]);
+        } else if (questionId === "nightCreamLabel") {
+          gtmSkinTestTrack(questionIdx, questionId, ay_quiz_data["q7"]["nightCremeProduct"]["name"], ay_quiz_data["q7"]["nightCremeProduct"]["name"]);
+        }
+      } else if (q_type !== "faceScan") {
+        gtmSkinTestTrack(questionIdx, questionId, ay_quiz_data["q7"][`${questionId}`], a_text);
+      }
+      doesQuestionTriggerFirstApiCall(questionId);
+      doesQuestionTriggerSecondApiCall(questionId);
+      nextBtn.removeEventListener("click", ensureFiringOnce);
+    }
+
+    function buildNextBtn(nextBtn, ac, qtrQuestion, questionId, q_type, a_value, a_type, questionIdx) {
+      if (!nextBtns.questionId) {
+        nextBtns[`${questionId}`] = {}
+        nextBtns[`${questionId}`]["nextBtn"] = nextBtn;
+        nextBtns[`${questionId}`]["ac"] = ac;
+        nextBtns[`${questionId}`]["qtrQuestion"] = qtrQuestion;
+        nextBtns[`${questionId}`]["questionId"] = questionId;
+        nextBtns[`${questionId}`]["q_type"] = q_type;
+        nextBtns[`${questionId}`]["a_value"] = a_value;
+        nextBtns[`${questionId}`]["a_type"] = a_type;
+        nextBtns[`${questionId}`]["questionIdx"] = questionIdx;
+        nextBtns[`${questionId}`]["a_text"] = [];
+      }
+    }
+
+    function trackQuestion() {
+      let answerChoices = document.querySelectorAll(".qtnr__answer__item");
+      if (answerChoices) {
+        answerChoices.forEach(async (ac) => {
+          let answerId = ac.getAttribute("data-answer-id");
+          let qtrQuestion = ac.closest(".qtnr__question");
+          let questionId = qtrQuestion.getAttribute("data-question-id");
+          let questionIdx = qtrQuestion.getAttribute("data-question-index");
+          let questionMultipleMaxSelection = parseInt(qtrQuestion.getAttribute("data-question-multiple-max-selection"));
+          
+          let input = ac.querySelector("input");
+          let backBtn = qtrQuestion.querySelector(".qtnr__navigation__prev");
+          let nextBtn = qtrQuestion.querySelector(".qtnr__navigation__next");
+          let q_type = ac.getAttribute("data-question-type");
+          let q_regex = ac.getAttribute("data-question-regex");
+          let a_text = ac.getAttribute("data-answer-text");
+          let a_type = ac.getAttribute("data-answer-type");
+          let a_value = ac.getAttribute("data-answer-value");
+          let a_isnota = ac.getAttribute("data-answer-isnota");
+
+          if (q_type === "endScreen") {
+            let pdpBtn = document.querySelector(".qtnr__endscreen__pdp_btn");
+            if (pdpBtn) {
+              pdpBtn.addEventListener("click", () => {
+                gtmSkinTestTrack(questionIdx, questionId, "endScreen", "endScreen");
+                if (storeCountry === "DE" && storeLocale === "de") {
+                  window.location.href = `/products/product-detail-test?skinid=${skinId}&token=${answerAccessToken}`;
+                } else if (storeCountry === "DE" && storeLocale === "en") {
+                  window.location.href = `/en/products/product-detail-test?skinid=${skinId}&token=${answerAccessToken}`;
+                } else {
+                  window.location.href = `/${storeLocale}-${storeCountry}/products/product-detail-test?skinid=${skinId}&token=${answerAccessToken}`;
+                }
+              });
+            }
+            return;
+          }
+
+          // check if disclaimer, then use the defeault answer as value
+          if (q_type === "disclaimer") {
+            let defVal = qtrQuestion.getAttribute("data-question-default-answer");
+            if (defVal) {
+              a_value = defVal;
+            }
+          }
+
+          // Prevent triggering NEXT question
+          // when input field is clicked
+          if (input) {
+            // handle phone requirements
+            let numPrefix = ""
+            if (questionId === "phoneNumber") {
+              input.value = input.value.replace(/\D+/g, '')
+                  .replace('', phonePrefixes[storeCountry]);   
+              let prevVal = input.value;
+              numPrefix = phonePrefixes[storeCountry];
+              input.value = numPrefix;
+            }
+
+            // handle regex for other types of input except phoneNumber
+            // the regex is defined in the question metaobject
+            let regExErrorMsgEl = qtrQuestion.querySelector(".qtnr__error_msg");
+            input.addEventListener("click", (e) => {
+              e.stopPropagation();
+            });
+            input.addEventListener("input", (e) => {
+              // only perform regex checking for input questions other than phoneNumber
+              let regex = null;
+              if (questionId !== "phoneNumber") {
+                if (q_regex) {
+                  regex = new RegExp(q_regex);
+                }
+                if (!regex) {
+                  if (e.target.value.length > 0) {
+                    nextBtn.classList.remove("qtnr__navigation__disabled");
+                  } else {
+                    nextBtn.classList.add("qtnr__navigation__disabled");
+                  }
+                } else {
+                  if (!regex.test(e.target.value)) {
+                    nextBtn.classList.add("qtnr__navigation__disabled");
+                    if (regExErrorMsgEl) {
+                      regExErrorMsgEl.classList.remove("hidden");
+                    }
+                  } else {
+                    nextBtn.classList.remove("qtnr__navigation__disabled");
+                    if (regExErrorMsgEl) {
+                      regExErrorMsgEl.classList.add("hidden");
+                    }
+                  }
+                }
+              } else { // if question is phoneNumber, perform different input checking and formatting
+                currVal = e.target.value;
+                enforcePhoneInput(e, currVal, numPrefix, nextBtn);
+              }
+
+              if (q_type === "creamLabel") {
+                let labelEl = qtrQuestion.querySelector("label.qtnr__answer__creamLabel__label");
+                if (labelEl) {
+                  if (e.target.value.length <= 8) {
+                    labelEl.innerText = e.target.value;
+                  } else {
+                    e.target.value = `${e.target.value}`.substring(0, 8)
+                  }
+                }
+                if (questionId.includes("dayCream")) {
+                  ay_quiz_data["q7"]["product"] = { name: e.target.value };
+                } else if (questionId.includes("nightCream")) {
+                  ay_quiz_data["q7"]["nightCremeProduct"] = { name: e.target.value };
+                }
+              } else {
+                ay_quiz_data["q7"][`${questionId}`] = e.target.value;
+              }
+            });
+          }
+
+          // if (backBtn) {
+          //   backBtn.addEventListener("click", async (e) => {
+          //     e.stopPropagation();
+          //     bringScreenToTop();
+          //     let _currQuizData = JSON.parse(window.localStorage.getItem("quiz_data"));
+          //     _currQuizData["q7"][`${questionId}`] = [];
+          //     nextBtn.classList.add("qtnr__navigation__disabled");
+          //   });
+          // }
+
+          if (nextBtn) {
+            if (!nextBtns.questionId) {
+              await buildNextBtn(nextBtn, ac, qtrQuestion, questionId, q_type, a_value, a_type, questionIdx)
+            }
+            //nextBtns[`${questionId}`].addEventListener("click", (e) => ensureFiringOnce(e, nextBtns[`${questionId}`], qtrQuestion, ac, questionId, q_type, a_value, a_type, questionIdx, a_text));
+          }
+          
+          ac.addEventListener("click", (e) => {
+            if (q_type !== "input") {
+              // Prevent triggering NEXT question
+              // if anywhere in answer container is clicked
+              if (q_type && q_type === "faceScan") {
+                  e.stopPropagation();
+              } else if (q_type && q_type === "multiple") {
+                let isMultiAnswerQuestionsStore = multiAnswerQuestions && multiAnswerQuestions[`${questionId}`] ? true : false;
+                // ** HANDLE MULTIPLE ANSWER SELECTION **
+                handleMultipleAnswers(qtrQuestion, ac, a_value, questionId, questionMultipleMaxSelection, isMultiAnswerQuestionsStore, nextBtn, a_isnota);
+              } else {
+                bringScreenToTop();
+                if (nextBtns.questionId) {
+                  nextBtns.questionId.a_text.push(a_text);
+                }
+                goToQuestion(qtrQuestion, ac, questionId, q_type, a_value, a_type);   
+                progressBar(ac, "forward");
+                gtmSkinTestTrack(questionIdx, questionId, a_value, a_text);
+                doesQuestionTriggerFirstApiCall(questionId);
+                doesQuestionTriggerSecondApiCall(questionId);
+              }
+            }
+          })
+        });
+      }
+    }
+
+    // === DIRECT EVENT LISTENERS
+    // toggle top back button
+    if (topBackBtn) {
+      topBackBtn.addEventListener("click", () => {
+        if (testJourney.length >= 1) {
+          goBackToQuestion(previousQuestion);
+        } else {
+          topBackBtn.classList.add("hidden");
+        }
+        progressBar(null, "backward")
+      });
+    }
+    // show popup
+    let popupDetailsBtns = document.querySelectorAll(".qtnr__popup_details__btn");
+    if (popupDetailsBtns) {
+      popupDetailsBtns.forEach((el) => {
+        el.addEventListener("click", () => {
+          popupDetailsEl.classList.remove("hidden");
+          popupDetailsEl.classList.remove("slide_down");
+          popupDetailsEl.classList.add("slide_up");
+        });
+      });
+    }
+    // hide popup
+    let popupDetailsCloseBtn = popupDetailsEl.querySelector(".popup_details__x");
+    popupDetailsCloseBtn.addEventListener("click", () => {
+      popupDetailsEl.classList.add("hidden");
+      popupDetailsEl.classList.remove("slide_up");
+      popupDetailsEl.classList.add("slide_down");
+      let contentEl = popupDetailsEl.querySelector(".popup_details__content");
+      contentEl.innerHTML = null;
+    });
+
+    // FUNCTION CALLS
+    trackQuestion();
+    loadPopupDetails()
+    
+
+    // handle click event for next buttons
+    if (nextBtns && Object.keys(nextBtns).length > 0) {
+      Object.keys(nextBtns).map((el) => {
+        if (nextBtns[el].nextBtn) {
+          nextBtns[el].nextBtn.addEventListener("click", (e) => {
+            ensureFiringOnce(e, nextBtns[el].nextBtn, nextBtns[el].qtrQuestion, nextBtns[el].ac, nextBtns[el].questionId, nextBtns[el].q_type, nextBtns[el].a_value, nextBtns[el].a_type, nextBtns[el].questionIdx, nextBtns[el].a_text)
+            progressBar(nextBtns[el].ac, "forward");
+          });
+        }
+      });
+    }
+  });
+</script>

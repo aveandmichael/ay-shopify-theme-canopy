@@ -1,0 +1,341 @@
+{%- unless template == 'gift_card' -%}
+	{%- if section.settings.announcement_show -%}
+		{%- if template contains 'index' or section.settings.announcement_home_only == false -%}
+
+			<div class="announcement-bar {% if settings.announcement_col_bar == settings.toolbar_col_bg %}announcement-bar--same-color{% endif %}" data-cc-animate data-section-type="announcement-bar">
+				<div class="container">
+					<div class="announcement-bar__inner">
+						{%- liquid
+							assign showing_currency_or_locale = false
+							if section.settings.show_locale_selector or section.settings.show_currency_selector
+								assign showing_currency_or_locale = true
+							endif
+						%}
+
+						{%- if showing_currency_or_locale and section.settings.show_social_icons == false -%}
+							<div class="announcement-bar__spacer desktop-only"></div>
+						{%- elsif section.settings.show_social_icons -%}
+								<div class="toolbar-social announcement-bar__spacer desktop-only">
+									{% render 'social-icons', icon_setting: settings.social_custom_icon, icon_size: 'x48' %}
+								</div>
+						{%- endif -%}
+
+						<div class="announcement-bar__text">
+                            {% if localization.language.iso_code == 'de' and localization.country.iso_code == 'DE' or localization.country.iso_code == 'AT' or localization.country.iso_code == 'CH' %}
+    							{%- if section.settings.announcement_link_de_de != blank -%}
+    								<a href="{{ section.settings.announcement_link_de_de }}" class="announcement-bar__text__inner">
+    							{%- else -%}
+    									<span class="announcement-bar__text__inner">
+    							{%- endif -%}
+    
+    								{{ section.settings.announcement_text_de_de }}
+    
+    							{%- if section.settings.announcement_link_de_de != blank -%}
+    								</a>
+    							{%- else -%}
+    								</span>
+    							{%- endif -%}
+                            {% elsif localization.language.iso_code == 'en' and localization.country.iso_code == 'DE' %}
+    							{%- if section.settings.announcement_link_de_en != blank -%}
+    								<a href="{{ section.settings.announcement_link_de_en }}" class="announcement-bar__text__inner">
+    							{%- else -%}
+    									<span class="announcement-bar__text__inner">
+    							{%- endif -%}
+    
+    								{{ section.settings.announcement_text_de_en }}
+    
+    							{%- if section.settings.announcement_link_de_en != blank -%}
+    								</a>
+    							{%- else -%}
+    								</span>
+    							{%- endif -%}
+                            {% else %}
+    							{%- if section.settings.announcement_link_other_en != blank -%}
+    								<a href="{{ section.settings.announcement_link_other_en }}" class="announcement-bar__text__inner">
+    							{%- else -%}
+    									<span class="announcement-bar__text__inner">
+    							{%- endif -%}
+    
+    								{{ section.settings.announcement_text_other_en }}
+    
+    							{%- if section.settings.announcement_link_other_en != blank -%}
+    								</a>
+    							{%- else -%}
+    								</span>
+    							{%- endif -%}
+                            {% endif %}
+						</div>
+
+                        {%- if section.settings.show_locale_selector or section.settings.show_currency_selector -%}
+                          <div class="localization localization--header announcement-bar__spacer">
+                            {% include  'currency_selector' %}
+                          </div>
+						{%- elsif section.settings.show_social_icons -%}
+							<div class="announcement-bar__spacer desktop-only"></div>
+						{%- endif -%}
+
+                        {% comment %}
+						{%- if section.settings.show_locale_selector or section.settings.show_currency_selector -%}
+							<div class="localization localization--header announcement-bar__spacer">
+								{% render 'localization', input_prefix: 'header' %}
+							</div>
+						{%- elsif section.settings.show_social_icons -%}
+							<div class="announcement-bar__spacer desktop-only"></div>
+						{%- endif -%}
+                        {% endcomment %}
+					</div>
+				</div>
+			</div>
+
+		{%- endif -%}
+	{%- endif -%}
+{%- endunless -%}
+
+{% schema %}
+  {
+	"name": "Announcement bar",
+	"class": "section-announcement-bar",
+	"settings": [
+		{
+			"type": "checkbox",
+			"id": "announcement_show",
+			"label": "Show announcement",
+			"default": true
+		},
+		{
+			"type": "checkbox",
+			"id": "announcement_home_only",
+			"label": "Home page only",
+			"default": false
+		},
+		{
+			"type": "richtext",
+			"id": "announcement_text_de_de",
+			"label": "Text for Germany only (DE language)"
+		},
+        {
+			"type": "url",
+			"id": "announcement_link_de_de",
+			"label": "Link for Germany only (DE language)"
+		},
+		{
+			"type": "richtext",
+			"id": "announcement_text_de_en",
+			"label": "Text for Germany only (EN language)"
+		},
+		{
+			"type": "url",
+			"id": "announcement_link_de_en",
+			"label": "Link for Germany only (EN language)"
+		},
+        {
+			"type": "textarea",
+			"id": "announcement_text_at_de",
+			"label": "Text for Austria only (DE language)",
+			"default": "Announce something here"
+		},
+        {
+			"type": "url",
+			"id": "announcement_link_at_de",
+			"label": "Link for Austria only (DE language)"
+		},
+		{
+			"type": "textarea",
+			"id": "announcement_text_at_en",
+			"label": "Text for Austria only (EN language)",
+			"default": "Announce something here"
+		},
+		{
+			"type": "url",
+			"id": "announcement_link_at_en",
+			"label": "Link for Austria only (EN language)"
+		},
+        {
+			"type": "textarea",
+			"id": "announcement_text_other_de",
+			"label": "Text for all other countries (DE language)",
+			"default": "Text for all other countries"
+		},
+		{
+			"type": "url",
+			"id": "announcement_link_other_de",
+			"label": "Link for all other countries (DE language)"
+		},
+        {
+			"type": "richtext",
+			"id": "announcement_text_other_en",
+			"label": "Text for all other countries (EN language)"
+		},
+		{
+			"type": "url",
+			"id": "announcement_link_other_en",
+			"label": "Link for all other countries (EN language)"
+		},
+
+        {
+			"type": "textarea",
+			"id": "announcement_text_glamour_de",
+			"label": "Text for all other countries (DE language) (Glamour)",
+			"default": "Text for all other countries"
+		},
+		{
+			"type": "url",
+			"id": "announcement_link_glamour_de",
+			"label": "Link for all other countries (DE language) (Glamour)"
+		},
+        {
+			"type": "textarea",
+			"id": "announcement_text_glamour_en",
+			"label": "Text for all other countries (EN language) (Glamour)",
+			"default": "Text for all other countries"
+		},
+		{
+			"type": "url",
+			"id": "announcement_link_glamour_en",
+			"label": "Link for all other countries (EN language) (Glamour)"
+		},
+      
+		{
+			"type": "checkbox",
+			"id": "show_social_icons",
+			"label": "Show social media links",
+			"default": true
+		},
+		{
+			"type": "checkbox",
+			"id": "show_locale_selector",
+			"label": "Show language selector",
+			"info": "To add a language, go to your [language settings.](/admin/settings/languages)",
+			"default": true
+		},
+		{
+			"type": "checkbox",
+			"id": "show_currency_selector",
+			"label": "Show currency selector",
+			"info": "To add a currency, go to your [payment settings.](/admin/settings/payments)",
+			"default": true
+		}
+	]
+}
+{% endschema %}
+
+{% stylesheet %}
+.announcement-bar__text__inner p {
+  margin: 0!important;
+}
+{% endstylesheet %}
+
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script>
+
+  // $.getJSON('https://apiip.net/api/check?accessKey=b9372a73-cc79-4ac6-b56f-c9dbc660b5ec&output=json&fields=countryCode', function(result) {
+  //   console.log("result : "+result.countryCode);
+  //   if(result.countryCode == 'DE')
+  //   {
+  //     console.log('countryCode : '+result.countryCode);
+  //     {% if template.suffix == 'page-christmas-test' %}
+        
+  //       {% if request.locale.iso_code == 'de' %}
+  //       $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_glamour_de }}');
+  //       {% else %}
+  //       $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_glamour_en }}');
+  //       {% endif %}
+        
+  //       {% if section.settings.announcement_link_de_de != blank %}
+  //       {% if request.locale.iso_code == 'de' %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_glamour_de }}');
+  //       {% else %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_glamour_en }}');
+  //       {% endif %}
+  //       {% endif %}
+
+  //     {% elsif section.settings.announcement_text_de_de != blank %}
+  //       {% if request.locale.iso_code == 'de' %}
+  //         $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_de_de }}');
+  //       {% else %}
+  //         $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_de_en }}');
+  //       {% endif %}
+        
+  //       {% if section.settings.announcement_link_de_de != blank %}
+  //         {% if request.locale.iso_code == 'de' %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_de_de }}');
+  //         {% else %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_de_en }}');
+  //         {% endif %}
+  //       {% endif %}
+  //     {% endif %}
+  //   }
+      
+  //   else if(result.countryCode == 'AT')
+  //   {
+  //     console.log('countryCode : '+result.countryCode);
+
+  //     {% if template.suffix == 'page-christmas-test' %}
+
+  //     {% if request.locale.iso_code == 'de' %}
+  //         $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_glamour_de }}');
+  //       {% else %}
+  //         $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_glamour_en }}');
+  //       {% endif %}
+        
+  //       {% if section.settings.announcement_link_at_de != blank %}
+  //         {% if request.locale.iso_code == 'de' %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_glamour_de }}');
+  //         {% else %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_glamour_en }}');
+  //         {% endif %}
+  //       {% endif %}
+
+  //     {% elsif section.settings.announcement_text_at_de != blank %}
+  //       {% if request.locale.iso_code == 'de' %}
+  //         $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_at_de }}');
+  //       {% else %}
+  //         $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_at_en }}');
+  //       {% endif %}
+        
+  //       {% if section.settings.announcement_link_at_de != blank %}
+  //         {% if request.locale.iso_code == 'de' %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_at_de }}');
+  //         {% else %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_at_en }}');
+  //         {% endif %}
+  //       {% endif %}
+  //     {% endif %}
+  //   }
+      
+  //   else
+  //   {
+  //     {% if template.suffix == 'page-christmas-test' %}
+
+  //     {% if request.locale.iso_code == 'de' %}
+  //           $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_glamour_de }}');
+  //       {% else %}
+  //           $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_glamour_en }}');
+  //       {% endif %}
+        
+  //       {% if section.settings.announcement_link_other_de != blank %}
+  //           {% if request.locale.iso_code == 'de' %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_glamour_de }}');
+  //           {% else %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_glamour_en }}');
+  //       {% endif %}   
+  //       {% endif %}
+
+  //     {% elsif section.settings.announcement_text_other_de != blank %}
+  //       {% if request.locale.iso_code == 'de' %}
+  //           $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_other_de }}');
+  //       {% else %}
+  //         $('.announcement-bar__text__inner').text('{{ section.settings.announcement_text_other_en }}');
+  //       {% endif %}
+        
+  //       {% if section.settings.announcement_link_other_de != blank %}
+  //         {% if request.locale.iso_code == 'de' %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_other_de }}');
+  //         {% else %}
+  //           $('.announcement-bar__text a').attr('href','{{ section.settings.announcement_link_other_en }}');
+  //       {% endif %}   
+  //     {% endif %}
+  //   {% endif %}
+  //   }
+  // });
+</script>

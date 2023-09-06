@@ -1,0 +1,335 @@
+<div
+  class="container product-container product-container--{{ section.settings.page_width }} pdp-parent_container"
+  data-section-type="product-template"
+  data-components="accordion">
+  {% assign recommendations = collections[section.settings.recommendation_collection_source] %}
+
+  <div class="pdp-loading_indicator">
+    {% render 'svg-loading' %}
+    <p>Analyzing your result</p>
+  </div>
+
+  <div class="pdp-container hidden">
+    {% if section.settings.banner %}
+      <div class="pdp-banner">
+        {% if section.settings.banner %}
+          {{ section.settings.banner | image_url: width: 1080 | image_tag: class: 'pdp-banner__desktop' }}
+        {% endif %}
+        {% if section.settings.banner_mobile %}
+          {{ section.settings.banner_mobile | image_url: width: 600 | image_tag: class: 'pdp-banner__mobile' }}
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {% comment %} HEADER {% endcomment %}
+    <div class="pdp-header">
+      <h3>Your Routine</h3>
+      <p class="pdp-header__product_count"></p>
+    </div>
+
+    {% comment %} CUSTOMER INFO {% endcomment %}
+    <div class="pdp-customer_info">
+      <div class="pdp-customer_info__name">
+        {{ section.settings.label_image | image_url: width: 800 | image_tag }}
+        <span></span>
+      </div>
+      <div class="pdp-customer_info__skintype customer_info__skin">
+        <div class="pdp-customer_info__skintype customer_info__skin__title">SKIN TYPE</div>
+        <div class="pdp-customer_info__skintype customer_info__skin__value"></div>
+      </div>
+      <div class="pdp-customer_info__skingoals customer_info__skin">
+        <div class="pdp-customer_info__skingoals customer_info__skin__title">SKIN GOALS</div>
+        <div class="pdp-customer_info__skingoals customer_info__skin__value"></div>
+      </div>
+    </div>
+
+    {% comment %} CTA {% endcomment %}
+    <div class="pdp-cta">
+      <p class="pdp-cta__more_result_text pdp-main_product__more_result pdp-main_product__more_result__lifestyle pdp-main_product__more_result ">{{ '>>' }} MORE INSIGHTS FROM YOUR SKIN TEST {{ '<<' }}</p>
+    </div>
+
+    {% comment %} DAY CREAM {% endcomment %}
+    <div class="pdp-main_product__container">
+      <div class="pdp-main_product pdp-main_product__daycream pdp-product_offer pdp-product_offer__count">
+        <h1 class="pdp-main_product__title">Personalized Day Cream</h1>
+        <div class="pdp-main_product__tags">
+          <span class="pdp-main-tag">Skin regeneration</span>
+          <span class="pdp-main-tag">Reduced pimples</span>
+          <span class="pdp-main-tag">Skin glow</span>
+        </div>
+        <div class="pdp-main_product__info">
+          <div class="pdp-main_product__media">
+            <img src="https://cdn.shopify.com/s/files/1/0663/2783/8964/files/aveyou_day_cream_tagescreme_4fb0ea97-c2ce-4c50-bb10-0ec5caf28604.jpg" alt="" />
+          </div>
+          <div class="pdp-main_product__details">
+            <div class="pdp-main_product__price"></div>
+            {% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge_average', jm_style: '', concierge_install: false, product: product %}
+            <div class="pdp-main_product__form">
+              <div class="pdp-main_product__variants pdp-main_product__variants__day"></div>
+              <div class="pdp-main_product__qty">
+                <div>
+                  Quantity
+                </div>
+                <div class="pdp-main_product__qty__controls qty_for_personalized qty_for_personalized__day" data-product-id="{{ product.id }}">
+                  <div class="pdp-main_product__control pdp-main_product__qty__dec">-</div>
+                  <input
+                    type="number"
+                    class="pdp-main_product__qty__val"
+                    readonly
+                    value=1 />
+                  <div class="pdp-main_product__control pdp-main_product__qty__inc">+</div>
+                </div>
+              </div>
+            </div>
+            {% comment %}
+            <button class="pdp-main_product__more_result" data-result-for="daycream">More about your cream</button>
+            {% endcomment %}
+            <div class="pdp-main_product__description">
+              {{ product.description }}
+            </div>
+            {% comment %}
+            <span class="pdp-main_product__description__seemore">show more...</span>
+            {% endcomment %}
+            <button class="pdp-main_product__more_result" data-result-for="daycream">More about your cream</button>
+          </div>
+        </div>
+        <div class="pdp-main_product__incis pdp-main_product__incis__day"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      {% comment %} NIGHT CREAM {% endcomment %}
+      <div class="pdp-main_product pdp-main_product__nightcream pdp-product_offer pdp-product_offer__count">
+        <h1 class="pdp-main_product__title">Personalized Night Cream</h1>
+        <div class="pdp-main_product__tags">
+          <span class="pdp-main-tag">Sample1</span>
+          <span class="pdp-main-tag">Sample2</span>
+          <span class="pdp-main-tag">Sample3</span>
+        </div>
+        <div class="pdp-main_product__info">
+          <div class="pdp-main_product__media">
+            <img src="https://cdn.shopify.com/s/files/1/0663/2783/8964/files/aveyou_day_cream_tagescreme_4fb0ea97-c2ce-4c50-bb10-0ec5caf28604.jpg" alt="" />
+          </div>
+          <div class="pdp-main_product__details">
+            <div class="pdp-main_product__price"></div>
+            {% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge_average', jm_style: '', concierge_install: false, product: product %}
+            <div class="pdp-main_product__form">
+              <div class="pdp-main_product__variants pdp-main_product__variants__night"></div>
+              <div class="pdp-main_product__qty">
+                <div>
+                  Quantity
+                </div>
+                <div class="pdp-main_product__qty__controls qty_for_personalized qty_for_personalized__night" data-product-id="{{ product.id }}">
+                  <div class="pdp-main_product__control pdp-main_product__qty__dec">-</div>
+                  <input
+                    type="number"
+                    class="pdp-main_product__qty__val"
+                    readonly
+                    value=1 />
+                  <div class="pdp-main_product__control pdp-main_product__qty__inc">+</div>
+                </div>
+              </div>
+            </div>
+            {% comment %}
+            <button class="pdp-main_product__more_result" data-result-for="nightcream">More about your cream</button>
+            {% endcomment %}
+            <div class="pdp-main_product__description">
+              {{ product.description }}
+            </div>
+            {% comment %}
+            <span class="pdp-main_product__description__seemore">show more...</span>
+            {% endcomment %}
+            <button class="pdp-main_product__more_result" data-result-for="nightcream">More about your cream</button>
+          </div>
+        </div>
+        <div class="pdp-main_product__incis pdp-main_product__incis__night"></div>
+      </div>
+    </div>
+
+    {% comment %} RECOMMENDATIONS {% endcomment %}
+    <div class="pdp-recommendations pdp-recommendations__standard">
+      <div class="standard_recommendations standard__cleanser">
+        <h1 class="pdp-recommendations__item__title">STEP 1 - CLEANSER</h1>
+        {% for recommendation in recommendations.products %}
+          {% assign current_variant = recommendation.selected_or_first_available_variant %}
+          {{ recommendation.title }}
+        {% endfor %}
+      </div>
+    </div>
+    
+    {% comment %} GO BEYOND
+    <div class="pdp-recommendations__item__title__gobeyond__container">    
+      <h1 class="pdp-recommendations__item__title pdp-recommendations__item__title__gobeyond">GO BEYOND</h1>
+    </div>
+    <div class="pdp-recommendations pdp-recommendations__gobeyond gobeyond_recommendations">
+      {% if section.settings.extra_product %}
+      {% for extra_product in section.settings.extra_product %}
+        {% assign current_variant = extra_product.selected_or_first_available_variant %}
+          <div
+            class="pdp-recommendations__item pdp-recommendations__item__extra hidden"
+            data-product-id="{{ extra_product.id }}"
+            data-json="{{ extra_product | json }}"
+          >
+            <div class="pdp-recommendations__info">
+              <div class="pdp-recommendations__media">
+                <img src="{{ extra_product.featured_image | image_url }}" alt="{{ extra_product.title }}">
+              </div>
+              <div class="pdp-recommendations__details">
+                <div class="pdp-recommendations__price">
+                  <span class="recommendations_price" data-variant-price="{{ current_variant.price }}"">{{ current_variant.price | money }}</span>
+                  <span class="recommendations_size">{{ extra_product.metafields.custom.product_size }}</span>
+                </div>
+                {% render 'judgeme_widgets', widget_type: 'judgeme_preview_badge_average', jm_style: '', concierge_install: false, product: extra_product %}
+                <div class="pdp-main_product__form">
+                  <div class="pdp-main_product__variants hidden">
+                    <div
+                      class="variant_option variant__option_1 variant__option_{{ current_variant.id }} selected"
+                      data-variant-product-id="7953983013108"
+                      data-variant-id="{{ current_variant.id }}"
+                      data-variant-sku="{{ current_variant.sku }}"
+                      data-variant-price="{{ current_variant.price }}">{{ current_variant.title }}</div>
+                  </div>
+                  <div class="pdp-main_product__qty">
+                    <div>
+                      Quantity
+                    </div>
+                    <div class="pdp-main_product__qty__controls qty_for_personalized" data-product-id="{{ product.id }}">
+                      <div class="pdp-main_product__control pdp-main_product__qty__dec">-</div>
+                      <input
+                        type="number"
+                        class="pdp-main_product__qty__val"
+                        readonly
+                        value=1 />
+                      <div class="pdp-main_product__control pdp-main_product__qty__inc">+</div>
+                    </div>
+                  </div>
+                </div>
+                {% if extra_product.description.size > 300 %}
+                  <div class="pdp-recommendations__description pdp-recommendations__description__short">
+                    <div>{{ extra_product.description | truncate: 285, ". . . " }}</div>
+                    <span class="pdp-main_product__description__seemore show_more">[show more]</span>
+                  </div>
+                  <div class="pdp-recommendations__description pdp-recommendations__description__full hidden">
+                    <div>{{ extra_product.description }}</div>
+                    <span class="pdp-main_product__description__seemore show_less">[show less]</span>
+                  </div>
+                {% else %}
+                  <div class="pdp-recommendations__description pdp-recommendations__description__full">
+                    {{ extra_product.description }}
+                  </div>
+                {% endif %}
+                <button class="pdp-main_product__more_result" data-result-for="standardproduct">More about your cream</button>
+              </div>
+            </div>
+            <div class="pdp-recommendation__metafields hidden">
+                {% if recommendation.metafields.custom.hero_ingredients %}
+                    {% for hcmf in recommendation.metafields.custom.hero_ingredients.value %}
+                        {% assign media_image = hcmf.image | file_url %}
+                        <div class="pdp-recommendation__metaobject">
+                          <div class="metaobjectName">{{ hcmf.name }}</div>
+                          <div class="metaobjectImg">{{ media_image }}</div>
+                          <div class="metaobjectDesc">{{ hcmf.description }}</div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="pdp-recommendation__application">{{ recommendation.metafields.my_fields.anwendung_produkt }}</div>
+                <div class="pdp-recommendation__ingredients">{{ recommendation.metafields.my_fields.inhaltsstoffe_produkt }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+   {% endcomment %}
+
+    {% comment %} MORE RESULT SLIDER {% endcomment %}
+    <div class="pdp-more_result slide_down">
+      <div class="pdp-more_result__x">
+        {% render 'svg-x' %}
+      </div>
+      <div class="pdp-more_result__tab">
+        <button class="pdp-more_result__tab__links selected" id="HeroInciTab">
+          Hero Ingredients
+        </button>
+        <button class="pdp-more_result__tab__links" id="ApplicationTab">
+          Application
+        </button>
+        <button class="pdp-more_result__tab__links" id="InciTab">
+          Ingredients
+        </button>
+      </div>
+      <div class="pdp-more_result__tabcontent tabcontent_hero selected" id="HeroInciTabContent"></div>
+      <div class="pdp-more_result__tabcontent tabcontent_application hidden" id="ApplicationTabContent"></div>
+      <div class="pdp-more_result__tabcontent tabcontent_ingredients hidden" id="InciTabContent">
+        INCIs
+      </div>
+    </div>
+  </div>
+  
+  {% comment %} STICKY CHECKOUT {% endcomment %}
+  <div class="pdp-cta__sticky hidden">
+    <button class="pdp-cta__checkout_btn">CHECKOUT</button>
+  </div>
+</div>
+
+{% render 'main-product-subscription-20230516-style' %}
+{% render 'main-product-subscription-20230516-js', product: product, recommendations: recommendations, localization: localization, section: section %}
+
+{% schema %}
+  {
+    "name": "pc-pdp-20230516",
+    "settings": [
+      {
+        "type": "image_picker",
+        "id": "label_image",
+        "label": "Choose the image to show beside the customer name as a label."
+      },
+      {
+        "type": "image_picker",
+        "id": "banner",
+        "label": "Choose the banner image to show on top of PDP on desktop."
+      },
+      {
+        "type": "image_picker",
+        "id": "banner_mobile",
+        "label": "Choose the banner image to show on top of PDP on mobile."
+      },
+      {
+        "type": "select",
+        "id": "page_width",
+        "default": "medium",
+        "label": "Page width",
+        "options": [
+          {
+            "value": "narrow",
+            "label": "Narrow"
+          }, {
+            "value": "medium",
+            "label": "Medium"
+          }, {
+            "value": "wide",
+            "label": "Wide"
+          }
+        ]
+      },
+      {
+        "type": "collection",
+        "id": "recommendation_collection_source",
+        "label": "Recommendation Collection Source",
+        "info": "Select the collection that will be used as the source of recommended products"
+      },
+      {
+        "type": "richtext",
+        "id": "day_cream_application",
+        "label": "Day Cream Application"
+      }, {
+        "type": "richtext",
+        "id": "night_cream_application",
+        "label": "Night Cream Application"
+      }, {
+        "type": "product_list",
+        "id": "extra_product",
+        "label": "Go Beyond product"
+      }
+    ]
+  }
+{% endschema %}

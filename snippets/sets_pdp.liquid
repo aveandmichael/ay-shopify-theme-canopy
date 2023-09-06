@@ -1,0 +1,129 @@
+<style>
+  
+  .product-price-1 {
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+  
+   .current-price-1 {
+    color: #fb5250;
+    margin-right: 4px;
+         font-size: 24px;
+}
+   .product-price-1 .was-price-1 {
+    font-size: 1.2em;
+    line-height: 1.2em;
+    opacity: .75;
+    text-decoration: line-through;
+}
+</style>
+
+
+{% paginate collections.all.products by 10000 %}
+  
+   {% for product in collections.all.products %}
+  
+
+    {% if product.tags contains 'pdp-sets-cream' %}
+   {%- assign current_variant = product.selected_or_first_available_variant -%}
+ {%- assign show_single_variant_details = true -%}
+ 
+    <div class="row product-container bundle-{{product.variants.first.sku | replace: ".", "-"}} DN" style="width:100%">
+      {%- assign animate = true -%}
+
+      {%- render 'media-gallery', product: product, animate: animate -%}
+
+      {%- liquid
+        if settings.cart_type contains 'drawer'
+          assign enable_ajax = true
+        else
+          assign enable_ajax = false
+        endif
+
+        if settings.prod_quantity_controls == "realtime" and enable_ajax
+          assign use_ajax_quantities = true
+        else
+          assign use_ajax_quantities = false
+        endif
+
+        if use_ajax_quantities
+          assign form_class = "product-form product-form--mini product-form--not-quickbuy half column"
+        else
+          assign form_class = "product-form half column"
+        endif
+
+        if settings.cart_type == 'drawer-dynamic'
+          assign open_cart_drawer = true
+        else
+          assign open_cart_drawer = false
+        endif
+      -%}
+      
+ 
+    <div id="main_product_pdp_sets"  data-val="{{ product.id }}" data-variant-id="" >
+      
+          {% form 'product', product, data-productid: product.id, class:form_classes, novalidate: 'novalidate' %}
+      
+    <h2 class="h5 pb-1 product-single__title">{{ product.title  }}</h2>
+           
+       
+      
+   <div class="product-detail__gap-sm rte product-area__rte" data-show-in-quickbuy="false">
+                  <p>30 days guarantee of satisfaction</p>
+   </div>
+
+ <hr class="divider__line-false divider__gap-above-medium divider__gap-below-small" style="border-bottom: 1px  solid transparent;" data-show-in-quickbuy="false">     
+      
+      <div id="price-1"
+                   class="product-price-1 product-detail__gap-sm-1 {% if product.compare_at_price > current_variant.price %}on-sale-1{% endif %}" {{ block.shopify_attributes }}>
+                <span class="current-price-1 theme-money" style=" font-weight: 500;   ">
+                  {% render 'price', price: product.price %}
+                </span>
+                {% if product.compare_at_price > product.price %}
+                  <span class="was-price-1 theme-money" style=" font-weight: 500;">{% render 'price', price: product.compare_at_price %}</span>
+                {% endif %}
+
+               
+              </div>
+      
+ <hr class="divider__line-false divider__gap-above-medium divider__gap-below-small" style="border-bottom: 1px  solid transparent;" data-show-in-quickbuy="false">
+      
+    {% endform %}
+       
+      
+      <div>
+        
+      <div class="btn_mre_info btn_new btn_flex btn_mre_info_fntstyle CP DN" onclick="openPopup();">More about your results</div>
+       
+      <button class="btn product-add mini-form alt outline" onclick="AddtoCart_Sets({{ product.variants.first.id }})" style="cursor:pointer; margin-top: 0.95em; width: 300px; margin-bottom: 2.95em;"> Add to cart </button>
+        
+      <div class="product-detail-accordion" data-show-in-quickbuy="{{ block.settings.show_in_quickbuy }}" {{ block.shopify_attributes }}>
+                  {% render 'accordion', allow_multi_open: true, add_content_class: 'rte', first_item_open: block.settings.open, item1_title: "Description", item1_content: product.description %}
+       </div>
+        
+         
+      
+      
+     
+    </div>
+      
+      
+      
+</div>
+      
+</div>
+     
+    {% endif %}
+  
+  {% endfor %}
+  
+  {% endpaginate %}
+
+
+<script>
+  
+</script>
+
+
+

@@ -1,0 +1,128 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+  var translated = [];
+
+  var getTranslationFor = function(key) {
+{%- assign current_language_num = 0 -%}
+{%- for language in shop.metafields.language_codes -%}
+  {%- if language.last == request.locale.iso_code  -%}
+    {%- assign language_id_num = language.first | replace: "ly", "" | plus: 0 %}
+    {%- if current_language_num < language_id_num  -%}
+      {%- assign current_language = language.first -%}
+      {%- assign current_language_num = language_id_num -%}
+    {%- endif -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign language = current_language -%}
+    
+    {%- assign type_translation_namespace = "ty" | append: language -%}
+    {%- for type_translation in shop.metafields[type_translation_namespace] -%}
+    {%- assign src = type_translation | first -%}
+    {%- if src contains 'ly_type_' -%}
+    {%- assign tmp_type_namespace = 'l_ty' | append: language -%}
+    {%- if shop.metafields[tmp_type_namespace][src] -%}
+    {%- assign src = shop.metafields[tmp_type_namespace][src] -%}
+    {%- endif -%}
+    {%- endif -%}
+    {%- assign translation = type_translation | last -%}
+    {% assign src = src | replace: '"', 'ly_dq' %}
+    {% assign src = src | replace: "'", 'ly_sq' %}
+    {% assign src = '#ly_cu' | append: src %}
+    {% assign translation = translation | replace: '"', 'ly_dq' %}
+    {% assign translation = translation | replace: "'", 'ly_sq' %}
+    {%- if translation -%}
+    if(key.replace('"', 'ly_dq').replace("'", 'ly_sq').trim() == '{{ src | strip_newlines }}') {
+       return '{{ translation | replace: "\", "\\\" | replace: "'", "\\'" | replace: '"', 'ly_dq' | replace: "'", 'ly_sq' | strip_newlines }}';
+       }
+       {%- endif -%}
+       {% endfor %}
+
+    {%- assign vendor_translation_namespace = 've' | append: language -%}
+    {%- for vendor_translation in shop.metafields[vendor_translation_namespace] -%}
+    {%- assign src = vendor_translation | first -%}
+    {%- if src contains 'ly_vendor_' -%}
+    {%- assign tmp_vendor_namespace = 'l_ve' | append: language -%}
+    {%- if shop.metafields[tmp_vendor_namespace][src] -%}
+    {%- assign src = shop.metafields[tmp_vendor_namespace][src] -%}
+    {%- endif -%}
+    {%- endif -%}
+    {%- assign translation = vendor_translation | last -%}
+    {% assign src = src | replace: '"', 'ly_dq' %}
+    {% assign src = src | replace: "'", 'ly_sq' %}
+    {% assign src = '#ly_cu' | append: src %}
+    {% assign translation = translation | replace: '"', 'ly_dq' %}
+    {% assign translation = translation | replace: "'", 'ly_sq' %}
+    {%- if translation -%}
+    if(key.replace('"', 'ly_dq').replace("'", 'ly_sq').replaceAll('&amp;','&').trim() == '{{ src | strip_newlines }}') {
+       return '{{ translation | replace: "\", "\\\" | replace: "'", "\\'" | replace: '"', 'ly_dq' | replace: "'", 'ly_sq' | strip_newlines }}';
+       }
+       {%- endif -%}
+       {% endfor %}
+       
+    return key;
+  };
+
+  var translateHtml = function(id, replace) {
+  	var element = $(id);
+    var content = element.html();
+    if(content) {
+      var translation = getTranslationFor(content);
+      if(content != translation) {
+        element.html(translation);
+      }
+    }
+  }
+
+  var translatePlaceholder = function(id) {
+  	var element = $(id);
+    var content = element.attr('placeholder');
+    if(content) {
+      var translation = getTranslationFor(content);
+      if(content != translation) {
+        element.attr('placeholder', translation);
+      }
+    }
+  }
+
+  var translateValue = function(id) {
+  	var element = $(id);
+    var content = element.val();
+    if(content) {
+      var translation = getTranslationFor(content);
+      if(content != translation) {
+        element.val(translation);
+      }
+    }
+  }
+  
+  $(function() {
+    $('body').bind('DOMSubtreeModified', function() {
+      
+      var elements = $('select.ly_type > option');
+      for(var i = 0; i < elements.length; i++) {
+        var element = $(elements[i]);
+        var content = element.html();
+        if(content) {
+          var translation = getTranslationFor(content);
+                  
+          if(content != translation) {
+            element.html(translation);
+          }
+        }
+      }
+      var elements1 = $('a.active-filter-controls__tag.ly_type');
+      for(var i = 0; i < elements1.length; i++) {
+        var element = $(elements1[i]);
+        console.log(element.text());
+        var content = element.html();
+        if(content) {
+          var translation = getTranslationFor(content);
+                  
+          if(content != translation) {
+            element.html(translation);
+          }
+        }
+      }
+    });
+  });
+</script>

@@ -1,0 +1,395 @@
+<div class="section container press-room__section">
+  <div class="press-room__heading">
+    <h1>
+      {% if section.settings.heading %}
+        {{ section.settings.heading }}  
+      {% else %}
+        Press Room
+      {% endif %}
+    </h1>
+  </div>
+  <div class="press-room__grid">
+    {% for block in section.blocks %}
+      <script>
+        window.addEventListener("DOMContentLoaded", async (event) => {
+          let a = {{ block.settings.contents | json }};
+          window.sessionStorage.setItem('pressRoom__{{ block.settings.folder_handle }}', a);
+        });
+      </script>
+      {% if block.settings.folder_type == 'folder' %}
+        <div class="press-room__grid-item" data-folder-handle="{{ block.settings.folder_handle }}">
+          <div class="press-room__grid-item__image">
+            {{ block.settings.folder_feature_image | image_url: width: 1500, height: 1500 | image_tag }}
+          </div>
+          <div class="press-room__grid-item__details">
+            <h3>{{ block.settings.folder_name }}</h3>
+          </div>
+          {% comment %}
+          <div class="press-room__grid-item__action">
+            <button class="btn room-btn" data-folder-handle="{{ block.settings.folder_handle }}">SHOW</button>
+          </div>
+          {% endcomment %}
+        </div>
+      {% elsif block.settings.folder_type == 'file' %}
+        <div class="press-room__grid-item downloadable" data-download-link="{{ block.settings.folder_download_link }}" data-folder-name="{{ block.settings.folder_name }}">
+          <div class="press-room__grid-item__image">
+            {{ block.settings.folder_feature_image | image_url: width: 1500, height: 1500 | image_tag }}
+          </div>
+          <div class="press-room__grid-item__details">
+            <h3>{{ block.settings.folder_name }}</h3>
+          </div>
+          {% comment %}
+          <div class="press-room__grid-item__action">
+            <a class="btn" href="{{ block.settings.folder_download_link }}" alt="{{ block.settings.folder_name }}">DOWNLOAD</a>
+          </div>
+          {% endcomment %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  <div class="press-room__content suspend-set">
+    <a href="#" class="back-to-folder-link">GO BACK</a>
+    <div class="content-grid"></div>
+  </div>
+</div>
+
+{% schema %}
+  {
+    "name": "Press Room",
+    "blocks": [
+      {
+        "type": "text",
+        "name": "Folders",
+        "settings": [
+          {
+            "type": "text",
+            "id": "folder_handle",
+            "label": "Folder Handle",
+            "info": "Provide unique handle for the folder. Use dash (-) to separate words i.e. berlin-conference."
+          },
+          {
+            "type": "text",
+            "id": "folder_name",
+            "label": "Folder Name",
+            "info": "Name of the folder that people will see in the page"
+          },
+          {
+            "type": "select",
+            "id": "folder_type",
+            "label": "File or Folder?",
+            "options": [
+              {
+                "value": "file",
+                "label": "File"
+              },
+              {
+                "value": "folder",
+                "label": "Folder"
+              }
+            ],
+            "info": "Specify whether this is a file or folder"
+          },
+          {
+            "type": "image_picker",
+            "id": "folder_feature_image",
+            "label": "Feature Image",
+            "info": "Upload a feature image for this folder"
+          },
+          {
+            "type": "url",
+            "id": "folder_download_link",
+            "label": "Download Link",
+            "info": "Download link of folder (optional)"
+          },
+          {
+            "type": "textarea",
+            "id": "contents",
+            "label": "Contents (optional for file type)"
+          }
+        ]
+      }
+    ],
+    "settings": [
+      {
+        "type": "text",
+        "id": "heading",
+        "label": "Page Heading"
+      }
+    ]
+  }
+{% endschema %}
+
+{% stylesheet %}
+  .press-room__section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  /* HEADING SECTION */
+  .press-room__heading {
+    padding: 15px 0 30px 0;
+  }
+  .press-room__heading h1 {
+    font-weight: 500;
+  }
+
+  /*  GRID SECTION  */
+  .press-room__grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  .press-room__grid-item {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    flex: 25%; 
+    flex-grow: 0; 
+  }
+  .press-room__grid-item:hover {
+    cursor: pointer;
+  }
+  .press-room__grid-item .press-room__grid-item__image img {
+    object-fit: cover;
+    width: 100%;
+  }
+  .press-room__grid-item .press-room__grid-item__details {
+    text-align: center;
+  }
+  .press-room__grid-item .press-room__grid-item__action {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+    align-self: flex-end;
+  }
+  .press-room__grid-item .press-room__grid-item__action button {
+    width: 100px;
+    height: 40px;
+  }
+  @media only screen and (max-width: 768px) {
+    .press-room__grid-item {
+      flex: 33.33%;
+    }
+  }
+  @media only screen and (max-width: 580px) {
+    .press-room__grid-item .press-room__grid-item__details h3 {
+      font-size: 1rem!important;
+      margin-top: 15px;
+    }
+    .press-room__grid-item .press-room__grid-item__action {
+      justify-content: center;
+    }
+  }
+
+
+  /*  CONTENT SECTION  */
+  .press-room__content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+  }
+  .press-room__content .content-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 30px; 
+  }
+  .content-grid .content-grid__item {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+/*     flex: 33.33%; */
+    flex: 4;  
+  }
+  .content-image__container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .content-image__container img {
+
+    max-width: 300px;
+    max-height: 300px;
+  }
+  .content-grid .content-grid__item .content-title__container {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+  }
+  .content-grid .content-grid__item .content-title__container h2 {
+    font-size: 1.1rem; 
+  }
+  .content-grid .content-grid__item .content-action__container {
+    position: absolute;
+    right: 10px;
+    bottom: 10px; 
+  }
+  .content-grid .content-grid__item a {
+    align-self: flex-end;
+    display: flex;
+    justify-content: flex-end;
+  }
+  .back-to-folder-link {
+    text-decoration: underline;
+  }
+  @media only screen and (max-width: 768px) {
+  }
+  @media only screen and (max-width: 580px) {
+    .content-grid .content-grid__item .content-title__container h2 {
+      font-size: 1rem; 
+    }
+  }
+
+  
+
+  /*  ANIMATION  */
+  @keyframes slide-out-left {
+    0% {
+      transform: translateX(0);
+      display: block;
+    }
+    100% {
+      transform: translateX(-300%);
+      display: none;
+      height: 0;
+    }
+  }
+  @keyframes slide-in-left {
+    0% {
+      display: none;
+      transform: translateX(-150%);
+    }
+    100% {
+      transform: translateX(0);
+      display: block;
+    }
+  }
+  .press-room__grid.suspend-set, .press-room__content.suspend-set {
+    transform: translateX(-300%);
+    display: none;
+  }
+  .press-room__grid.slide-out {
+    z-index: 1;
+    animation: slide-out-left 1s ease forwards;
+  }
+  .press-room__grid.slide-in {
+    animation: slide-in-left 1s ease forwards;
+  }
+{% endstylesheet %}
+
+<script>
+  window.addEventListener("DOMContentLoaded", async (event) => {
+    let isMainShown = false;
+    
+    function forceDownload(url, fileName) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", url, true);
+      xhr.responseType = "blob";
+      console.log(xhr)
+      xhr.onload = function(){
+          var urlCreator = window.URL || window.webkitURL;
+          var imageUrl = urlCreator.createObjectURL(this.response);
+          var tag = document.createElement('a');
+          tag.href = imageUrl;
+          tag.download = fileName;
+          document.body.appendChild(tag);
+          tag.click();
+          document.body.removeChild(tag);
+      }
+      xhr.send();
+    }
+
+    let roomBtn = document.querySelectorAll('.press-room__grid-item')
+    roomBtn.forEach((el) => {
+      el.addEventListener('click', () => {
+        if (el.classList.contains('downloadable')) {
+          forceDownload(el.getAttribute('data-download-link'), el.getAttribute('data-folder-name'));
+        } else {
+          window.scrollTo(0, 0);
+          let folderHandle = el.getAttribute('data-folder-handle')
+          document.querySelector('.press-room__content').classList.remove('suspend-set')
+          document.querySelector('.press-room__grid').classList.remove('slide-in')
+          document.querySelector('.press-room__grid').classList.add('slide-out')
+          // let productGridContent = document.createElement('div')
+          // productGridContent.classList.add('press-room__content')
+          let productGridContent = document.querySelector('.press-room__content .content-grid')
+          productGridContent.innerHTML = ''
+          let contents = window.sessionStorage.getItem(`pressRoom__${folderHandle}`);
+          console.log(contents)
+          if (contents) {
+            let pContents = JSON.parse(contents)
+            for (let i = 0; i < pContents.length; i++) {
+              let contentItem = document.createElement('div')
+              contentItem.classList.add('content-grid__item')
+              contentItem.setAttribute('data-download-link', pContents[i].downloadLink);
+              contentItem.setAttribute('data-content-title', pContents[i].title);
+              contentItem.style.cursor = "pointer";
+              
+              let contentItemImageContainer = document.createElement('div')
+              contentItemImageContainer.classList.add('content-image__container')
+              let contentItemImage = document.createElement('img')
+              contentItemImage.src = `${pContents[i].featureImage}`
+              // contentItemImage.style.objectFit = 'contain';
+              contentItemImageContainer.append(contentItemImage)
+              
+              let contentItemTitleContainer = document.createElement('div')
+              contentItemTitleContainer.classList.add('content-title__container')
+              let contentItemTitle = document.createElement('h2')
+              contentItemTitle.innerHTML = `${pContents[i].title}`
+              contentItemTitleContainer.appendChild(contentItemTitle)
+              
+              //let contentItemActionContainer = document.createElement('div')
+              //contentItemActionContainer.classList.add('content-action__container')
+              //let contentItemButton = document.createElement('a')
+              //contentItemButton.classList.add('btn')
+              //contentItemButton.href = `${pContents[i].downloadLink}`
+              //contentItemButton.target = '_blank'
+              //contentItemButton.innerHTML = 'DOWNLOAD'
+              //contentItemActionContainer.appendChild(contentItemButton)
+              
+              contentItem.appendChild(contentItemImageContainer)
+              contentItem.appendChild(contentItemTitleContainer)
+              //contentItem.appendChild(contentItemActionContainer)
+              productGridContent.appendChild(contentItem)
+  
+              //contentItemButton.addEventListener('click', (e) => {
+              //  e.preventDefault()
+              //  forceDownload(pContents[i].downloadLink, `${pContents[i].title}`)
+              //});
+            }
+          }
+        }
+
+        
+        let folderDownloadBtns = document.querySelectorAll('.content-grid__item');
+        console.log(folderDownloadBtns)
+        if (folderDownloadBtns) {
+          folderDownloadBtns.forEach((el) => {
+            el.addEventListener('click', (e) => {
+              e.preventDefault();
+              console.log("TESTSETSTSSETSE")
+              forceDownload(el.getAttribute('data-download-link'), el.getAttribute('data-content-title'));
+            });
+          });
+        }
+      })
+    });
+
+    document.querySelector('.back-to-folder-link').addEventListener('click', () => {
+        document.querySelector('.press-room__content').classList.add('suspend-set')
+        document.querySelector('.press-room__content').classList.add('slide-in')
+        document.querySelector('.press-room__content').classList.add('slide-out')
+        document.querySelector('.press-room__grid').classList.remove('suspend-set')
+        document.querySelector('.press-room__grid').classList.add('slide-in')
+        document.querySelector('.press-room__grid').classList.remove('slide-out')
+    });
+
+  })
+</script>

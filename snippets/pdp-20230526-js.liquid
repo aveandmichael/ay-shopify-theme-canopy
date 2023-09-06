@@ -1,0 +1,1985 @@
+<script>
+  window.addEventListener("DOMContentLoaded", async (event) => {
+    const urlParams = new URLSearchParams(window.location.search);
+	const skinid = urlParams.get('skinid');
+	const token = urlParams.get('token');
+	var actualCart = [];
+	var cartItems = [];
+	var cartTotal = 0;
+	var quizData = null;
+	var inciData = null;
+	var productCount = 0;
+	var personalizedCreamCartProperties = {
+		day: {
+		"_skinId": skinid,
+          },
+	night: {
+		"_skinId": skinid,
+          },
+        }
+	const routes = {{ routes | json}};
+	var apiHost = `https://europe-west1-metrics-production-1.cloudfunctions.net`;
+	var siteLocale = {{ localization.language.iso_code | json }};
+	var productCountText = "{{ product_count_text }}";
+	var lifestyleButtonText = "{{ lifestyle_button_text }}";
+	var lifestyleButtonLoadingText = "{{ lifestyle_button_loading_text }}";
+	var dayCreamHeaderText = "{{ daycream_header_text }}";
+	var nightCreamHeaderText = "{{ nightcream_header_text }}";
+	var descriptionShowMoreText = "{{ description_show_more_text }}";
+	var descriptionShowLessText = "{{ description_show_less_text }}";
+	var moreDayCreamButtonText = "{{ more_daycream_button_text }}";
+    var jarButtonText = "{{ jar_button_text }}";
+    var dispenserButtonText = "{{ dispenser_button_text }}";
+	var moreNightCreamButtonText = "{{ more_nightcream_button_text }}";
+	var step1HeaderText = "{{ step_1_header_text }}";
+	var step2HeaderText = "{{ step_2_header_text }}";
+	var step3HeaderText = "{{ step_3_header_text }}";
+	var step4HeaderText = "{{ step_4_header_text }}";
+	var goBeyondHeaderText = "{{ gobeyond_header_text }}";
+	var moreStandardProductButtonText = "{{ more_standardproduct_button_text }}";
+	var popupHeroinciHeaderText = "{{ popup_heroinci_header_text }}";
+	var popupApplicationHeaderText = "{{ popup_application_header_text }}";
+	var popupIngredientsHeaderText = "{{ popup_ingr_header_text }}";
+	var creamLabelImgSrc = {{ cream_label_image | json}};
+	var personalizedProduct = {{ product | json}};
+	var dayCreamDescription = "{{ day_cream_description }}";
+	var nightCreamDescription = "{{ night_cream_description }}";
+	var personalizedProductRating = "{{ product_rating }}";
+	var personalizedProductJudgemeBadge = {{ product_judgeme_badge | json}};
+	var standardProducts = {{ standard_products | json}};
+	var checkoutSubtextAboveDE = "{{ checkout_subtext_above_de }}";
+	var checkoutSubtextBelowDE = "{{ checkout_subtext_below_de }}";
+	var pdpMainSection = document.querySelector('.pdp-main_section');
+	var pdpPageLoadingSection = document.querySelector('.pdp-page_loading_indicator');
+	var pdpProductCount = document.querySelector('.pdp-text__product_count');
+	var popSlide = document.querySelector('.pdp-more_result');
+	var skinTypeTranslation = {
+		"VeryDry": {
+		en: "Very Dry",
+	de: "Sehr Trocken"
+      },
+	"Dry": {
+		en: "Dry",
+	de: "Trocken"
+      },
+	"Mischhaut": {
+		en: "Combination",
+	de: "Mischhaut"
+      },
+	"Oily": {
+		en: "Oily",
+	de: "Fettig"
+      },
+	"normal": {
+		en: "Normal",
+	de: "Normal"
+      }
+    };
+	var skinGoalsTranslation = {
+		"MehrFeuchtigkeit": {
+		en: "Increase Hydration",
+	de: "Mehr Feuchtigkeit"
+      },
+	"WenigerAustrocknung": {
+		en: "Reduce Dry Areas",
+	de: "Weniger trockene Stellen"
+      },
+	"Reddening": {
+		en: "Reduce Redness",
+	de: "Weniger Rötungen"
+      },
+	"Falten": {
+		en: "Reduce Wrinkles",
+	de: "Weniger Falten"
+      },
+	"BlueLightProtection": {
+		en: "Blue Light Protection",
+	de: "Schutz vor Display-Licht"
+      },
+	"WenigerPigmentflecken": {
+		en: "Reduce Pigmentation",
+	de: "Weniger Pigmentflecken"
+      },
+	"ReinereHaut": {
+		en: "Reduce Pimples",
+	de: "Reinere Haut"
+      },
+	"StrahlendererTeint": {
+		en: "Skin Glow",
+	de: "Strahlender Teint"
+      },
+	"PorenVerfeinerung": {
+		en: "Refine Pores",
+	de: "Verfeinerung des Porenbildes"
+      },
+	"AntiPollution": {
+		en: "Anti Pollution",
+	de: "Schutz gegen Umwelteinflüsse"
+      }
+    };
+	var lifeStyle = null;
+	var lifestyleAllData = [
+	{
+		"title": "My skin type is",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/sk.svg?v=14728403771609218710",
+	"type": "skintype",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "Dry",
+	"description": "Your skin is dry, but fear not! We have an easy solution for you: our day and night creams contain ingredients to soothe and soften your skin, keeping it moisturized at all times."
+          },
+	{
+		"id": 2,
+	"type": "VeryDry",
+	"description": "Your skin is dry, but fear not! We have an easy solution for you: our day and night creams contain ingredients to soothe and soften your skin, keeping it moisturized at all times."
+          },
+	{
+		"id": 3,
+	"type": "Oily",
+	"description": "Sebum is secreted by your skin as a natural moisturizer. But excess sebum can clog your pores and cause acne. Luckily your personalized cream is tailored for your skin to find its perfect balance."
+          },
+	{
+		"id": 4,
+	"type": "Mischhaut",
+	"description": "With combination skin it can be difficult to find the right product tackling both your dry and oily areas at the same time. Luckily your personalized cream contains ingredients to  soothe your dry areas, and keep you oily areas balanced."
+          }, {
+		"id": 5,
+	"type": "normal",
+	"description": "With combination skin it can be difficult to find the right product tackling both your dry and oily areas at the same time. Luckily your personalized cream contains ingredients to  soothe your dry areas, and keep you oily areas balanced."
+          }
+	]
+      },
+	{
+		"title": "My skin tends to show redness",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/redness.svg?v=16201943310377837805",
+	"type": "reddening",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "0",
+	"description": "Your skin doesn't have redness, which means that it's moisturized and hydrated. Keep up the good work!"
+          }, {
+		"id": 2,
+	"type": "1",
+	"description": "Sometimes, your skin shows redness due to lifestyle and environmental factors, e.g. climate changes. Ensure that your skin stays hydrated and protected."
+          }, {
+		"id": 3,
+	"type": "2",
+	"description": "To prevent redness we only use hypoallergenic fragrances. If you often have redness, a dermatologist could help you find the cause. Ensure that your skin stays hydrated and protected."
+          }
+	]
+      },
+	{
+		"title": "Your travel habits",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/plane.svg?v=3308805964373302485",
+	"type": "flyingFrequency",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "0",
+	"description": "Amazing - Your skin is safe from the low humidity and recycled air of air travel! Not to mention the great contribution you're making to protecting the environment."
+          },
+	{
+		"id": 2,
+	"type": "1",
+	"description": "You only fly a few times a year, so your skin is relatively safe from the low humidity and recycled air on planes. Make sure to take care of your skin before, during, and after the flight by using moisturizer and you should be fine!"
+          },
+	{
+		"id": 3,
+	"type": "2",
+	"description": "You fly 4-8 times a year, which is good news for your skin as it doesn't get exposed too often to the low humidity and recycled air on planes. Make sure that you're taking care of your skin before, during, and after your flight by applying a good amount of moisturizer."
+          },
+	{
+		"id": 4,
+	"type": "3",
+	"description": "Wow, you fly every month! It is important that you keep your skin hyrdated so that it is best protected from the low humidity and recycled air on planes. Your AVE & YOU cream will contain the right amount of Hyaluronic acid to compensate for the dehydration of your skin during your flights."
+          }, {
+		"id": 5,
+	"type": "4",
+	"description": "Wow, you are a busy bee! Your skin is exposed a lot to the low humidity and recycled air on planes. The resulting dehydration and stress your skin experiences during air travel is best compensated by applying a good amount of moisturizer to your skin before, during, and after flight.  Your AVE & YOU cream will contain a high level of Hyaluronic acid that helps your skin to compensate for moisture loss and have a calming effect on stressed skin."
+          }
+	]
+      },
+	{
+		"title": "Your daily sun exposure",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/sun.svg?v=12683879583288890766",
+	"type": "sunExposition",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "0",
+	"description": "You are keeping away from direct sunlight. That is great news for your skin, because long exposure can cause a variety of issues, including premature aging, wrinkles and sunburn. Continue to stay in the shade and don't forget to use sun protection according to your skin type!"
+          },
+	{
+		"id": 2,
+	"type": "1",
+	"description": "You are exposed to sunlight 2-4 hours a day. Make sure that you are well protected, as prolonged exposure to the sun can damage your skin and cause premature aging. Your AVE & YOU cream will ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"
+          },
+	{
+		"id": 3,
+	"type": "2",
+	"description": "You spend a lot of time in the sun. This may have negative effects on your skin (e.g. premature aging, wrinkles, dark spots, loss of elasticity). Try to stay more in the shade and don't forget to use sun protection according to your skin type! Your AVE & YOU cream will also ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"
+          },
+	{
+		"id": 4,
+	"type": "3",
+	"description": "You spend a lot of time in the sun. This may have negative effects on your skin (e.g. premature aging, wrinkles, dark spots, loss of elasticity). Try to stay more in the shade and don't forget to use sun protection according to your skin type! Your AVE & YOU cream will also ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"
+          }, {
+		"id": 5,
+	"type": "4",
+	"description": "You spend a lot of time in the sun. This may have negative effects on your skin (e.g. premature aging, wrinkles, dark spots, loss of elasticity). Try to stay more in the shade and don't forget to use sun protection according to your skin type! Your AVE & YOU cream will also ensure that your skin is replenished appropriately with the right active ingredients after sun exposure!"
+          }
+	]
+      }, {
+		"title": "Your daily water intake",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/water.svg?v=16637081063602910020",
+	"type": "glassWaterIntake",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "0",
+	"description": "The amount of water you drink during the day is below average. Drinking water can help to prevent premature aging, as well as impurities and helps to keep a good complexion. You should try to increase your water intake while we make sure that your cream is giving your skin the right level of hydration."
+          },
+	{
+		"id": 2,
+	"type": "1",
+	"description": "The amount of water you drink during the day is below average. Drinking water can help to prevent premature aging, as well as impurities and helps to keep a good complexion. You should try to increase your water intake while we make sure that your cream is giving your skin the right level of hydration."
+          },
+	{
+		"id": 3,
+	"type": "2",
+	"description": "Your daily water intake is right about average, but we recommend to drink a little more water to improve the health of your skin. Drinking water can help to prevent premature aging, as well as impurities and helps to keep a good complexion. We will make sure that your formula is supporting the right level of hydration of your skin."
+          },
+	{
+		"id": 4,
+	"type": "3",
+	"description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }, {
+		"id": 5,
+	"type": "4",
+	"description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }, {
+		"id": 5,
+	"type": "6",
+	"description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }, {
+		"id": 5,
+	"type": "8",
+	"description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }, {
+		"id": 5,
+	"type": "9+",
+	"description": "Well done! You drink more water than most people and your skin should be well hydrated. That way you also help rid the body and skin of toxins and reduce the risk of premature aging. Your AVE & YOU cream will support the good work and make sure that your skin hydration level is perfectly balanced troughout the day."
+          }
+	]
+      }, {
+		"title": "Your stress level",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/meditate.svg?v=4086451458156057167",
+	"type": "stressLevel",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "0",
+	"description": "Great, most of the time you feel relaxed and this should also be visible in your skin! Stress hormones can slow down the collagen synthesis, which influences the elasticity of the skin and can lead to premature aging. So being relaxes is great for your skin!"
+          },
+	{
+		"id": 2,
+	"type": "1",
+	"description": "Great, most of the time you feel relaxed and this should also be visible in your skin! Stress hormones can slow down the collagen synthesis, which influences the elasticity of the skin and can lead to premature aging. So being relaxed is great for your skin! Make sure you keep taking a break from time to time and let your body rest."
+          },
+	{
+		"id": 3,
+	"type": "2",
+	"description": "Great, most of the time you feel relaxed and this should also be visible in your skin! Stress hormones can slow down the collagen synthesis, which influences the elasticity of the skin and can lead to premature aging. So being relaxed is great for your skin! Make sure you keep taking a break from time to time and let your body rest."
+          },
+	{
+		"id": 4,
+	"type": "3",
+	"description": "You are under stress and this can have negative effects on your skin. Try to take a break from time to time and let your body rest. Stress hormones can slow down the collagen synthesis, which influences the elasticity of your skin and can lead to premature aging. Your AVE & YOU cream contains the right level of active ingredients which strengthen the elasticity of your skin and counteract premature skin aging."
+          }, {
+		"id": 5,
+	"type": "4",
+	"description": "You are under stress and this can have negative effects on your skin. Try to take a break from time to time and let your body rest. Stress hormones can slow down the collagen synthesis, which influences the elasticity of your skin and can lead to premature aging. Your AVE & YOU cream contains the right level of active ingredients which strengthen the elasticity of your skin and counteract premature skin aging."
+          }
+	]
+      }, {
+		"title": "Your smoking habits",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/cigarette.svg?v=14965223516095436119",
+	"type": "smoking",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "0",
+	"description": "You never smoke. That is great news for your skin! Smoking can cause a dull complexion and premature aging, so keep up the great work!"
+          },
+	{
+		"id": 2,
+	"type": "1",
+	"description": "Your smoking habits can have negative effects on your skin, such as a dull complexion and premature aging. Good skincare can help to maintain a fresh complexion and reduce premature aging. Your AVE & YOU cream will contain active ingredients such as vitamin C and Hyaluronic acid which aim to counterbalance the effects of smoking on your skin."
+          },
+	{
+		"id": 3,
+	"type": "2",
+	"description": "Your smoking habits can have negative effects on your skin, such as a dull complexion and premature aging. Good skincare can help to maintain a fresh complexion and prevent premature aging. Your AVE & YOU cream will contain active ingredients such as Vitamin C and Hyaluronic Acid which aim to counterbalance the effects that smoking has on your skin."
+          },
+	{
+		"id": 4,
+	"type": "3",
+	"description": "Smoking causes a deterioration of collagen in the skin, which can lead to sagging skin and wrinkles. You can slow down these signs of aging by having a good skincare routine. Your AVE & YOU cream will contain a high level of active ingredients such as Vitamin C and Hyaluronic Acid which aim to counterbalance the effects of smoking on your skin."
+          }, {
+		"id": 5,
+	"type": "4",
+	"description": "Smoking causes a deterioration of collagen in the skin, which can lead to sagging skin and wrinkles. You can slow down these signs of aging by having a good skincare routine. Your AVE & YOU cream will contain a high level of active ingredients such as Vitamin C and Hyaluronic Acid which aim to counterbalance the effects of smoking on your skin."
+          }
+	]
+      }, {
+		"title": "Your blue light exposure",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/Blue_light.svg?v=4139393738149125852",
+	"type": "bluelightExposition",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "0",
+	"description": "You spend a few hours a day in front of a screen. If this time increases we recommend a blue light protection filter in your skincare."
+          },
+	{
+		"id": 2,
+	"type": "1",
+	"description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          },
+	{
+		"id": 3,
+	"type": "2",
+	"description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          },
+	{
+		"id": 4,
+	"type": "3",
+	"description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }, {
+		"id": 4,
+	"type": "4",
+	"description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }
+	]
+      }, {
+		"title": "Your blue light exposure",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/Blue_light.svg?v=4139393738149125852",
+	"type": "bluelightExposition",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "0",
+	"description": "You spend a few hours a day in front of a screen. If this time increases we recommend a blue light protection filter in your skincare."
+          }, {
+		"id": 2,
+	"type": "1",
+	"description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }, {
+		"id": 3,
+	"type": "2",
+	"description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }, {
+		"id": 4,
+	"type": "3",
+	"description": "You spend a lot of time in front of a screen. Early research indicates that blue light coming off your devices may have similar effects on your skin to UVA radiation. To be on the safe side, we have added a filter to your cream to protect your skin from blue display light."
+          }
+	]
+      }, {
+		"title": "Your environment",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/location-village.svg?v=10120292450964336639",
+	"type": "urbanEnvironment",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "0",
+	"description": "You live rather rural. Great, your skin shouldn't have any problems with air pollution!"
+          },
+	{
+		"id": 2,
+	"type": "1",
+	"description": "You live rather rural. Great, your skin shouldn't have any problems with air pollution!"
+          },
+	{
+		"id": 3,
+	"type": "2",
+	"description": "You live in a small town. Dirt particles in the air will be limited but nevertheless can stress your skin. With an Anti- Pollution Filter in your skincare you are on the safe side. It helps to protect your skin."
+          },
+	{
+		"id": 4,
+	"type": "3",
+	"description": "You live in a city. Dirt particles in the air can stress your skin. With an Anti- Pollution Filter in your skincare you are on the safe side. It helps to protect your skin."
+          }, {
+		"id": 5,
+	"type": "4",
+	"description": "You live in a big city. Dirt particles in the air can stress your skin. With an Anti- Pollution Filter in your skincare you are on the safe side. It helps to protect your skin."
+          }
+	]
+      }, {
+		"title": "Your sleeping patterns",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/Sleep.svg?v=16607544554478506459",
+	"type": "sleep",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "4",
+	"description": "Your're not sleeping a lot. Getting sufficient rest is important for your skin and body to regenerate and skin is prone to looking older if you're consistently missing sleep. Try to get at least 7 hours of rest every night. We understand only too well that sometimes there just aren't enough hours in the day. Hence our night cream ingredients DNA Night Boost and Teloplex help to compensate for a lack of sleep and support your skin's regeneration overnight."
+          }, {
+		"id": 2,
+	"type": "6",
+	"description": "You sleep less than average. Getting sufficient rest is important for your skin and body to regenerate and skin is prone to looking older if you're consistently missing sleep. Try to get at least 7 hours of rest every night. We understand only too well that sometimes there just aren't enough hours in the day. Hence our night cream ingredients DNA Night Boost and Teloplex help to compensate for a lack of sleep and support your skin's regeneration overnight."
+          }, {
+		"id": 3,
+	"type": "8",
+	"description": "Great! Your skin gets enough time to regenerate and repair itself. Keep up your great sleeping habit! Our night cream ingredients DNA Night Boost and Teloplex support your skin's regeneration overnight."
+          }, {
+		"id": 4,
+	"type": "9+",
+	"description": "Great! Your skin gets enough time to regenerate and repair itself. Keep up your great sleeping habit! Our night cream ingredients DNA Night Boost and Teloplex support your skin's regeneration overnight."
+          }
+	]
+      }, {
+		"title": "Your diet",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/Nutrition.svg?v=1593229808194931899",
+	"type": "nutrition",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "alcohol",
+	"description": "Cheers! You drink a glass now and then and to be honest, life is too short to do without these pleasures! However, alcohol leads to dehydration. Wrinkles and pores can become more visible and your skin may lose it's natural plumpness and healthy glow. Your AVE & YOU cream will contain a high level of active ingredients aiming to counterbalance any potential deficits."
+          },
+	{
+		"id": 2,
+	"type": "junkfood",
+	"description": "Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it."
+          },
+	{
+		"id": 3,
+	"type": "coffee",
+	"description": "Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."
+          },
+	{
+		"id": 4,
+	"type": "alcohol,junkfood",
+	"description": "Cheers! You drink a glass now and then and to be honest, life's too short to do without these pleasures! However, alcohol leads to dehydration and can make wrinkles and pores more visible. Furthermore, your skin may lose its natural plumpness and healthy glow. Your AVE & YOU cream will contain a high level of active ingredients aiming to counterbalance any potential deficits. Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it."
+          }, {
+		"id": 5,
+	"type": "alcohol,coffee",
+	"description": "Cheers! You drink a glass now and then and to be honest, life's too short to do without these pleasures! However, alcohol leads to dehydration and can make wrinkles and pores more visible. Furthermore, your skin may lose its natural plumpness and healthy glow. Your AVE & YOU cream will contain a high level of active ingredients aiming to counterbalance any potential deficits. Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."
+          }, {
+		"id": 6,
+	"type": "coffee,junkfood",
+	"description": "Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it. Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."
+          }, {
+		"id": 7,
+	"type": "alcohol,coffee,junkfood",
+	"description": "Junk food can be delicious, but it also contains a lot of unsaturated fats and carbohydrates that can cause dryness and impurities in your skin. It's important to have a skincare regimen that helps to protect from their effects and your personalized cream will be a vital part of it. Caffeine can increase the production of the stress hormone cortisol. This may lead to breakouts and increased skin sensitivity. More than five cups a day are considered too much and staying within the limit should have a positive effect on your skin as well as your overall well being."
+          }, {
+		"id": 8,
+	"type": "none",
+	"description": "You eat healthy, which is a fantastic start for great skin! While your personalized cream does not need to counter balance any nutrition insufficiencies our personalized AVE & YOU cream will nevertheless keep your skin in balance and improve its overall appearance."
+          }
+	]
+      }, {
+		"title": "Your exercise habits",
+	"img": "//cdn.shopify.com/s/files/1/0057/5268/4611/files/fitness.svg?v=16840573649037471049",
+	"type": "weeklySports",
+	"skinType": [
+	{
+		"id": 1,
+	"type": "IndoorWorkout",
+	"description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs."
+          },
+	{
+		"id": 2,
+	"type": "OutdoorWorkout",
+	"description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores.Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs."
+          },
+	{
+		"id": 3,
+	"type": "WaterSports",
+	"description": "You spend a lot of time in the water. Chlorine and sea salt residues can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin. We will make sure your formula provides."
+          },
+	{
+		"id": 4,
+	"type": "IndoorWorkout,OutdoorWorkout",
+	"description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs."
+          }, {
+		"id": 5,
+	"type": "IndoorWorkout,WaterSports",
+	"description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs. You spend a lot of time in the water. Chlorine and sea salt residue can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin - we will make sure that your day and night cream formulas do just that."
+          }, {
+		"id": 6,
+	"type": "OutdoorWorkout,WaterSports",
+	"description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs. You spend a lot of time in the water. Chlorine and sea salt residue can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin - we will make sure that your day and night cream formulas do just that."
+          }, {
+		"id": 7,
+	"type": "IndoorWorkout,OutdoorWorkout,WaterSports",
+	"description": "Great! Physical activity increases the blood flow, so the blood carries oxygen and essential nutrients to all of your working cells, including those found in your skin. After your workout, we recommend washing your face as sweat affects the skin’s pH level and clogs your pores. Afterwards, moisturize with your AVE & YOU cream which will meet your skin's post workout needs. You spend a lot of time in the water. Chlorine and sea salt residue can irritate the skin and should always be rinsed off. You should also apply moisturising skincare products after your workout to protect your skin - we will make sure that your day and night cream formulas do just that."
+          }, {
+		"id": 8,
+	"type": "NoSports",
+	"description": "You are not exercising and your skin is missing out. Working out increases blood flow to your skin and helps nourish and oxygenate the cells. But don't worry, your AVE & YOU cream will contain the right level of active ingredients to keep your skin looking healthy and balanced."
+          }
+	]
+      }];
+
+	async function getCart() {
+		let d = await fetch("/cart.js").then((r) => r.json())
+	if (d && d.token) {
+				return d
+			}
+	return null
+		}
+
+
+	async function removeCartItemAJAX(items) {
+		let d = fetch('/cart/update.js', {
+		method: 'POST',
+	headers: {
+		'Content-Type': 'application/json'
+				},
+	body: JSON.stringify({
+		updates: items
+				})
+			}).then(response => response.json()).then(async (data) => {
+		console.log("NEW PDP: ajax cart item removed")
+	});
+		}
+
+	async function updateProductQtyInputFromActualCart() {
+    	let excludedItems = {}
+        let personalizedCreamsInCart = []
+    	let cart = await getCart();
+    	if (cart && cart.token) {
+          if (cart.items && cart.items.length > 0) {
+            // first check if cart has the personalized creams, then add to array
+            await Promise.all(cart.items.map(async (c) => {
+              if (c.handle === "product-detail" || c.handle === "product-detail-test") {
+                personalizedCreamsInCart.push(`${c.id}`);
+              }
+            }))
+
+            // then select/deselect variant option for personalized cream if variant id
+            // is in the array above
+            let variantOptions = document.querySelectorAll(".pdp-product__variant_option.variant_option_personalized");
+            variantOptions.forEach((vo) => {
+              let voVariantId = vo.getAttribute('data-variant-id');
+              let variantParentForm = vo.closest(".pdp-product__form");
+              let qtyInput = variantParentForm.querySelector(".pdp-product__quantity__selector__input");
+              if (personalizedCreamsInCart) {
+                if (personalizedCreamsInCart.includes(`${voVariantId}`)) {
+                  vo.classList.add("selected");
+                } else {
+                  // qtyInput.value = 0;
+                  // vo.classList.remove("selected");
+                  // cartItems.map((c) => {
+                  //   if (`${c.id}` === `${voVariantId}`) {
+                  //     c.quantity = 0;
+                  //   }
+                  // })
+                }
+              }
+            });
+                  
+    		// await Promise.all(cart.items.map(async (c) => {
+    		// 	// console.log("_Set", c.properties._Set)
+    		// 	let variantOptions = document.querySelectorAll(".pdp-product__variant_option.variant_option_personalized");
+    		// 	if (variantOptions) {
+    		// 		variantOptions.forEach((vo) => {
+    		// 			let voVariantId = vo.getAttribute('data-variant-id');
+      //                   console.log("CCC", c)
+    		// 			if (`${voVariantId}` !== `${c.id}`) {
+    		// 				vo.classList.remove("selected");
+    		// 			} else {
+    		// 				vo.classList.add("selected");
+    		// 			}
+    		// 		});
+    		// 	}
+    		// }));
+            
+            await Promise.all(cart.items.map(async (c) => {
+        		console.log(c)
+                let variant = document.querySelector(`[data-variant-id="${c.id}"]`);
+            	if (variant) {
+            		variant.classList.add("selected");
+                	let variantParentForm = variant.closest(".pdp-product__form");
+                	if (variantParentForm) {
+                		let qtyInput = variantParentForm.querySelector(".pdp-product__quantity__selector__input");
+                    	if (qtyInput) {
+                    		qtyInput.value = c.quantity
+                            excludedItems[`${c.id}`] = 0;
+                        }
+                    }
+                }
+            }));
+            //await removeCartItemAJAX(excludedItems)
+
+
+            //cartItems = []
+            await Promise.all(cart.items.map(async (c) => {
+        		cartItems.push({
+        			id: c.id,
+        			quantity: c.quantity,
+        			properties: c.properties,
+        			price: c.price
+        		});
+            }));
+        	console.log("CI", cartItems);
+
+        	const dict = { };
+            await Promise.all(cartItems.map((obj) => {
+              const id = obj.id;
+              if (dict.hasOwnProperty(id)) {
+                if (obj.quantity > dict[id].quantity) {
+                  dict[id] = obj;
+                }
+              } else {
+                  dict[id] = obj;
+              }
+            }))
+          	cartItems = Object.values(dict);
+          }
+        }
+      }
+
+	async function handleStickyCheckoutUpsellText(mode) {
+		let cartTotal = 0;
+			if (cartItems && cartItems.length > 0) {
+		let upsellText = document.querySelector(".pdp-cta__checkout_subtext");
+				await Promise.all(cartItems.map((c) => {
+					if (c.price) {
+		cartTotal += parseInt(c.price) * c.quantity;
+					}
+				}));
+	console.log("cartTotal", cartTotal);
+	let country = "{{ localization.country.iso_code }}";
+	if (upsellText && country === "DE") {
+					if (cartTotal > 5000) {
+		upsellText.innerText = checkoutSubtextAboveDE;
+					} else {
+		upsellText.innerText = checkoutSubtextBelowDE;
+					}
+				}
+			}
+		}
+
+
+	async function addToCart(items) {
+			if (items && items.length > 0) {
+		await Promise.all(items.map((item) => {
+			cartItems.push({
+				id: item.id,
+				quantity: item.quantity,
+				properties: item.properties,
+				price: item.price,
+			});
+		}));
+			}
+		}
+
+	async function updateCartItem(variantUpdate) {
+			if (cartItems && cartItems.length > 0) {
+		await Promise.all(cartItems.map((item, idx) => {
+			if (item.id === variantUpdate.id) {
+				let tmp = cartItems.filter((i) => i.id !== variantUpdate.id);
+				cartItems = tmp;
+				// cartItems.push(variantUpdate);
+				Object.keys(variantUpdate).map((vu) => {
+					let tmpProperties = {}
+					if (vu === 'properties') {
+						if (item && item.properties) {
+							tmpProperties = item.properties;
+							item[vu] = { ...tmpProperties, ...variantUpdate[vu] }
+						} else {
+							item[vu] = variantUpdate[vu];
+						}
+					} else {
+						item[vu] = variantUpdate[vu];
+					}
+				});
+				cartItems.push(item);
+			}
+		}));
+			}
+		}
+
+
+	async function removeFromCart(variantId) {
+		// if (options && options.prodType) {
+		// 	let _cart = await getCart();
+		// 	if (_cart && _cart.items && _cart.items.length > 0) {
+		// 		await Promise.all(_cart.items.map(async (c) => {
+		// 			if (c.variant_title && c.variant_title.toLowerCase().includes(options.prodType)) {
+		// 				let _updates = {}
+		// 				_updates[`${c.id}`] = 0;
+		// 				await fetch("/cart/update.js", {
+		// 					method: 'POST',
+		// 					headers: {
+		// 						"Content-Type": "application/json",
+		// 					},
+		// 					body: JSON.stringify({
+		// 						updates: _updates
+		// 					})
+		// 				})
+		// 			}
+		// 		}))
+		// 	}
+		// }
+
+		if (cartItems && cartItems.length > 0) {
+			//let tmp = cartItems.filter((i) => i.id !== Number(variantId));
+			//cartItems = tmp;
+
+			await Promise.all(cartItems.map((ci) => {
+				if (ci.id === Number(variantId)) {
+					ci.quantity = 0
+				}
+			}))
+		}
+	}
+
+
+	async function personalizedCreamExistsInActualCart(mode) {
+		let _stat = false;
+		console.log("TTTT", actualCart)
+		if (actualCart && actualCart.items && actualCart.items.length > 0) {
+			await Promise.all(actualCart.items.map((c) => {
+				if (mode === "day") {
+					if (c.variant_title && c.variant_title.toLowerCase().includes("day cream")) {
+						_stat = true
+					}
+				} else if (mode === "night") {
+					if (c.variant_title && c.variant_title.toLowerCase().includes("night cream")) {
+						_stat = true
+					}
+				}
+			}));
+		}
+		return _stat;
+	}
+
+
+	async function loadQuizData() {
+		let response = await fetch(`${apiHost}/getDataForOrder/${skinid}`);
+	const data = await response.json();
+	return data;
+    }
+
+
+    const loadInciData = async (reqData) => {
+		let response = await fetch(`${apiHost}/getCreamIngredients`, {
+		method: 'POST',
+	headers: {
+		"Content-Type": "application/json"
+        },
+	body: JSON.stringify(reqData)
+      });
+	const data = await response.json();
+	return data;
+    }
+
+
+	async function loadLifeStyleData() {
+		let response = await fetch(`${apiHost}/getAnswers/${skinid}/${token}`, {
+		method: 'POST',
+	headers: {
+		"Content-Type": "application/json"
+        }
+      });
+	const data = await response.json();
+	return data;
+    }
+
+
+	async function presetPersonalizedCreamProperties(qD) {
+		// day cream
+		personalizedCreamCartProperties['day']['_answerId'] = qD.answerId;
+		personalizedCreamCartProperties['day']['Name'] = qD.cream.day.name;
+		personalizedCreamCartProperties['day']['_Cream ID'] = qD.cream.day.id;
+		personalizedCreamCartProperties['day']['_Fragrance'] = qD.cream.day.fragrance;
+		personalizedCreamCartProperties['day']['_Duft'] = qD.cream.day.fragranceName;
+		// night cream
+		personalizedCreamCartProperties['night']['_answerId'] = qD.answerId;
+		personalizedCreamCartProperties['night']['Name'] = qD.cream.night.name;
+		personalizedCreamCartProperties['night']['_Cream ID'] = qD.cream.night.id;
+		personalizedCreamCartProperties['night']['_Fragrance'] = qD.cream.night.fragrance;
+		personalizedCreamCartProperties['night']['_Duft'] = qD.cream.night.fragranceName;
+	}
+
+
+	function buildLifeStyleUI(headerTitle, img, val) {
+      var str = "";
+	str += '<article class="skin-section__body-item show" data-notation="skinType">';
+		str += '<div class="skin-section__body-item-icon"><img src="' + img + '" alt=""></div>';
+		str += '<input type="hidden" value="Dry">'
+			str += '<h2 class="h6 skin-section__body-item-title text-left">' + headerTitle + '</h2>'
+			str += '<div class="skin-section__body-item-iwr">'
+				str += ' <div class="skin-section__body-item-text show">'
+					str += '<span>' + val[0].description + '</span>'
+					str += '<input type="hidden" value="<-Dry->">';
+						str += ' </div>';
+				str += '</div>';
+			str += '</article>';
+	return str;
+    }
+
+
+	function organizeLifestyleData(val, lifestyleType) {
+      var typedata = lifestyleAllData.filter(function(item) {
+        return item.type === lifestyleType;
+      })
+
+	if (typedata.length !== 0) {
+		let skinTypeSel = typedata[0].skinType.filter(function(item) {
+          return item.type === val;
+        })
+	if (skinTypeSel.length !== 0)
+	return buildLifeStyleUI(typedata[0].title, typedata[0].img, skinTypeSel);
+	else
+	return "";
+        
+
+      } else {
+        return "";
+      }
+    }
+
+
+	function togglePageLoadingIndicator() {
+			if (!quizData) {
+				if (pdpPageLoadingSection) {
+		pdpPageLoadingSection.classList.remove('hidden');
+					// pdpPageLoadingSection.innerHTML = `
+					// 	<?xml version="1.0" encoding="utf-8"?>
+					// 	<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto; width:30px; height:30px;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+					// 	<circle cx="50" cy="50" fill="none" stroke="#000" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+					// 		<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+					// 	</circle>
+					// 	</svg>
+					// 	<p>ANALYZING YOUR DATA</p>
+					// `;
+				}
+			} else {
+				if (pdpMainSection) {
+		pdpMainSection.classList.remove('hidden');
+	if (pdpPageLoadingSection) {
+		pdpPageLoadingSection.classList.add('hidden');
+	pdpPageLoadingSection.innerHTML = '';
+					}
+				}
+			}
+		}
+
+	async function handleClickVariantOption() {
+		let variantOptions = document.querySelectorAll('.pdp-product__variant_option');
+	if (variantOptions) {
+		variantOptions.forEach((option) => {
+			option.addEventListener("click", async () => {
+				let detailsParent = option.closest('.pdp-product__details');
+				let priceParent = detailsParent.querySelector('.pdp-product__price');
+				let optionFormParent = option.closest('.pdp-product__form');
+				let qtyInput = optionFormParent.querySelector(".pdp-product__quantity__selector__input");
+				let _variantFor = option.getAttribute("data-varaint-for")
+				if (qtyInput) {
+					let optionParent = option.closest('.pdp-product__form__variants');
+					if (option.classList.contains("selected")) {
+						option.classList.remove("selected");
+						removeFromCart(option.getAttribute("data-variant-id"));
+						console.log(cartItems);
+					} else {
+						let otherOptions = optionParent.querySelectorAll('.pdp-product__variant_option');
+						await otherOptions.forEach((oo) => {
+							let __variantFor = oo.getAttribute("data-variant-for")
+							if (oo.getAttribute("data-variant-id") === option.getAttribute("data-variant-id")) {
+								oo.classList.add("selected");
+							} else {
+								oo.classList.remove("selected")
+								removeFromCart(oo.getAttribute("data-variant-id"));
+							}
+						});
+						if (parseInt(qtyInput.value) <= 0) {
+							// qtyInput.value = 1;
+						}
+						priceParent.querySelector('h3').innerText = theme.formatMoney(parseFloat(option.getAttribute("data-variant-price") * parseFloat(qtyInput.value)), theme.money_format);
+						addToCart([
+							{
+								id: Number(option.getAttribute("data-variant-id")),
+								quantity: parseInt(qtyInput.value),
+								properties: personalizedCreamCartProperties[option.getAttribute('data-variant-for')],
+								price: option.getAttribute('data-variant-price')
+							}
+						]);
+						handleStickyCheckoutUpsellText('inc');
+						console.log(cartItems);
+					}
+				}
+			});
+		});
+			}
+		}
+
+	async function handleClickQtySelector() {
+		let qtySelectors = document.querySelectorAll('.pdp-product__quantity__selector');
+	if (qtySelectors) {
+		qtySelectors.forEach((selector) => {
+			let detailsParent = selector.closest('.pdp-product__details');
+			let priceParent = detailsParent.querySelector('.pdp-product__price');
+			selector.addEventListener("click", async () => {
+				let formParent = selector.closest(".pdp-product__form");
+				let selectedVariantOption = formParent.querySelector(".pdp-product__variant_option.selected");
+				if (selectedVariantOption) {
+					let selectorParent = selector.closest(".pdp-product__quantity");
+					let qtyInput = selectorParent.querySelector(".pdp-product__quantity__selector__input");
+					let qtyCurrVal = parseInt(qtyInput.value);
+					if (selector.classList.contains("pdp-product__quantity__selector__dec")) {
+						if (qtyCurrVal > 0) {
+							qtyInput.value = qtyCurrVal - 1;
+							await updateCartItem({
+								id: Number(selectedVariantOption.getAttribute("data-variant-id")),
+								quantity: parseInt(qtyInput.value),
+								price: selectedVariantOption.getAttribute('data-variant-price'),
+								//properties: {"_Set": "Personalized Set"}
+							});
+							handleStickyCheckoutUpsellText('dec');
+						}
+					} else if (selector.classList.contains("pdp-product__quantity__selector__inc")) {
+						qtyInput.value = qtyCurrVal + 1;
+						await updateCartItem({
+							id: Number(selectedVariantOption.getAttribute("data-variant-id")),
+							quantity: parseInt(qtyInput.value),
+							price: selectedVariantOption.getAttribute('data-variant-price'),
+							//properties: {"_Set": "Personalized Set"}
+						});
+						handleStickyCheckoutUpsellText('inc');
+					}
+					priceParent.querySelector('h3').innerText = theme.formatMoney(parseFloat(selectedVariantOption.getAttribute("data-variant-price") * parseFloat(qtyInput.value)), theme.money_format);
+				}
+				console.log(cartItems);
+			});
+		});
+			}
+		}
+
+	async function toggleDescriptionShow() {
+		let descriptionToggles = document.querySelectorAll('.pdp-product__description__show__toggle');
+	if (descriptionToggles) {
+		descriptionToggles.forEach((toggle) => {
+			toggle.addEventListener("click", () => {
+				let toggleDescriptionParent = toggle.closest(".pdp-product__description");
+				let toggleDescriptionShort = toggleDescriptionParent.querySelector(".pdp-product__description__short");
+				let toggleDescriptionLong = toggleDescriptionParent.querySelector(".pdp-product__description__long");
+				if (toggleDescriptionParent) {
+					if (toggle.classList.contains("pdp-product__description__show__toggle__more")) {
+						toggleDescriptionShort.classList.add("hidden");
+						toggleDescriptionLong.classList.remove("hidden");
+					} else if (toggle.classList.contains("pdp-product__description__show__toggle__less")) {
+						toggleDescriptionShort.classList.remove("hidden");
+						toggleDescriptionLong.classList.add("hidden");
+					}
+				}
+			});
+		});
+			}
+		}
+
+	async function handleMoreResultBtnClickEvent() {
+		let btn = document.querySelectorAll('.pdp-product__more_result');
+	if (btn) {
+		btn.forEach((el) => {
+			el.addEventListener('click', async () => {
+				if (el.classList.contains('pdp-product__more_result__lifestyle')) {
+					let inciTab = document.querySelector('#HeroInciTab');
+					let inciTabContent = document.querySelector('#HeroInciTabContent');
+					inciTab.innerHTML = lifestyleButtonText;
+					inciTab.style.fontSize = "1.7rem";
+					inciTab.style.fontWeight = "700";
+					document.querySelector(`#ApplicationTab`).classList.add('hidden');
+					document.querySelector(`#InciTab`).classList.add('hidden');
+
+					if (!lifeStyle) {
+						el.innerHTML = `
+                <div style="display:inline-flex;gap:10px;">
+                  <?xml version="1.0" encoding="utf-8"?>
+                  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+                  <circle cx="50" cy="50" fill="none" stroke="#fff" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+                    <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+                  </circle>
+                  </svg>
+                  <span style="font-weight:700;">${lifestyleButtonLoadingText}</span>
+                </div>`
+						lifeStyle = await loadLifeStyleData();
+						el.innerHTML = lifestyleButtonText;
+					}
+
+					let skinConditionType = lifeStyle.skinCondition.skinType;
+					let reddeningType = lifeStyle.skinCondition.reddening;
+					let flyingFreqType = lifeStyle.lifestyle.flyingFrequency;
+					let sunExpositionType = lifeStyle.lifestyle.sunExposition;
+					let glassWaterType = lifeStyle.lifestyle.glassWaterIntake;
+					let weeklySports = lifeStyle.lifestyle.weeklySports;
+					let stressLevelType = lifeStyle.lifestyle.stressLevel;
+					let smokingType = lifeStyle.lifestyle.smoking;
+					let blueLightType = lifeStyle.lifestyle.bluelightExposition;
+					let urbanEnvironmentType = lifeStyle.lifestyle.urbanEnvironment;
+					let sleepType = lifeStyle.lifestyle.sleep;
+					let nutritionType = lifeStyle.lifestyle.nutrition.sort();
+					let weeklySportsType = lifeStyle.lifestyle.weeklySports.sort();
+					let skinInfo = organizeLifestyleData(skinConditionType, "skintype");
+					if (typeof reddeningType !== "undefined")
+						skinInfo += organizeLifestyleData(reddeningType, "reddening");
+
+
+
+					skinInfo += organizeLifestyleData(flyingFreqType, "flyingFrequency");
+					skinInfo += organizeLifestyleData(sunExpositionType, "sunExposition");
+					skinInfo += organizeLifestyleData(glassWaterType, "glassWaterIntake");
+					skinInfo += organizeLifestyleData(stressLevelType, "stressLevel");
+					skinInfo += organizeLifestyleData(smokingType, "smoking");
+
+					skinInfo += organizeLifestyleData(blueLightType, "bluelightExposition");
+					skinInfo += organizeLifestyleData(urbanEnvironmentType, "urbanEnvironment");
+
+					skinInfo += organizeLifestyleData(sleepType, "sleep");
+					skinInfo += organizeLifestyleData(nutritionType.toString(), "nutrition");
+					skinInfo += organizeLifestyleData(weeklySportsType.toString(), "weeklySports");
+
+					inciTabContent.innerHTML = skinInfo;
+
+					popSlide.classList.remove('hidden');
+					popSlide.classList.remove('slide_down');
+					popSlide.classList.add('slide_up');
+				} else {
+					let inciTab = document.querySelector('#HeroInciTab');
+					let inciTabContent = document.querySelector('#HeroInciTabContent');
+					if (el.getAttribute('data-result-for') === 'daycream' || el.getAttribute('data-result-for') === 'nightcream') {
+						if (!inciData) {
+							let oldElText = el.innerText;
+							el.innerHTML = `
+									<div style="display:inline-flex;gap:10px;">
+										<?xml version="1.0" encoding="utf-8"?>
+										<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+										<circle cx="50" cy="50" fill="none" stroke="#000" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+											<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+										</circle>
+										</svg>
+										<h5>LOADING MORE CREAM DATA</h5>
+									</div>`;
+							inciData = await loadInciData({
+								creamId: {
+									day: quizData.cream.day.id,
+									night: quizData.cream.night.id
+								},
+								locale: siteLocale,
+								creamVersion: 21
+							});
+							el.innerHTML = `<h5>${oldElText}</h5>`;
+						}
+
+						inciData.ingredients.map((i) => {
+							if (i.ofCream) {
+								if (el.getAttribute('data-result-for') === 'daycream') {
+									if (i.ofCream[0] === 'day') {
+										if (inciTabContent) {
+											let inciContainer = document.createElement('div');
+											inciContainer.classList.add('pdp-main_more_result__incis__item');
+											let inciImage = document.createElement('img');
+											inciImage.width = "70";
+											inciImage.height = "70";
+											inciImage.src = `${i.imageUrl
+												}?w=50`;
+											inciImage.alt = `${i.name
+												}`;
+											let inciDetailContainer = document.createElement('div');
+											inciDetailContainer.classList.add('pdp-main_product__more_result__incis__details');
+											let inciTitle = document.createElement('h6');
+											inciTitle.classList.add('pdp-main_product__more_result__incis__item__title');
+											inciTitle.innerText = `${i.name
+												}`;
+											let inciDesc = document.createElement('p');
+											inciDesc.innerText = `${i.description
+												}`;
+											inciContainer.appendChild(inciImage);
+											inciDetailContainer.appendChild(inciTitle);
+											inciDetailContainer.appendChild(inciDesc);
+											inciContainer.appendChild(inciDetailContainer);
+											inciTabContent.appendChild(inciContainer);
+										}
+									}
+								} else if (el.getAttribute('data-result-for') === 'nightcream') {
+									if (i.ofCream[0] === 'night') {
+										if (inciTabContent) {
+											let inciContainer = document.createElement('div');
+											inciContainer.classList.add('pdp-main_more_result__incis__item');
+											let inciImage = document.createElement('img');
+											inciImage.width = "70";
+											inciImage.height = "70";
+											inciImage.src = `${i.imageUrl
+												}?w=50`;
+											inciImage.alt = `${i.name
+												}`;
+											let inciDetailContainer = document.createElement('div');
+											inciDetailContainer.classList.add('pdp-main_product__more_result__incis__details');
+											let inciTitle = document.createElement('h6');
+											inciTitle.classList.add('pdp-main_product__more_result__incis__item__title');
+											inciTitle.innerText = `${i.name
+												}`;
+											let inciDesc = document.createElement('p');
+											inciDesc.innerText = `${i.description
+												}`;
+											inciContainer.appendChild(inciImage);
+											inciDetailContainer.appendChild(inciTitle);
+											inciDetailContainer.appendChild(inciDesc);
+											inciContainer.appendChild(inciDetailContainer);
+											inciTabContent.appendChild(inciContainer);
+										}
+									}
+								}
+							}
+						});
+					}
+
+					popSlide.classList.remove('hidden');
+					popSlide.classList.remove('slide_down');
+					popSlide.classList.add('slide_up');
+					inciTab.innerText = popupHeroinciHeaderText;
+					inciTab.style.fontSize = ".8rem";
+					document.querySelector(`#ApplicationTab`).classList.remove('hidden');
+					document.querySelector(`#InciTab`).classList.remove('hidden');
+
+					if (el.getAttribute('data-result-for') === 'standardproduct') {
+						let parentItem = el.closest('.pdp-recommendations_container');
+						let parentProductGridItem = el.closest('.pdp-product__grid__item');
+						let recommendationItem = parentItem.querySelector(`#Recommendation__${parentProductGridItem.getAttribute('data-product-id')}`)
+						if (recommendationItem) {
+							let metafields = recommendationItem.querySelector('.pdp-recommendation__metafields');
+							if (metafields) {
+								let metaObject = metafields.querySelectorAll('.pdp-recommendation__incis');
+								if (metaObject) {
+									metaObject.forEach((mo) => {
+										let metaName = mo.querySelector('.metaobjectName');
+										let metaImg = mo.querySelector('.metaobjectImg');
+										let metaDesc = mo.querySelector('.metaobjectDesc');
+										if (inciTabContent) {
+											let inciContainer = document.createElement('div');
+											inciContainer.classList.add('pdp-main_more_result__incis__item');
+											let inciImage = document.createElement('img');
+											inciImage.width = "70";
+											inciImage.height = "70";
+											inciImage.src = `${metaImg.innerText
+												}?w=50`;
+											inciImage.alt = `${metaName.innerText
+												}`;
+											let inciDetailContainer = document.createElement('div');
+											inciDetailContainer.classList.add('pdp-main_product__more_result__incis__details');
+											let inciTitle = document.createElement('h6');
+											inciTitle.classList.add('pdp-main_product__more_result__incis__item__title');
+											inciTitle.innerText = `${metaName.innerText
+												}`;
+											let inciDesc = document.createElement('p');
+											inciDesc.innerText = `${metaDesc.innerText
+												}`;
+											inciContainer.appendChild(inciImage);
+											inciDetailContainer.appendChild(inciTitle);
+											inciDetailContainer.appendChild(inciDesc);
+											inciContainer.appendChild(inciDetailContainer);
+											inciTabContent.appendChild(inciContainer);
+										}
+									});
+								}
+								let standardApplication = metafields.querySelector('.pdp-recommendation__application');
+								if (standardApplication) {
+									document.querySelector(`#ApplicationTabContent`).innerText = standardApplication.innerText;
+								}
+								let standardIngredients = metafields.querySelector('.pdp-recommendation__ingredients');
+								if (standardIngredients) {
+									document.querySelector(`#InciTabContent`).innerText = standardIngredients.innerText;
+								}
+							}
+						}
+					}
+
+					if (el.getAttribute('data-result-for') === 'daycream') {
+						document.querySelector(`#InciTabContent`).innerText = inciData.ingredientsText.day;
+						document.querySelector(`#ApplicationTabContent`).innerHTML = {{ section.settings.day_cream_application | json }};
+				} else if (el.getAttribute('data-result-for') === 'nightcream') {
+		document.querySelector(`#InciTabContent`).innerText = inciData.ingredientsText.night;
+	document.querySelector(`#ApplicationTabContent`).innerHTML = {{ section.settings.night_cream_application | json }};
+              }
+            }
+          });
+        });
+      }
+    }
+
+
+
+	async function handleMoreResultTabClickEvent() {
+		let tabs = document.querySelectorAll('.pdp-more_result__tab__links');
+	let tabContents = document.querySelectorAll('.pdp-more_result__tabcontent');
+	if (tabs) {
+		tabs.forEach((tab) => {
+			tab.addEventListener('click', (e) => {
+				tabs.forEach((tab) => {
+					tab.classList.remove('selected');
+				});
+				tab.classList.add('selected');
+
+
+				tabContents.forEach((tabContent) => {
+					tabContent.classList.add('hidden');
+				});
+				document.querySelector(`#${tab.getAttribute('id')
+					}Content`).classList.remove('hidden');
+			});
+		});
+      }
+    }
+
+
+	async function handleMoreResultCloseClickEvent() {
+		let closeBtn = document.querySelector('.pdp-more_result__x');
+	let tabs = document.querySelectorAll('.pdp-more_result__tab__links');
+	let tabContents = document.querySelectorAll('.pdp-more_result__tabcontent');
+	if (closeBtn) {
+		closeBtn.addEventListener('click', () => {
+			popSlide.classList.remove('slide_up');
+			popSlide.classList.add('slide_down');
+			document.querySelector(`#HeroInciTabContent`).innerText = "";
+			document.querySelector(`#ApplicationTabContent`).innerText = "";
+			document.querySelector(`#InciTabContent`).innerText = "";
+
+			// default selected tab and tabContent to HeroInci
+			if (tabs) {
+				tabs.forEach((tab) => {
+					if (tab.getAttribute('id') === "HeroInciTab") {
+						tab.classList.add('selected');
+					} else {
+						tab.classList.remove('selected');
+					}
+				});
+			}
+			if (tabContents) {
+				tabContents.forEach((tab) => {
+					if (tab.getAttribute('id') === "HeroInciTabContent") {
+						tab.classList.remove('hidden');
+					} else {
+						tab.classList.add('hidden');
+					}
+				});
+			}
+		});
+      }
+    }
+
+
+
+	async function translateCustomerInfo() {
+		let skinTypeEl = document.querySelector(".pdp-customer_info__skintype .pdp-customer_info__value");
+	let skinGoalsEl = document.querySelector(".pdp-customer_info__skingoals .pdp-customer_info__value");
+	if (siteLocale) {
+				if (quizData && quizData.quizData) {
+					if (quizData.quizData.skinType) {
+		skinTypeEl.innerText = skinTypeTranslation[quizData.quizData.skinType][siteLocale];
+					}
+					if (quizData.quizData.skinGoals && quizData.quizData.skinGoals.length > 0) {
+		let translatedSkinGoals = [];
+						await Promise.all(quizData.quizData.skinGoals.map((sg) => {
+		translatedSkinGoals.push(skinGoalsTranslation[sg][siteLocale]);
+						}));
+	skinGoalsEl.innerText = translatedSkinGoals.join(", ");
+					}
+				}
+			}
+		}
+
+
+	async function loadPersonalizedCreamInciDataSummary(inciData) {
+		let inciListDay = document.querySelector(".pdp-product__incis__personalized__day");
+	let inciListNight = document.querySelector(".pdp-product__incis__personalized__night");
+			if (inciData && inciData.ingredients && inciData.ingredients.length > 0) {
+		await Promise.all(inciData.ingredients.map((inci) => {
+			if (inci.ofCream.includes('day')) {
+				inciListDay.insertAdjacentHTML('beforeend', `
+							<div class="pdp-product__incis__item">
+								<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
+								<p class="pdp-product__inci__title">${inci.name}</p>
+							</div>
+						`);
+			}
+			if (inci.ofCream.includes('night')) {
+				inciListNight.insertAdjacentHTML('beforeend', `
+							<div class="pdp-product__incis__item">
+								<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
+								<p class="pdp-product__inci__title">${inci.name}</p>
+							</div>
+						`);
+			}
+		}));
+			}
+		}
+
+
+
+	async function loadPersonalizedProducts() {
+		console.log(standardProducts)
+			let dayLabel = ""
+	let nightLabel = "";
+	let description = "";
+
+	if (personalizedProduct) {
+		let targetParent = document.querySelector('.pdp-personalized_container');
+	let labelName = {
+		day: '',
+	night: ''
+				}
+	let creams = { };
+	let variants = {
+		day: {
+		"30ml": null,
+	"50ml": null,
+					},
+	night: {
+		"30ml": null,
+	"50ml": null,
+					},
+				}
+
+	if (quizData) {
+					if (quizData.cream && quizData.cream.day) {
+		creams['day'] = quizData.cream.day.id;
+	labelName['day'] = quizData.cream.day.name ?? '';
+					}
+	if (quizData.cream && quizData.cream.night) {
+		creams['night'] = quizData.cream.night.id;
+	labelName['night'] = quizData.cream.night.name ?? '';
+					}
+				}
+	
+				await Promise.all(Object.keys(creams).map((cream) => {
+		let found = "";
+	if (cream.includes('day')) {
+		description = dayCreamDescription;
+                    } else if (cream.includes('night')) {
+		description = nightCreamDescription;
+                    }
+					personalizedProduct.variants.map(async (variant) => {
+						if (variant.sku.includes(cream) && variant.sku.includes(creams[cream])) {
+							if (cream.includes('day')) {
+								if (variant.sku.includes('day30')) {
+		variants['day']['30ml'] = variant;
+		let _dayCreamInActualCart = await personalizedCreamExistsInActualCart('day');
+        console.log("PC SPlan", personalizedProduct.selling_plan_groups)
+		if (!_dayCreamInActualCart) {
+			cartItems.push({
+				id: variant.id,
+			quantity: 1,
+			properties: personalizedCreamCartProperties['day'],
+			price: variant.price,
+            //selling_plan: personalizedProduct.selling_plan_groups[0].selling_plans[0].id
+											});
+		}
+	console.log(cartItems)
+								} else if (variant.sku.includes('day50')) {
+		variants['day']['50ml'] = variant;
+								}
+							} else if (cream.includes('night')) {
+								if (variant.sku.includes('night30')) {
+									variants['night']['30ml'] = variant;
+		let _nightCreamInActualCart = await personalizedCreamExistsInActualCart('night');
+		if (!_nightCreamInActualCart) {
+			cartItems.push({
+				id: variant.id,
+				quantity: 1,
+				properties: personalizedCreamCartProperties['night'],
+				price: variant.price,
+            //selling_plan: personalizedProduct.selling_plan_groups[0].selling_plans[0].id
+			});
+		}
+	console.log(cartItems)
+								} else if (variant.sku.includes('night50')) {
+		variants['night']['50ml'] = variant;
+								}
+							}
+						}
+					});
+	productCount += 1;
+	pdpProductCount.innerText = `${productCount} ${productCountText}`;
+				}));
+
+				Object.keys(variants).map((cream) => {
+		let inciSection = '';
+	inciSection = `
+	<div class="pdp-product__incis pdp-product__incis__personalized__${cream.includes('day') ? 'day' : 'night'}"></div>
+	`;
+	if (inciData && inciData.ingredients && inciData.ingredients.length) {
+		inciData.ingredients.map((inci) => {
+			if (inci.ofCream.includes(cream)) {
+				inciItems += `
+									<div class="pdp-product__incis__item">
+										<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
+										<p class="pdp-product__inci__title">${inci.name}</p>
+									</div>
+								`;
+			}
+		});
+	inciSection = `
+	<div class="pdp-product__incis">
+		${inciItems}
+	</div>
+	`;
+					}
+	targetParent.insertAdjacentHTML('beforeend', `
+	<div class="pdp-product_group__container">
+		<div class="pdp-product_group__container__header">
+			<h2>${cream.includes('day') ? dayCreamHeaderText : nightCreamHeaderText}</h2>
+			<div class="pdp-product__header__cream_label">
+				${labelName[cream] && `
+											<img src="${creamLabelImgSrc}" alt="cream_label" class="pdp-product__cream_label__image" />
+											<span>${labelName[cream]}</span>
+										`}
+			</div>
+		</div>
+
+		<div class="pdp-product__grid">
+			<div class="pdp-product__grid__item">
+				<div class="pdp-product__info">
+					<div class="pdp-product__media">
+						<img
+							src="${personalizedProduct.featured_image}&width=150"
+							alt="${personalizedProduct.title}"
+							width="150"
+						/>
+					</div>
+					<div class="pdp-product__details">
+						<div class="pdp-product__price">
+							<h3>${theme.formatMoney(variants[cream]['30ml'].price, theme.money_format)}</h3>
+							<span></span>
+						</div>
+						<div class="pdp-product__review">
+							<div class="pdp-product__review_badge">
+								${personalizedProductJudgemeBadge}
+							</div>
+							<span class="pdp-product__review_rating">
+								${parseFloat(personalizedProductRating).toFixed(1)}/5.0
+							</span>
+						</div>
+						<div class="pdp-product__form">
+							<div class="pdp-product__form__variants">
+								<div
+									class="pdp-product__variant_option variant_option_personalized selected"
+									data-variant-id="${variants[cream]['30ml'].id}"
+									data-variant-price="${variants[cream]['30ml'].price}"
+									data-variant-for="${cream}"
+								>
+									${dispenserButtonText}
+								</div>
+								<div
+									class="pdp-product__variant_option variant_option_personalized"
+									data-variant-id="${variants[cream]['50ml'].id}"
+									data-variant-price="${variants[cream]['50ml'].price}"
+									data-variant-for="${cream}"
+								>
+									${jarButtonText}
+								</div>
+							</div>
+							<div class="pdp-product__quantity">
+								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__dec" data-qty-for="${cream}">-</div>
+								<input class="pdp-product__quantity__selector pdp-product__quantity__selector__input" type="number" value="1" readonly />
+								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc" data-qty-for="${cream}">+</div>
+							</div>
+							<div class="pdp-product__form__qty"></div>
+						</div>
+						<div class="pdp-product__description">
+							<div class="pdp-product__description__short">
+								${description.length > 250 ? `${description.substring(0, 250)}...<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">[${descriptionShowMoreText}]</span>` : description}
+							</div>
+							<div class="pdp-product__description__long hidden">
+								${description}...<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
+							</div>
+						</div>
+						<div class="pdp-product__more_result pdp-product__more_result__cream" data-result-for="${cream.includes('day') ? 'day' : 'night'}cream">
+							<h5>${cream.includes('day') ? moreDayCreamButtonText : moreNightCreamButtonText}</h5>
+						</div>
+					</div>
+				</div>
+				${inciSection}
+			</div>
+		</div>
+	</div>
+	`
+	);
+				});
+			}
+		}
+
+
+
+	async function loadStandardProducts() {
+		let standarProductsSteps = [
+	{
+		id: "cleanser",
+	step: 1,
+	exps: [
+	"@C",
+	],
+	title: 'CLEANSER',
+	headerText: step1HeaderText,
+				},
+	{
+		id: "toner",
+	step: 2,
+	exps: [
+	"@T",
+	],
+	title: 'TONER',
+	headerText: step2HeaderText,
+				},
+	{
+		id: "serum",
+	step: 3,
+	exps: [
+	"@S",
+	"@O",
+	],
+	title: 'SERUM',
+	headerText: step3HeaderText,
+				},
+	{
+		id: "eyecream",
+	step: 4,
+	exps: [
+	"@E",
+	],
+	title: 'EYE CREAM',
+	headerText: step4HeaderText,
+				},
+	];
+			if (quizData && quizData.recommendation && quizData.recommendation.length > 0) {
+				if (standardProducts && standardProducts.length > 0) {
+		let targetParent = document.querySelector(".pdp-recommendations_container");
+	let recommendationEls = targetParent.querySelectorAll(".pdp-recommendation");
+	let parsedRecommendations = [];
+					await Promise.all(quizData.recommendation.map(async (r) => {
+		parsedRecommendations.push(`${r}`.replaceAll(".", "@"));
+					}));
+					standarProductsSteps.map(async (step) => {
+		await targetParent.insertAdjacentHTML('beforeend', `
+							<div class="pdp-product_group__container exp__${step.id}">
+								<div class="pdp-product_group__container__header">
+									<h2>${step.headerText}</h2>
+								</div>
+								<div class="pdp-product__grid product__grid__compressed">
+								</div>
+							</div>
+						`);
+	let productGroupContainer = targetParent.querySelector(`.pdp-product_group__container.exp__${step.id}`);
+						parsedRecommendations.map((pR) => {
+							if (recommendationEls) {
+		recommendationEls.forEach((el) => {
+			let inciSection = '';
+			let inciItems = '';
+			let featureItems = '';
+			let inciMetafields = el.querySelectorAll('.pdp-recommendation__metafields .pdp-recommendation__incis');
+			let featureMetafields = el.querySelectorAll('.pdp-recommendation__metafields .pdp-recommendation__features');
+			if (inciMetafields) {
+				inciMetafields.forEach((iM) => {
+					inciItems += `
+												<div class="pdp-product__incis__item">
+													<img width="50" height="50" src="${iM.querySelector('.metaobjectImg').innerText}?w=50" alt="${iM.querySelector('.metaobjectName').innerText}" />
+													<p class="pdp-product__inci__title">${iM.querySelector('.metaobjectName').innerText}</p>
+												</div>
+											`;
+				});
+			}
+			if (featureMetafields) {
+				featureMetafields.forEach((fM) => {
+                    console.log("FFFFFFFFFFFFF", fM.innerText)
+					featureItems += `
+												<span class="pdp-main-tag">${fM.innerText}</span>
+											`;
+				});
+			}
+			let expParents = el.querySelectorAll(".pdp-recommendation__exps");
+			if (expParents) {
+				expParents.forEach((expP) => {
+					let exps = expP.querySelectorAll(".pdp-recommendation__exp");
+					if (exps) {
+						let processedExps = [];
+						exps.forEach((exp) => {
+							if (!processedExps.includes(exp.innerText)) {
+								if (step.exps) {
+									step.exps.map((sExp) => {
+										if (exp.innerText === pR && pR.includes(sExp)) {
+											productCount += 1;
+											pdpProductCount.innerText = `${productCount} ${productCountText}`;
+											cartItems.push({
+												id: Number(exp.getAttribute("data-id")),
+												quantity: 1,
+											});
+											let productGrid = productGroupContainer.querySelector(".pdp-product__grid");
+											if (productGrid) {
+												let recommendationCommons = el.querySelector(".pdp-recommendation__commons");
+												productGrid.insertAdjacentHTML('beforeend', `
+																			<div class="pdp-product__grid__item" data-product-id="${el.getAttribute('data-product-id')}">
+
+																				<div class="pdp-main_product__tags">
+																					${featureItems}
+																				</div><br/>
+
+																				<div class="pdp-product__info">
+																					<div class="pdp-product__media">
+																						<img
+																							src="${recommendationCommons.querySelector(".pdp-recommendation__featured_image").innerText}"
+																							alt="${recommendationCommons.querySelector(".pdp-recommendation__featured_image").innerText}"
+																							width="150"
+																						/>
+																					</div>
+																					<div class="pdp-product__details">
+																						<div class="pdp-product__title">
+																							${recommendationCommons.querySelector(".pdp-recommendation__title").innerHTML}
+																						</div>
+																						<div class="pdp-product__price">
+																							<h3>${theme.formatMoney(exp.getAttribute("data-prc"), theme.money_format)}</h3>
+																							<span>${recommendationCommons.querySelector(".pdp-recommendation__product_size").innerText}</span>
+																						</div>
+																						<div class="pdp-product__review">
+																							<div class="pdp-product__review_badge">
+																								${recommendationCommons.querySelector(".pdp-recommendation__review_badge").innerHTML}
+																							</div>
+																							<div class="pdp-product__review_rating">
+																								${recommendationCommons.querySelector(".pdp-recommendation__review_rating").innerText}
+																							</div>
+																						</div>
+																						<div class="pdp-product__form">
+																							<div class="pdp-product__form__variants hidden">
+																								<div
+																									class="pdp-product__variant_option selected"
+																									data-variant-id="${exp.getAttribute("data-id")}"
+																									data-variant-price="${exp.getAttribute("data-prc")}"
+																								>
+																									${exp.getAttribute("data-title")}
+																								</div>
+																							</div>
+																							<div class="pdp-product__quantity">
+																								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__dec">-</div>
+																								<input class="pdp-product__quantity__selector pdp-product__quantity__selector__input" type="number" value="1" readonly />
+																								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc">+</div>
+																							</div>
+																							<div class="pdp-product__form__qty"></div>
+																						</div>
+																						<div class="pdp-product__description">
+																							<div class="pdp-product__description__short">
+																								${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.substring(0, 250)}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.length > 250 ? `...[${descriptionShowMoreText}]` : ""}</span>
+																							</div>
+																							<div class="pdp-product__description__long hidden">
+																								${recommendationCommons.querySelector(".pdp-recommendation__description").innerText}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
+																							</div>
+																						</div>
+																						<div class="pdp-product__more_result pdp-product__more_result__standard" data-result-for="standardproduct">
+																							<h5>${moreStandardProductButtonText}</h5>
+																						</div>
+																						<div class="pdp-product__incis product__incis__desktop">
+																							${inciItems}
+																						</div>
+																					</div>
+																				</div>
+																				<div class="pdp-product__incis product__incis__mobile">
+																					${inciItems}
+																				</div>
+																			</div>
+																		`);
+											}
+										}
+									});
+								}
+								processedExps.push(exp.innerText);
+							}
+						});
+					}
+				});
+			}
+		});
+							}
+						});
+					});
+				}
+			}
+		}
+
+
+
+
+	async function loadGoBeyondProducts() {
+		let targetParent = document.querySelector(".pdp-recommendations_container.pdp-gobeyond");
+	let recommendationEls = targetParent.querySelectorAll(".pdp-recommendation");
+	await targetParent.insertAdjacentHTML('beforeend', `
+	<div class="pdp-product_group__container">
+		<div class="pdp-product_group__container__header">
+			<h2>${goBeyondHeaderText}</h2>
+		</div>
+		<div class="pdp-product__grid product__grid__compressed">
+		</div>
+	</div>
+	`);
+	let productGroupContainer = targetParent.querySelector(`.pdp-product_group__container`);
+	if (recommendationEls) {
+		recommendationEls.forEach((el) => {
+			let inciSection = '';
+			let inciItems = '';
+			let inciMetafields = el.querySelectorAll('.pdp-recommendation__metafields .pdp-recommendation__incis');
+			if (inciMetafields) {
+				inciMetafields.forEach((iM) => {
+					inciItems += `
+								<div class="pdp-product__incis__item">
+									<img width="50" height="50" src="${iM.querySelector('.metaobjectImg').innerText}?w=50" alt="${iM.querySelector('.metaobjectName').innerText}" />
+									<p class="pdp-product__inci__title">${iM.querySelector('.metaobjectName').innerText}</p>
+								</div>
+							`;
+				});
+			}
+			let expParents = el.querySelectorAll(".pdp-recommendation__exps");
+			if (expParents) {
+				expParents.forEach((expP) => {
+					let exps = expP.querySelectorAll(".pdp-recommendation__exp");
+					if (exps) {
+						let processedExps = [];
+						exps.forEach((exp, idx) => {
+							cartItems.push({
+								id: Number(exp.getAttribute("data-id")),
+								quantity: 0,
+							});
+							if (!processedExps.includes(exp.innerText)) {
+								let productGrid = productGroupContainer.querySelector(".pdp-product__grid");
+								if (productGrid) {
+									let recommendationCommons = el.querySelector(".pdp-recommendation__commons");
+									productGrid.insertAdjacentHTML('beforeend', `
+												<div class="pdp-product__grid__item" data-product-id="${el.getAttribute('data-product-id')}">
+													<div class="pdp-product__info">
+														<div class="pdp-product__media">
+															<img
+																src="${recommendationCommons.querySelector(".pdp-recommendation__featured_image").innerText}"
+																alt="${recommendationCommons.querySelector(".pdp-recommendation__featured_image").innerText}"
+																width="150"
+															/>
+														</div>
+														<div class="pdp-product__details">
+															<div class="pdp-product__title">
+																${recommendationCommons.querySelector(".pdp-recommendation__title").innerHTML}
+															</div>
+															<div class="pdp-product__price">
+																<h3>${theme.formatMoney(exp.getAttribute("data-prc"), theme.money_format)}</h3>
+																<span></span>
+															</div>
+															<div class="pdp-product__review">
+																<div class="pdp-product__review_badge">
+																	${recommendationCommons.querySelector(".pdp-recommendation__review_badge").innerHTML}
+																</div>
+																<div class="pdp-product__review_rating">
+																	${recommendationCommons.querySelector(".pdp-recommendation__review_rating").innerText}
+																</div>
+															</div>
+															<div class="pdp-product__form">
+																<div class="pdp-product__form__variants hidden">
+																	<div
+																		class="pdp-product__variant_option selected"
+																		data-variant-id="${exp.getAttribute("data-id")}"
+																		data-variant-price="${exp.getAttribute("data-prc")}"
+																	>
+																		${exp.getAttribute("data-title")}
+																	</div>
+																</div>
+																<div class="pdp-product__quantity">
+																	<div class="pdp-product__quantity__selector pdp-product__quantity__selector__dec">-</div>
+																	<input class="pdp-product__quantity__selector pdp-product__quantity__selector__input" type="number" value="0" readonly />
+																	<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc">+</div>
+																</div>
+																<div class="pdp-product__form__qty"></div>
+															</div>
+															<div class="pdp-product__description">
+																<div class="pdp-product__description__short">
+																	${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.substring(0, 250)}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.length > 250 ? `...[${descriptionShowMoreText}]` : ""}</span>
+																</div>
+																<div class="pdp-product__description__long hidden">
+																	${recommendationCommons.querySelector(".pdp-recommendation__description").innerText}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
+																</div>
+															</div>
+															<div class="pdp-product__more_result pdp-product__more_result__standard" data-result-for="standardproduct">
+																<h5>${moreStandardProductButtonText}</h5>
+															</div>
+															<div class="pdp-product__incis product__incis__desktop">
+																${inciItems}
+															</div>
+														</div>
+													</div>
+													<div class="pdp-product__incis product__incis__mobile">
+														${inciItems}
+													</div>
+												</div>
+											`);
+								}
+								processedExps.push(exp.innerText);
+							}
+						});
+					}
+				});
+			}
+		});
+			}
+		}
+
+
+
+
+	async function toggleCheckout() {
+		let btn = document.querySelector(".pdp-cta__checkout_btn");
+	btn.innerHTML = await `
+	<div style="display:inline-flex;gap:10px;align-items:center;">
+		<?xml version="1.0" encoding="utf-8"?>
+		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto; width:20px; height:20px;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+			<circle cx="50" cy="50" fill="none" stroke="#fff" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+				<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+			</circle>
+		</svg>
+		<span>CHECKING OUT</span>
+	</div>
+	`;
+      //let formData = {
+		//  items: cartItems
+		//}
+		//console.log(formData)
+		//await updateProductQtyInputFromActualCart();
+		let cart = await getCart();
+	const {matchingItems, nonMatchingItems} = cartItems.reduce((r, ci) =>  {
+				const matchingItm = cart.items.find((c) => {
+					if (c.id === ci.id) {
+						if (c.quantity === ci.quantity) {
+		c["cartResolve"] = "ignore";
+						} else if (ci.quantity > c.quantity || ci.quantity < c.quantity) {
+		c["cartResolve"] = "update";
+	c.quantity = ci.quantity
+						} else {
+		c["cartResolve"] = "add";
+						}
+	return c;
+					}
+	return undefined;
+				});
+	if (matchingItm && matchingItm.cartResolve === "update") {
+		r.matchingItems.push(ci)
+	} else if (!matchingItm || (matchingItm && matchingItm.cartResolve === "add")) {
+		r.nonMatchingItems.push(ci)
+	}
+	return r
+			}, {matchingItems: [], nonMatchingItems: [] })
+	console.log("matching", matchingItems)
+	console.log("non matching", nonMatchingItems)
+	if (matchingItems) {
+		let formData = { }
+	let updates = { }
+				await Promise.all(matchingItems.map((d) => {
+		updates[d.id] = d.quantity
+	}))
+	formData = {
+		updates,
+				}
+	await fetch('/cart/update.js', {
+		method: 'POST',
+	headers: {
+		'Content-Type': 'application/json'
+					},
+	body: JSON.stringify(formData)
+				})
+			}
+	if (nonMatchingItems) {
+		let formData = {
+		items: nonMatchingItems
+				}
+				//fetch('/cart/add.js', {
+		//	method: 'POST',
+		//	headers: {
+		//		'Content-Type': 'application/json'
+		//	},
+		//	body: JSON.stringify(formData)
+		//}).then(response => response.json()).then(async (data) => {
+		//await theme.updateCartSummaries(true, true, true);
+		//window.location.href = "{{ routes.cart_url | string }}"
+		//window.location.href = "/checkout"
+		//});
+		await fetch('/cart/add.js', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(formData)
+		})
+	}
+	window.location = "/checkout"
+    }
+
+		document.querySelector(".pdp-cta__checkout_btn").addEventListener("click", () => {
+    		toggleCheckout();
+		}, { once: true });
+
+	// CALLS
+	// *
+	// *
+	// *
+
+	window.onscroll = function() {
+			var stickyCheckoutContainer = document.querySelector('.pdp-cta__sticky');
+	if (stickyCheckoutContainer) {
+				if (window.scrollY >= 100) {
+		stickyCheckoutContainer.classList.remove('hidden');
+				} else {
+		stickyCheckoutContainer.classList.add('hidden');
+				}
+			}
+		}
+
+	togglePageLoadingIndicator();
+	quizData = await loadQuizData();
+	await presetPersonalizedCreamProperties(quizData);
+	togglePageLoadingIndicator();
+
+	let inciDataCalled = false;
+	var stickyCheckoutContainer = document.querySelector('.pdp-cta__sticky');
+	window.onscroll = async function() {
+			if (window.scrollY >= 50 && !inciData && !inciDataCalled) {
+		inciDataCalled = true;
+	inciData = await loadInciData({
+		creamId: {
+		day: quizData.cream.day.id,
+	night: quizData.cream.night.id
+					},
+	locale: siteLocale,
+	creamVersion: 21
+				});
+	await loadPersonalizedCreamInciDataSummary(inciData);
+			}
+
+	if (stickyCheckoutContainer) {
+				if (window.scrollY >= 100) {
+		stickyCheckoutContainer.classList.remove('hidden');
+				} else {
+		stickyCheckoutContainer.classList.add('hidden');
+				}
+			}
+		}
+
+	translateCustomerInfo();
+	actualCart = await getCart();
+	await loadPersonalizedProducts();
+	await loadStandardProducts();
+	await loadGoBeyondProducts();
+	await updateProductQtyInputFromActualCart();
+	await handleStickyCheckoutUpsellText('inc');
+	handleClickVariantOption();
+	handleClickQtySelector();
+	toggleDescriptionShow();
+	handleMoreResultBtnClickEvent();
+	handleMoreResultCloseClickEvent();
+	handleMoreResultTabClickEvent();
+  });
+</script>
