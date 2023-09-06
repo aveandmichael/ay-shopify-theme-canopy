@@ -418,6 +418,10 @@
 .qtnr__answer__choice__text {
   text-align: center;
 }
+.qtnr__page_container__arabic .qtnr__answer__choice__text * {
+  direction: rtl;
+  text-align: right;
+}
 .qtnr__answer__choice[data-question-type="disclaimer"] {
   border: 0;
 }
@@ -645,6 +649,10 @@ div[data-question-id="pigmenttationType"] .qtnr__answer__item.choice__styling_fl
   }
   div[data-question-id="pigmenttationType"] .qtnr__answer__choice__text * {
     text-align: left;
+  }
+  .qtnr__page_container__arabic div[data-question-id="pigmenttationType"] .qtnr__answer__choice__text * {
+    direction: rtl;
+    text-align: right;
   }
   .qtnr__answer__item[data-answer-icon=true] .qtnr__answer__choice__icon {
     width: 80px;

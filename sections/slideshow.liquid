@@ -213,7 +213,7 @@
                       {% else %}
                           {% assign cta_url = block.settings.button_2_link %}
                       {% endif %}
-                      <a href="{{ cta_url }}"
+                      <a href="{{ block.settings.button_2_link }}"
                          class="{% if block.settings.button_2_style == 'link' %}link-display {% else %}btn btnSkinATest {% if block.settings.button_2_style == 'secondary' %}btn--secondary{% elsif block.settings.button_2_style == 'overlay' %}alt btn-overlay{% endif %}{% endif %}">
                         {{ block.settings.button_2_label | escape }}
                       </a>

@@ -384,24 +384,24 @@
                     {% assign domain = "https://aveandyou.com/" %}
                     {% if localization.country.iso_code == 'DE' %}
                       {% if localization.language.iso_code == 'de' %}
-                        {% assign cta_url = '/de/pages/ave-you-skin-test-de' %}
+                        {% assign cta_url = '/pages/skin-test' %}
                       {% else %}
-                        {% assign cta_url = 'pages/ave-you-skin-test-en' | prepend: domain %}
+                        {% assign cta_url = 'en/pages/skin-test' | prepend: domain %}
                       {% endif %}
                     {% elsif localization.country.iso_code == 'AT' or localization.country.iso_code == 'CH' %}
                       {% assign lang = localization.language.iso_code | append: '-' %}
                       {% assign country_code = localization.country.iso_code | downcase | append: '/' %}
                       {% assign subfolder = lang | prepend: domain | append: country_code %}
                       {% if localization.language.iso_code == 'de' %}
-                        {% assign cta_url = 'pages/ave-you-skin-test-de' | prepend: subfolder %}
+                        {% assign cta_url = 'pages/skin-test' | prepend: subfolder %}
                       {% else %}
-                        {% assign cta_url = 'pages/ave-you-skin-test-en' | prepend: subfolder %}
+                        {% assign cta_url = 'pages/skin-test' | prepend: subfolder %}
                       {% endif %}
                     {% else %}
                       {% assign lang = localization.language.iso_code | append: '-' %}
                       {% assign country_code = localization.country.iso_code | downcase | append: '/' %}
                       {% assign subfolder = lang | prepend: domain | append: country_code %}
-                      {% assign cta_url = 'pages/ave-you-skin-test-en' | prepend: subfolder %}
+                      {% assign cta_url = 'pages/skin-test' | prepend: subfolder %}
                     {% endif %}
                   <!--  <a href="https://skincare-configuration.aveandyou.com/{% if host_name == "en" %}en{% else %}de{% endif %}/q/q7/1{% if current_variant.sku == '9.5.B' %}?skuBundle=9.5.B{% endif %}{% if current_variant.sku == '9.6.B' %}?skuBundle=9.6.B{% endif %}"
                             class="btn product-add mini-form {% if block.settings.enable_payment_button and product.selling_plan_groups == empty %}alt outline{% endif %}">-->

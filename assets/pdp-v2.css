@@ -511,6 +511,7 @@
 	display: flex;
 	gap: 15px;
 	align-items: center;
+    justify-content: center;
 }
 .pdp-cta__sticky .pdp-cta__checkout_btn {
 	width: 100%;

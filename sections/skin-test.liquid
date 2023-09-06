@@ -3,7 +3,7 @@
 {% assign mf = page.metafields.custom.questionnaire.value %}
 {% assign current_country = localization.country.iso_code %}
 
-<div class="qtnr__page_container">
+<div class="qtnr__page_container {% if localization.language.iso_code == 'ar' %}qtnr__page_container__arabic{% endif %}">
   <div class="qtnr__page_header">
     <button class="qtnr__page_nav_back hidden">
       {% render 'svg-arrow-left' %}
@@ -837,11 +837,11 @@
               pdpBtn.addEventListener("click", () => {
                 gtmSkinTestTrack(questionIdx, questionId, "endScreen", "endScreen");
                 if (storeCountry === "DE" && storeLocale === "de") {
-                  window.location.href = `/products/product-detail-test?skinid=${skinId}&token=${answerAccessToken}`;
+                  window.location.href = `/products/product-detail?skinid=${skinId}&token=${answerAccessToken}`;
                 } else if (storeCountry === "DE" && storeLocale === "en") {
-                  window.location.href = `/en/products/product-detail-test?skinid=${skinId}&token=${answerAccessToken}`;
+                  window.location.href = `/en/products/product-detail?skinid=${skinId}&token=${answerAccessToken}`;
                 } else {
-                  window.location.href = `/${storeLocale}-${storeCountry}/products/product-detail-test?skinid=${skinId}&token=${answerAccessToken}`;
+                  window.location.href = `/${storeLocale}-${storeCountry}/products/product-detail?skinid=${skinId}&token=${answerAccessToken}`;
                 }
               });
             }
