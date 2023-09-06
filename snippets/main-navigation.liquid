@@ -54,7 +54,7 @@
           {% assign link_url = link.url %}
         {% endif %}
       
-        <a class="nav-item-link{% if featured_links contains link.title %} nav-item-link--featured{% endif %}" href="{{ link_url }}" {% if link.links != blank %}aria-haspopup="true" aria-expanded="false"{% endif %}>
+        <a class="nav-item-link{% if featured_links contains link.title %} nav-item-link--featured{% endif %}" href="{{ link.url }}" {% if link.links != blank %}aria-haspopup="true" aria-expanded="false"{% endif %}>
           <span class="nav-item-link-title">{{ link.title }}</span>
           {% if link.links != blank %}{% render 'svg-chevron-down' %}{% endif %}
         </a>
@@ -138,7 +138,7 @@
                   {% endif %}
 
                 <li class="sub-nav-item{% if child_link.active %} active{% endif %}{% if child_link.links != blank %} has-dropdown{% endif %}">
-                  <a class="sub-nav-item-link" href="{{ child_link_url }}"{% if child_link.type == 'collection_link' %}{% if child_link.object.image %} data-img="{{ child_link.object.image | img_url: nav_image_size }}"{% else %} data-img="{{ child_link.object.products.first.featured_media.preview_image | img_url: nav_image_size }}"{% endif %}{% endif %}{% if child_link.type == 'product_link' and child_link.object.featured_media.preview_image %} data-img="{{ child_link.object.featured_media.preview_image | img_url: nav_image_size }}"{% endif %} {% if child_link.links != blank %}aria-haspopup="true" aria-expanded="false"{% endif %}>
+                  <a class="sub-nav-item-link" href="{{ child_link.url }}"{% if child_link.type == 'collection_link' %}{% if child_link.object.image %} data-img="{{ child_link.object.image | img_url: nav_image_size }}"{% else %} data-img="{{ child_link.object.products.first.featured_media.preview_image | img_url: nav_image_size }}"{% endif %}{% endif %}{% if child_link.type == 'product_link' and child_link.object.featured_media.preview_image %} data-img="{{ child_link.object.featured_media.preview_image | img_url: nav_image_size }}"{% endif %} {% if child_link.links != blank %}aria-haspopup="true" aria-expanded="false"{% endif %}>
                     <span class="sub-nav-item-link-title">{{ child_link.title }}</span>
                     {% if child_link.links != blank %}{% render 'svg-chevron-down' %}{% endif %}
                   </a>
