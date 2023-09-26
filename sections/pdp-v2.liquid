@@ -6,7 +6,7 @@
 
 {% assign recommendations = collections[section.settings.recommendation_collection_source] %}
 
-<div class="pdp-page_loading_indicator pdp-section__padded__all hidden">
+<div class="pdp-page_loading_indicator pdp-section__padded__all">
 	<?xml version="1.0" encoding="utf-8"?>
 	<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto; width:30px; height:30px;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
 	<circle cx="50" cy="50" fill="none" stroke="#000" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
@@ -16,7 +16,7 @@
 	<p>ANALYZING YOUR DATA</p>
 </div>
 
-<div class="pdp-main_section" data-section-type="product-template" data-components="accordion">
+<div class="pdp-main_section hidden" data-section-type="product-template" data-components="accordion">
 	{% comment %} BANNER SECTION {% endcomment %}
 	<div class="pdp-section pdp-banner" data-locale="{{ localization.country.iso_code }}">
 		{% if section.settings.banner %}
@@ -255,7 +255,7 @@
     </div>
     {% endcomment %}
     <div class="pdp-cta__sticky hidden">
-  	<div class="pdp-cta__subscription-container">
+  	<div class="pdp-cta__subscription-container hidden">
         <div class="pdp-cta__subscription-checkbox">
     		<input id="recharge_subscription" name="recharge_subscription" type="checkbox" />
     		<label for="recharge_subscription">Purchase via subscription</label>
@@ -278,7 +278,9 @@
   	</div>
   	<div class="pdp-cta__action-container">
   		<button class="pdp-cta__checkout_btn__custom">{{ section.settings.checkout_button_text }}</button>
+        {% comment %}
   		<div class="pdp-cta__total"></div>
+        {% endcomment %}
   	</div>
       {% if localization.country.iso_code == "DE" %}
   		{% if cart.total_price > 50 %}
@@ -289,7 +291,9 @@
       {% endif %}
     </div>
 
+    {% comment %}
 	<div style="height:150px"></div>
+    {% endcomment %}
 </div>
 
 {%- render 'pdp-v2-js'
@@ -535,6 +539,12 @@
             "type": "text",
             "id": "checkout_subtext_above_de",
             "label": "Checkout Subtext Above € (DE)"
+        },
+        {
+            "type": "text",
+            "id": "loading_header",
+            "label": "Loading Header",
+            "default": "We are analyzing your formulation..."
         }
 	]
 }

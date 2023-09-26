@@ -50,6 +50,14 @@
                 <span class="qtnr__answer__choice_selection">0</span> / <span>{{ q.multiple_max_selection }} {{ section.settings.multiple_selected_text }}</span>
               </div>
             {% endif %}
+            {% if q.disclaimer %}
+              <div class="qtnr__disclaimer">
+                <h6><u>{{ section.settings.why_we_ask_text }}</u></h6>
+                <div class="qtnr__disclaimer__text qtnr__disclaimer__text__hidden">
+                  {{ q.disclaimer }}
+                </div>
+              </div>
+            {% endif %}
             <div class="qtnr__answer {% if q.type == "creamLabel" %}qtnr__answer__creamLabel{% endif %}">
               {% if q.type == 'single' or q.type == 'multiple' %}
                 {% for c in q.choices.value %}
@@ -204,7 +212,18 @@
                   <div class="qtnr__navigation__prev">{{ section.settings.back_button_text }}</div>
                 {% endcomment %}
                 <div class="qtnr__navigation__next {% if q.type != "faceScan" and q.type != "disclaimer" %}qtnr__navigation__disabled{% endif %}">
+                  {% comment %}
                   {{ section.settings.next_button_text }}
+                  {% endcomment %}
+                  {% if localization.language.iso_code == "en" %}
+                    CONTINUE
+                  {% elsif localization.language.iso_code == "de" %}
+                    Weiter
+                  {% elsif localization.language.iso_code == "ar" %}
+                    يكمل
+                  {% else %}
+                    CONTINUE
+                  {% endif %}
                   {% render 'svg-chevron-right' %}
                 </div>
               </div>
@@ -251,6 +270,13 @@
       "label": "Multiple 'selected' text",
       "default": "selected",
       "info": "The word that comes in multiple selection counter e.g. 1/2 'selected'"
+    },
+    {
+      "type": "text",
+      "id": "why_we_ask_text",
+      "label": "'WHY WE ASK' text",
+      "default": "WHY WE ASK",
+      "info": "Label/header text for the disclaimer section 'WHY WE ASK'"
     }
   ]
 }
@@ -398,6 +424,15 @@
       nextBtn.classList.add('qtnr__navigation__disabled');
     }
   }
+  function toggleDisclaimer(disclaimerEl) {
+    if (disclaimerEl) {
+      if (disclaimerEl.classList.contains("qtnr__disclaimer__text__hidden")) {
+        disclaimerEl.classList.remove("qtnr__disclaimer__text__hidden");
+      } else {
+        disclaimerEl.classList.add("qtnr__disclaimer__text__hidden");
+      }
+    }
+  }
   
   window.addEventListener("DOMContentLoaded", async (event) => {
     var faceScanFrame = document.querySelector("#faceScanFrame");
@@ -518,7 +553,7 @@
         skinTestData["quiz"]["isDirectPurchase"] = false;
         skinTestData["isDirectPurchase"] = false;
         skinTestData["creamVersion"] = 21;
-        skinTestData["featureRectMS"] = true; // signals calculation of features and recommendations as pubsub operation
+        skinTestData["featureRecMS"] = true; // signals calculation of features and recommendations as pubsub operation
 
         var tries = 0;
 
@@ -737,6 +772,9 @@
           questionEl.classList.add("q_slide_further_left");
           questionToJump.classList.remove("q_slide_further_right");
           questionToJump.classList.add("q_slide_left");
+          if (leadsTo === "dayCreamLabel" || leadsTo === "dayCreamLabel") {
+            questionToJump.classList.remove("qa_slide_up");
+          }
         currentQuestion = leadsTo;
       } else {
           let nextQuestionDiv = questionEl.nextElementSibling;
@@ -747,6 +785,10 @@
           questionEl.classList.add("q_slide_further_left");
           nextQuestionDiv.classList.remove("q_slide_further_right");
           nextQuestionDiv.classList.add("q_slide_left");
+          if (currentQuestion === "dayCreamLabel" || currentQuestion === "nightCreamLabel") {
+            let nextQuestionDivAnswerChoiceEl = nextQuestionDiv.querySelector(".qtnr__answer__choice");
+            nextQuestionDivAnswerChoiceEl.classList.add("qa_slide_up");
+          }
       }
     }
 
@@ -1011,6 +1053,18 @@
       let contentEl = popupDetailsEl.querySelector(".popup_details__content");
       contentEl.innerHTML = null;
     });
+    let disclaimerEls = document.querySelectorAll(".qtnr__disclaimer");
+    if (disclaimerEls) {
+      disclaimerEls.forEach((el) => {
+        let disclaimerTextTrigger = el.querySelector(".qtnr__disclaimer h6");
+        disclaimerTextTrigger.addEventListener("click", () => {
+          let disclaimerTextEl = el.querySelector(".qtnr__disclaimer__text");
+          if (disclaimerTextEl) {
+            toggleDisclaimer(disclaimerTextEl);
+          }
+        });
+      });
+    }
 
     // FUNCTION CALLS
     trackQuestion();

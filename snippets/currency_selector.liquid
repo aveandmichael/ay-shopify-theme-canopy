@@ -38,7 +38,7 @@
           {% endfor %}
           <div id="CountryList_divider"></div>
           {% for country in localization.available_countries %}
-            {% if country.iso_code != 'AT' and country.iso_code != 'DE' and country.iso_code != 'CH' and country.iso_code != 'US' and country.iso_code != 'AE' %}
+            {% if country.iso_code != 'AT' and country.iso_code != 'DE' and country.iso_code != 'CH' and country.iso_code != 'US' %}
               <li class="disclosure-list__item" name="{{ country.name }}" tabindex="-1">
                 <a class="disclosure-list__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-disclosure-option>
                   {% render 'currency_flag_options', country: country %} {{ country.name }}

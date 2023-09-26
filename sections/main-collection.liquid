@@ -152,8 +152,10 @@
       <div id="collection" data-cc-animate data-ajax-scroll-to>
 				{% capture sort_by %}
 					{% if section.settings.enable_sorting %}
-						<span class="filter">
+						<span class="filter toolbar-sort">
+                            {% comment %}
 							<label for="sort-by">{{ 'collections.sorting.title' | t }}:</label>
+                            {% endcomment %}
 							<select id="sort-by" name="sort_by" class="sort-by" data-default-value="{{ collection.sort_by | default: collection.default_sort_by  }}">
 								{%- for option in collection.sort_options -%}
 									{%- if option.value == "manual" and section.settings.collection_sort_show_featured -%}
@@ -199,8 +201,10 @@
                            {%- for filter in collection.filters -%}
 										{%- case filter.type -%}
 											{%- when "list" -%}
-												<span class="tags filter">
+												<span class="tags filter toolbar-filter">
+                                                    {% comment %}
 													<label for="filter-by-{{ filter.label | handleize }}">{{ filter.label }}:</label>
+                                                    {% endcomment %}
 													<select class="ly_type" id="filter-by-{{ filter.label | handleize }}"
 																	name="{{ filter.values.first.param_name }}">
 														<option value="">{{ 'collections.filtering.all' | t }}</option>
@@ -225,7 +229,9 @@
 										{%- case filter.type -%}
 											{%- when "list" -%}
 												<span class="tags filter">
+                                                    {% comment %}
 													<label for="filter-by-{{ filter.label | handleize }}">{{ filter.label }}:</label>
+                                                    {% endcomment %}
 													<select id="filter-by-{{ filter.label | handleize }}"
 																	name="{{ filter.values.first.param_name }}">
 														<option value="">{{ 'collections.filtering.all' | t }}</option>
@@ -775,3 +781,49 @@
 	]
 }
 {% endschema %}
+
+<style>
+  .rich-text.section {
+    padding-top: 0!important;
+    padding-bottom: 0!important;
+  }
+  .rich-text-section__text {
+    padding: 44px 1em;
+  }
+  .rte p {
+    margin: 0;
+    font-size: .9rem;
+  }
+  #content .section {
+    margin-top: -4rem;
+  }
+  #content .section.rich-text {
+    margin-top: 0;
+  }
+  .cc-toolbar-buttons .filter {
+    display: flex;
+    align-items: center;
+    padding: 5px 8px;
+    border: 1px solid #222;
+  }
+  .cc-toolbar-buttons .toolbar-filter {
+    width: 150px;
+  }
+  .cc-toolbar-buttons .toolbar-sort {
+    width: 190px;
+  }
+  .cc-toolbar-buttons .filter .pretty-select {
+    top: 0!important;
+    display: flex;
+    justify-content: space-between;
+    width: 100%!important;
+  }
+  @media only screen and (min-width: 768px) {
+    .rte p {
+      font-size: 1rem;
+    }
+    #content .section {
+      margin-top: -7rem;
+    }
+  }
+</style>

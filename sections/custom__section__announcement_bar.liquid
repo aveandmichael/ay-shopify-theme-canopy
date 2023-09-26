@@ -1,0 +1,114 @@
+{%- unless template == 'gift_card' -%}
+  {%- if 
+     section.settings.announcement_show_in and localization.country.iso_code == 'IN'
+     or section.settings.announcement_show_it and localization.country.iso_code == 'IT'
+  -%}
+    {%- if template contains 'index' or section.settings.announcement_home_only == false -%}
+      <div
+        class="announcement-bar"
+        data-cc-animate
+        data-section-type="announcement-bar"
+        style="background:#fff;color:#000;"
+      >
+        <div class="container">
+          <div class="announcement-bar__inner">
+            <div class="announcement-bar__text">
+              {% if localization.country.iso_code == 'DE' %}
+                {{ section.settings.shipping_threshold_text }}
+                {{ section.settings.shipping_threshold_de }}
+              {% elsif localization.country.iso_code == 'IN' %}
+                {{ section.settings.shipping_threshold_text }}
+                {{ section.settings.shipping_threshold_in }}
+              {% elsif localization.country.iso_code == 'AR' %}
+                {{ section.settings.shipping_threshold_text }}
+                {{ section.settings.shipping_threshold_ar }}
+              {% elsif localization.country.iso_code == 'IT' %}
+                {{ section.settings.shipping_threshold_text }}
+                {{ section.settings.shipping_threshold_it }}
+              {% else %}
+                {{ section.settings.shipping_threshold_text }}
+                {{ section.settings.shipping_threshold_intl }}
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+{%- endunless -%}
+
+{% schema %}
+  {
+	"name": "Announcement bar (v2)",
+	"class": "section-announcement-bar",
+	"settings": [
+		{
+			"type": "text",
+			"id": "shipping_threshold_text",
+			"label": "Shipping Threshold Text",
+            "default": "Product prices include duties & taxes - "
+		},
+		{
+			"type": "text",
+			"id": "shipping_threshold_intl",
+			"label": "Shipping Threshold (International)"
+		},
+		{
+			"type": "text",
+			"id": "shipping_threshold_de",
+			"label": "Shipping Threshold (DE)"
+		},
+		{
+			"type": "text",
+			"id": "shipping_threshold_in",
+			"label": "Shipping Threshold (IN)"
+		},
+		{
+			"type": "text",
+			"id": "shipping_threshold_ar",
+			"label": "Shipping Threshold (AR)"
+		},
+		{
+			"type": "text",
+			"id": "shipping_threshold_it",
+			"label": "Shipping Threshold (IT)"
+		},
+		{
+			"type": "checkbox",
+			"id": "announcement_show_intl",
+			"label": "Show announcement (International)",
+			"default": false
+		},
+		{
+			"type": "checkbox",
+			"id": "announcement_show_de",
+			"label": "Show announcement (DE)",
+			"default": false
+		},
+		{
+			"type": "checkbox",
+			"id": "announcement_show_in",
+			"label": "Show announcement (IN)",
+			"default": false
+		},
+		{
+			"type": "checkbox",
+			"id": "announcement_show_ar",
+			"label": "Show announcement (AR)",
+			"default": false
+		},
+		{
+			"type": "checkbox",
+			"id": "announcement_show_it",
+			"label": "Show announcement (IT)",
+			"default": false
+		},
+		{
+			"type": "checkbox",
+			"id": "announcement_home_only",
+			"label": "Home page only",
+			"default": false
+		}
+	]
+}
+{% endschema %}

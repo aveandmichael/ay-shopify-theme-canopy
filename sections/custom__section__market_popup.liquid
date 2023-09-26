@@ -1,0 +1,473 @@
+{% if section.settings.enable_popup %}
+  {% capture content_header %}
+      {% if localization.language.iso_code == 'de' %}
+        <h1>{{ section.settings.popup_header_de }}</h1>
+        <p>{{ section.settings.popup_subheader_de }}</p>
+      {% elsif localization.language.iso_code == 'ar' %}
+        <h1>{{ section.settings.popup_header_en }}</h1>
+        <p>{{ section.settings.popup_subheader_en }}</p>
+      {% else %}
+        <h1>{{ section.settings.popup_header_en }}</h1>
+        <p>{{ section.settings.popup_subheader_en }}</p>
+      {% endif %}
+  {% endcapture %}
+  
+  {% capture language_selector %}
+    <div class="market_popup_lng_container">
+      {% comment %}
+      {% if localization.country.iso_code == "DE" or localization.country.iso_code == "AT" or localization.country.iso_code == "CH" %}
+        <button data-language-code="de" class="market_popup_lng_btn market_popup_lng_btn__selected">
+          {% if localization.language.iso_code == "de" %}Deutsch{% else %}German{% endif %} (DE)
+        </button>
+        <button data-language-code="en" class="market_popup_lng_btn">
+          {% if localization.language.iso_code == "de" %}Englisch{% else %}English{% endif %} (EN)
+        </button>
+      {% elsif localization.country.iso_code == "SA" %}
+        <button data-language-code="en" class="market_popup_lng_btn market_popup_lng_btn__selected">
+          {% if localization.language.iso_code == "ar" %}إنجليزي{% else %}English{% endif %} (DE)
+        </button>
+        <button data-language-code="ar" class="market_popup_lng_btn">
+          {% if localization.language.iso_code == "ar" %}عربي{% else %}Arabic{% endif %} (EN)
+        </button>
+      {% endif %}
+      {% endcomment %}
+    </div>
+    
+    <br />
+    <select class="market_popup__country_selector">
+      {% for country in localization.available_countries %}
+        <option value="{{ country.iso_code }}" data-country-code="{{ country.iso_code }}">
+          {{ country.name }}
+        </option>
+      {% endfor %}
+    </select>
+    <br />
+    <button class="market_popup__continue_btn hidden">CONTINUE</button>
+  {% endcapture %}
+
+  {%- render 'custom__snippet__universal_popup', content_header: '', content_area: language_selector -%}
+
+  <style>
+    .market_popup_lng_container {
+      display: flex;
+      justify-content: space-evenly;
+      align-items: center;
+    }
+    .market_popup_lng_btn {
+      background: transparent;
+      color: #000;
+    }
+    .market_popup_lng_btn__selected {
+      background: #000;
+      color: #fff;
+    }
+  </style>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", async (event) => {
+      var popupHeaderEl = document.querySelector(".universal-popup__content-header");
+      var languageContainerEl = document.querySelector(".market_popup_lng_container");
+      var countrySelectorEl = document.querySelector(".market_popup__country_selector");
+      var continueBtn = document.querySelector(".market_popup__continue_btn");
+      var targetSubfolder = "";
+      var storeCountry = {{ localization.country.iso_code | json }};
+      var storeCountryLowerCase = {{ localization.country.iso_code | downcase | json }};
+      var storeLocale = {{ localization.language.iso_code | json }};
+      var actualCountryCode = undefined;
+      var actualCountryName = undefined;
+      var enHeader = {{ section.settings.popup_header_en | json }};
+      var deHeader = {{ section.settings.popup_header_de | json }};
+      var arHeader = {{ section.settings.popup_header_ar | json }};
+      var enSubheader = {{ section.settings.popup_subheader_en | json }};
+      var deSubheader = {{ section.settings.popup_subheader_de | json }};
+      var arSubheader = {{ section.settings.popup_subheader_ar | json }};
+      
+      async function detectCountry() {
+        await $.getJSON('https://apiip.net/api/check?accessKey=b9372a73-cc79-4ac6-b56f-c9dbc660b5ec&output=json&fields=countryCode', function(result) {
+          window.sessionStorage.setItem('visitorGeolocationCountryCode', result.countryCode);
+          actualCountryCode = result.countryCode;
+        });
+      }
+
+      async function buildDELangSelector(baseLocale) {
+        let parentEl = document.querySelector(".market_popup_lng_container");
+        let deButton = document.createElement("button");
+        let enButton = document.createElement("button");
+        parentEl.innerHTML = null;
+        deButton.classList.add("market_popup_lng_btn");
+        deButton.classList.add("market_popup_lng_btn__selected");
+        deButton.setAttribute("data-lang-code", "de");
+        deButton.setAttribute("data-lang-text-en", "German");
+        deButton.setAttribute("data-lang-text-de", "Deutsch");
+        if (baseLocale === "de") {
+          deButton.innerText = "Deutsch";
+        } else {
+          deButton.innerText = "German";
+        }
+        deButton.addEventListener("click",  () => {
+          handleLangClick(deButton, enButton);
+          goCorrectSubfolder();
+        });
+        enButton.classList.add("market_popup_lng_btn");
+        enButton.setAttribute("data-lang-code", "en");
+        enButton.setAttribute("data-lang-text-en", "English");
+        enButton.setAttribute("data-lang-text-de", "Englisch");
+        if (baseLocale === "de") {
+          enButton.innerText = "Englisch";
+        } else {
+          enButton.innerText = "English";
+        }
+        enButton.addEventListener("click",  () => {
+          handleLangClick(enButton, deButton);
+          goCorrectSubfolder();
+        });
+        parentEl.appendChild(deButton);
+        parentEl.appendChild(enButton);
+      }
+
+      async function buildARLangSelector(baseLocale) {
+        let parentEl = document.querySelector(".market_popup_lng_container");
+        let arButton = document.createElement("button");
+        let enButton = document.createElement("button");
+        parentEl.innerHTML = null;
+        arButton.classList.add("market_popup_lng_btn");
+        arButton.setAttribute("data-lang-code", "ar");
+        arButton.setAttribute("data-lang-text-en", "Arabic");
+        arButton.setAttribute("data-lang-text-ar", "عربي");
+        if (baseLocale === "ar") {
+          arButton.innerText = "عربي";
+        } else {
+          arButton.innerText = "Arabic";
+        }
+        arButton.addEventListener("click",  () => {
+          handleLangClick(arButton, enButton);
+          goCorrectSubfolder();
+        });
+        enButton.classList.add("market_popup_lng_btn");
+        enButton.classList.add("market_popup_lng_btn__selected");
+        enButton.setAttribute("data-lang-code", "en");
+        enButton.setAttribute("data-lang-text-en", "English");
+        enButton.setAttribute("data-lang-text-ar", "إنجليزي");
+        if (baseLocale === "ar") {
+          enButton.innerText = "إنجليزي";
+        } else {
+          enButton.innerText = "English";
+        }
+        enButton.addEventListener("click",  () => {
+          handleLangClick(enButton, arButton);
+          goCorrectSubfolder();
+        });
+        parentEl.appendChild(arButton);
+        parentEl.appendChild(enButton);
+      }
+
+      async function buildIntlLangSelector(baseLocale) {
+        let parentEl = document.querySelector(".market_popup_lng_container");
+        let arButton = document.createElement("button");
+        let enButton = document.createElement("button");
+        parentEl.innerHTML = null;
+        enButton.classList.add("market_popup_lng_btn");
+        enButton.classList.add("market_popup_lng_btn__selected");
+        enButton.setAttribute("data-lang-code", "en");
+        enButton.setAttribute("data-lang-text-en", "English");
+        if (baseLocale === "en") {
+          enButton.innerText = "English";
+        }
+        enButton.addEventListener("click",  () => {
+          handleLangClick(enButton, arButton);
+          goCorrectSubfolder();
+        });
+        parentEl.appendChild(enButton);
+      }
+
+      function clearLangSelector() {
+        let parentEl = document.querySelector(".market_popup_lng_container");
+        parentEl.innerHTML = null;
+      }
+
+      function handleLangClick(clickedBtn, otherBtn) {
+        let clickedBtnOrigText = clickedBtn.innerText;
+        let otherBtnOrigText = otherBtn.innerText;
+        targetSubfolder = "";
+        if (clickedBtn.getAttribute("data-lang-code") === "de") {
+          popupHeaderEl.querySelector("h1").innerText = deHeader;
+          popupHeaderEl.querySelector("p").innerText = deSubheader;
+          continueBtn.innerText = "Weitermachen";
+          clickedBtn.innerText = "Deutsch";
+          otherBtn.innerText = "Englisch";
+          targetSubfolder = "/de-";
+        } else if (clickedBtn.getAttribute("data-lang-code") === "ar") {
+          popupHeaderEl.querySelector("h1").innerText = arHeader;
+          popupHeaderEl.querySelector("p").innerText = arSubheader;
+          continueBtn.innerText = "يكمل";
+          clickedBtn.innerText = "عربي";
+          otherBtn.innerText = "إنجليزي";
+          targetSubfolder = "/ar-";
+        } else {
+          popupHeaderEl.querySelector("h1").innerText = enHeader;
+          popupHeaderEl.querySelector("p").innerText = enSubheader;
+          continueBtn.innerText = "CONTINUE";
+          clickedBtn.innerText = clickedBtn.getAttribute("data-lang-text-en");
+          otherBtn.innerText = otherBtn.getAttribute("data-lang-text-en");
+          targetSubfolder = "/en-";
+        }
+        if (countrySelectorEl.value !== "DE") {
+          targetSubfolder = targetSubfolder + `${countrySelectorEl.value}`.toLowerCase()
+        } else {
+          if (clickedBtn.getAttribute("data-lang-code") === "en") {
+            targetSubfolder = "/en";
+          } else {
+            targetSubfolder = "";
+          }
+        }
+        
+      }
+
+      // === HANDLE REDIRECTING TO PROPER SUBFOLDER
+      async function goCorrectSubfolder() {
+        let urlPath = window.location.pathname;
+          let redirectPath = urlPath;
+        
+          let currentSubfolderPortion = `/${storeLocale}-${storeCountryLowerCase}`
+          let targetSubfolderPortion = `/${storeLocale}-${actualCountryCode}`.toLowerCase();
+
+          if (actualCountryCode === "DE") {
+            let pathPortionToRemove = urlPath.indexOf(currentSubfolderPortion);
+            redirectPath = urlPath.split(currentSubfolderPortion).join("");
+            if (targetSubfolder === "") {
+              redirectPath = window.location.protocol + "//" + window.location.host;
+            } else {
+              redirectPath =  targetSubfolder + redirectPath
+            }
+          } else {
+            if (urlPath.includes("/en-")) {
+              currentSubfolderPortion = `/${storeLocale}-${storeCountryLowerCase}`
+              targetSubfolderPortion = `/${storeLocale}-${actualCountryCode}/`.toLowerCase();
+              
+              let pathPortionToRemove = urlPath.indexOf(currentSubfolderPortion);
+              redirectPath = urlPath.slice(pathPortionToRemove, 1);
+              redirectPath = urlPath.split(currentSubfolderPortion).join("");
+              redirectPath = targetSubfolder + redirectPath;
+            } else if (urlPath.includes("/en")) {
+              currentSubfolderPortion = "/en";
+              targetSubfolderPortion = `/${storeLocale}-${actualCountryCode}/`.toLowerCase();
+
+              let pathPortionToRemove = urlPath.indexOf(currentSubfolderPortion);
+              redirectPath = urlPath.slice(pathPortionToRemove, 1);
+              redirectPath = urlPath.split(currentSubfolderPortion).join("");
+              redirectPath = targetSubfolder + redirectPath;
+            } else {
+              currentSubfolderPortion = `/${storeLocale}-${storeCountryLowerCase}`
+              targetSubfolderPortion = `/${storeLocale}-${actualCountryCode}/`.toLowerCase();
+
+              let pathPortionToRemove = urlPath.indexOf(currentSubfolderPortion);
+              redirectPath = urlPath.slice(pathPortionToRemove, 1);
+              redirectPath = urlPath.split(currentSubfolderPortion).join("");
+              redirectPath = targetSubfolder + redirectPath;
+            }
+            
+            // if (!urlPath.includes(targetSubfolder)) {
+            //   let pathPortionToRemove = urlPath.indexOf(currentSubfolderPortion);
+            //   alert(currentSubfolderPortion)
+            //   redirectPath = urlPath.split(currentSubfolderPortion).join("");
+            //   alert(redirectPath)
+            //   redirectPath = targetSubfolder + redirectPath;
+            //   console.log("UNIVERSAL_POPUP", "button clicked");
+            // }
+            console.log("UNIVERSAL_POPUP::urlPath", urlPath);
+            console.log("UNIVERSAL_POPUP::redirectPath", redirectPath);
+          }
+  
+          window.location.href = redirectPath;
+      }
+  
+      function togglePopup() {
+        console.log("UNIVERSAL_POPUP::actualCountry", actualCountryCode);
+        console.log("UNIVERSAL_POPUP::storeCountry", storeCountry);
+        let popupEl = document.querySelector(".universal-popup");
+  
+        if (popupEl) {
+          let popupCloseEl = popupEl.querySelector(".universal-popup__content-close");
+          let popupHeader = popupEl.querySelector(".universal-popup__content-header");
+          let popupContentArea = popupEl.querySelector(".universal-popup__content-area");
+  
+          popupHeader.style.marginTop = "25px" 
+          if (popupCloseEl) { popupCloseEl.classList.add("hidden"); }
+  
+          if (actualCountryCode) {
+            // === PRESELECT COUNTRY
+            if (countrySelectorEl) {
+              let countrySelectorElOptions = countrySelectorEl.querySelectorAll("option");
+              if (countrySelectorElOptions) {
+                countrySelectorElOptions.forEach((el) => {
+                  if (el.getAttribute("data-country-code") === actualCountryCode) {
+                    el.setAttribute("selected", true);
+                    if (
+                      el.getAttribute("data-country-code") === "DE"
+                      || el.getAttribute("data-country-code") === "AT"
+                      || el.getAttribute("data-country-code") === "CH"
+                    ) {
+                      buildDELangSelector("de");
+                    } else if (
+                      el.getAttribute("data-country-code") === "JO"
+                      || el.getAttribute("data-country-code") === "SA"
+                    ) {
+                      buildARLangSelector("en");
+                    } else {
+                      // clearLangSelector();
+                      buildIntlLangSelector("en");
+                    }
+                  }
+                });
+              }
+            }
+
+            // === HANDLE COUNTRY SELECTION
+            if (countrySelectorEl) {
+              countrySelectorEl.addEventListener("change", (e) => {
+                if (
+                  e.target.value === "DE"
+                  || e.target.value === "AT"
+                  || e.target.value === "CH"
+                ) {
+                  buildDELangSelector("de");
+                } else if (
+                  e.target.value === "JO"
+                  || e.target.value === "SA"
+                ) {
+                  buildARLangSelector("en");
+                } else {
+                    clearLangSelector();
+                  }
+              });
+            }
+
+            // // === HANDLE REDIRECTING TO PROPER SUBFOLDER
+            // async function goCorrectSubfolder() {
+            //   let urlPath = window.location.pathname;
+            //     let redirectPath = urlPath;
+  
+            //     let currentSubfolderPortion = `/${storeLocale}-${storeCountryLowerCase}`
+            //     let targetSubfolderPortion = `/${storeLocale}-${actualCountryCode}`.toLowerCase();
+            //     if (urlPath.includes("/en/")) {
+            //       currentSubfolderPortion = "/en/";
+            //       targetSubfolderPortion = `/${storeLocale}-${actualCountryCode}/`.toLowerCase();
+            //     }
+                
+            //     if (!urlPath.includes(targetSubfolder)) {
+            //       let pathPortionToRemove = urlPath.indexOf(currentSubfolderPortion);
+            //       redirectPath = urlPath.split(currentSubfolderPortion).join("");
+            //       redirectPath = targetSubfolder + redirectPath;
+            //       console.log("UNIVERSAL_POPUP", "button clicked");
+            //     }
+            //     console.log("UNIVERSAL_POPUP::urlPath", urlPath);
+            //     console.log("UNIVERSAL_POPUP::redirectPath", redirectPath);
+            //     window.location.href = redirectPath;
+            // }
+  
+            // === HANDLE CONTINUE BUTTON CLICK
+            // if (continueBtn) {
+            //   continueBtn.addEventListener("click", () => {
+            //     let urlPath = window.location.pathname;
+            //     let redirectPath = urlPath;
+  
+            //     let currentSubfolderPortion = `/${storeLocale}-${storeCountryLowerCase}`
+            //     let targetSubfolderPortion = `/${storeLocale}-${actualCountryCode}`.toLowerCase();
+            //     if (urlPath.includes("/en/")) {
+            //       currentSubfolderPortion = "/en/";
+            //       targetSubfolderPortion = `/${storeLocale}-${actualCountryCode}/`.toLowerCase();
+            //     }
+                
+            //     if (!urlPath.includes(targetSubfolder)) {
+            //       let pathPortionToRemove = urlPath.indexOf(currentSubfolderPortion);
+            //       redirectPath = urlPath.split(currentSubfolderPortion).join("");
+            //       redirectPath = targetSubfolder + redirectPath;
+            //       console.log("UNIVERSAL_POPUP", "button clicked");
+            //     }
+            //     console.log("UNIVERSAL_POPUP::urlPath", urlPath);
+            //     console.log("UNIVERSAL_POPUP::redirectPath", redirectPath);
+            //     window.location.href = redirectPath;
+            //   });
+            // }
+            
+            if (actualCountryCode !== storeCountry) {
+              popupEl.classList.remove("hidden");
+              if (actualCountryCode === "DE" || actualCountryCode === "AT" || actualCountryCode === "CH") {
+                popupHeader.innerHTML = `
+                  <h1>${deHeader}</h1>
+                  <p>${deSubheader}</p>
+                `;
+              } else if (actualCountryCode === "SA") {
+                popupHeader.innerHTML = `
+                  <h1>${enHeader}</h1>
+                  <p>${enSubheader}</p>
+                `;
+              } else {
+                popupHeader.innerHTML = `
+                  <h1>${enHeader}</h1>
+                  <p>${enSubheader}</p>
+                `;
+              }
+            } else {
+              popupEl.classList.add("hidden");
+            }
+          }
+        }
+      }
+  
+      // == FUNCTION CALLS
+      await detectCountry();
+      togglePopup();
+    });
+  </script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Market Popup",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_popup",
+      "label": "Enabled",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "popup_header_en",
+      "label": "Header (EN)",
+      "default": "We ship to your country"
+    },
+    {
+      "type": "text",
+      "id": "popup_subheader_en",
+      "label": "Sub-Header (EN)",
+      "default": "Shop based on your own language and currency"
+    },
+    {
+      "type": "text",
+      "id": "popup_header_de",
+      "label": "Header (DE)",
+      "default": "Wir versenden in Ihr Land"
+    },
+    {
+      "type": "text",
+      "id": "popup_subheader_de",
+      "label": "Sub-Header (DE)",
+      "default": "Kaufen Sie basierend auf Ihrer eigenen Sprache und Währung ein"
+    },
+    {
+      "type": "text",
+      "id": "popup_header_ar",
+      "label": "Header (AR)",
+      "default": "نحن نشحن لدولتك"
+    },
+    {
+      "type": "text",
+      "id": "popup_subheader_ar",
+      "label": "Sub-Header (AR)",
+      "default": "تسوق حسب لغتك وعملة دولتك"
+    }
+  ]
+}
+{% endschema %}

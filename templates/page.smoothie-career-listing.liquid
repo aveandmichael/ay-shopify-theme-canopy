@@ -239,16 +239,29 @@ p.ql-align-center{
           <div class="smoothie-icon-wrapper" style="margin-top: 2px;">
             <svg width="20px" height="20px" id="Layer_1" style="enable-background:new 0 0 48 48;" version="1.1" viewBox="0 0 48 48" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g><polygon points="30.8,45.7 9.1,24 30.8,2.3 32.2,3.7 11.9,24 32.2,44.3  "/></g></svg>
           </div>
-          <span class="detail-text">View all listings</span>
+        {% if localization.language.iso_code == 'ar' %}
+        <span class="detail-text">عرض جميع القوائم</span>
+        {% else %}
+        <span class="detail-text">View all listings</span>
+        {% endif %}          
         </span>
      </a>
    </div>
 
    
       {% if career_external_form_link %}
-      <h1>{{ page.title }} <span class="job-apply" onclick="location.href='{{ career_external_form_link }}';">APPLY NOW</span></h1>
+        {% if localization.language.iso_code == 'ar' %}
+        <h1>{{ page.title }} <span class="job-apply" onclick="location.href='{{ career_external_form_link }}';">قدم الآن</span></h1>
+        {% else %}
+        <h1>{{ page.title }} <span class="job-apply" onclick="location.href='{{ career_external_form_link }}';">APPLY NOW</span></h1>
+        {% endif %}
+
       {% else %}
-      <h1>{{ page.title }} <span class="job-apply" onclick="smoothScroll(document.getElementById('af'))">APPLY NOW</span></h1>
+        {% if localization.language.iso_code == 'ar' %}
+            <h1>{{ page.title }} <span class="job-apply" onclick="smoothScroll(document.getElementById('af'))">قدم الآن</span></h1>
+        {% else %}
+            <h1>{{ page.title }} <span class="job-apply" onclick="smoothScroll(document.getElementById('af'))">APPLY NOW</span></h1>
+        {% endif %} 
       {% endif %}
     
       
@@ -333,8 +346,14 @@ p.ql-align-center{
  
   
   <div id="af" class="job-page">
-    <h2 style="margin-top: 5px; float: left;">APPLICATION FORM</h2>
-    <span style="float:right;">* Required</span>
+    {% if localization.language.iso_code == 'ar' %}
+        <h2 style="margin-top: 5px; float: left;">نموذج الطلب</h2>
+        <span style="float:right;">* مطلوب</span>
+    {% else %}
+        <h2 style="margin-top: 5px; float: left;">APPLICATION FORM</h2>
+        <span style="float:right;">* Required</span>
+    {% endif %}
+    
     <div style="clear: both;"></div>
 
     
@@ -348,20 +367,36 @@ p.ql-align-center{
 
       <div>
         <span class="smoothie-fname">
-          <label for="fname">First name *</label>
+         {% if localization.language.iso_code == 'ar' %}
+        <label for="fname">الاسم الأول *</label>
+        {% else %}
+         <label for="fname">First name *</label>
+        {% endif %}
           <input type="text" id="fname" name="fname" required />
         </span><span class="right smoothie-lname">
-          <label for="lname">Last name *</label>
+          
+         {% if localization.language.iso_code == 'ar' %}
+        <label for="lname">اسم العائلة *</label>
+        {% else %}
+        <label for="lname">Last name *</label>
+        {% endif %}
           <input style="float: right;" type="text" id="lname" name="lname" required />
         </span>
       </div
       ><div>
         <span class="smoothie-email">
-
+          {% if localization.language.iso_code == 'ar' %}
+          <label for="email">عنوان البريد الإلكتروني *</label>
+          {% else %}
           <label for="email">Email address *</label>
+          {% endif %}
           <input type="email" id="email" name="email" required />
         </span><span class="right smoothie-resume">
-          <label for="resume">Resume (.pdf and max of 4MB) *</label>
+          {% if localization.language.iso_code == 'ar' %}
+            <label for="resume">السيرة الذاتية (pdf وبحد أقصى 4 ميجابايت) *</label>
+          {% else %}
+            <label for="resume">Resume (.pdf and max of 4MB) *</label>
+          {% endif %} 
           <input type="file" name="resume" id="resume" accept="application/pdf, .doc, .docx, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, text/plain" required />
         </span>
       </div
@@ -377,7 +412,11 @@ p.ql-align-center{
           
         
       </div><div>
+        {% if localization.language.iso_code == 'ar' %}
+        <label for="cover_letter">غطاء الرسالة</label>
+          {% else %}
         <label for="cover_letter">Cover Letter</label>
+          {% endif %}
         <textarea id="cover_letter" name="cover_letter"></textarea>
       </div>
 
@@ -388,11 +427,19 @@ p.ql-align-center{
       
 
       <a href="/pages/career-opportunities">
+      {% if localization.language.iso_code == 'ar' %}
+      <button type="button" class="desktop-button back-button">عرض جميع القوائم</button>
+      {% else %}
       <button type="button" class="desktop-button back-button">View all listings</button>
+      {% endif %}
       </a>
 
-      <button type="submit">SUBMIT APPLICATION</button>
       
+    {% if localization.language.iso_code == 'ar' %}
+    <button type="submit">قدم الطلب</button>
+    {% else %}
+    <button type="submit">SUBMIT APPLICATION</button>
+    {% endif %}
     </form>
 
 
@@ -403,7 +450,12 @@ p.ql-align-center{
 
   <div style="text-align: center; margin-bottom: 40px;">
     <a href="/pages/career-opportunities">
+      {% if localization.language.iso_code == 'ar' %}
+      <button class="mobile-button back-button" type="button">عرض جميع القوائم</button>
+      {% else %}
       <button class="mobile-button back-button" type="button">View all listings</button>
+      {% endif %}
+      
     </a>
   </div>
 

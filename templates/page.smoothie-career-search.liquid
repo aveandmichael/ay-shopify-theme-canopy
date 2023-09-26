@@ -146,8 +146,12 @@ text-align: center;
 
     
 
-    <h1>CAREER OPPORTUNITIES</h1>
 
+{% if localization.language.iso_code == 'ar' %}
+    <h1>فرص عمل</h1>
+{% else %}
+    <h1>CAREER OPPORTUNITIES</h1>
+{% endif %}
     
 
     
