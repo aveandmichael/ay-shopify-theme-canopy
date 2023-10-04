@@ -1,3 +1,17 @@
+{%- if
+   localization.country.iso_code == "AE"
+   or localization.country.iso_code == "BH"
+   or localization.country.iso_code == "EG"
+   or localization.country.iso_code == "OM"
+   or localization.country.iso_code == "KW"
+   or localization.country.iso_code == "QA"
+   or localization.country.iso_code == "SA"
+-%}
+  {% assign isArabicMarket = true %}
+{% else %}
+  {% assign isArabicMarket = false %}
+{% endif %}
+
 {% if localization.available_countries.size > 1 %} 
   <localization-form>
     {% form 'localization' %}
@@ -50,6 +64,34 @@
 
         <input type="hidden" name="locale_code" value="{{ form.country.iso_code | downcase }}">
         <input type="hidden" name="country_code" value="{{ country.iso_code }}">
+
+        {% comment %}
+        <div class="disclosure__quick_locale_switcher">
+          {% if localization.country.iso_code == 'AT' or localization.country.iso_code == 'DE' or localization.country.iso_code == 'CH' %}
+            <span>
+              <a class="disclosure-list__option en_de__option" href="#" data-value="{{ localization.country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ localization.country.iso_code }}" data-preferred_locale="DE" data-disclosure-option>
+                DE
+              </a>
+            </span>
+            <span> | </span>
+            <span>
+              <a class="disclosure-list__option en_de__option" href="#" data-value="{{ localization.country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ localization.country.iso_code }}" data-preferred_locale="EN" data-disclosure-option>
+                EN
+              </a>
+            </span>
+          {% elsif isArabicMarket %}
+            <span>
+              <a class="disclosure-list__option en_de__option" href="#" data-value="{{ localization.country.iso_code | downcase }}" data-country="{{ localization.country.name }}" data-country_code="{{ localization.country.iso_code }}" data-preferred_locale="AR" data-disclosure-option>
+                عربي
+              </a>
+              <span> | </span>
+              <a class="disclosure-list__option en_de__option" href="#" data-value="en" data-country="{{ localizaion.country.name }}" data-country_code="EN" data-preferred_locale="EN" data-disclosure-option>
+                EN
+              </a>
+            </span>
+          {% endif %}
+        </div>
+        {% endcomment %}
       </div>
     {% endform %}
   </localization-form>

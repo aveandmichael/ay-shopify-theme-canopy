@@ -39,3 +39,22 @@
   border: 1px solid #d1d1d1;
   margin-bottom: 10px;
 }
+
+
+
+
+
+.disclosure {
+  display: flex;
+}
+.disclosure__toggle {
+  display: flex;
+  align-items: center;
+}
+.disclosure__quick_locale_switcher {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.disclosure__quick_locale_switcher a {
+  color: #fff!important;
+}

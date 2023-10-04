@@ -2,8 +2,31 @@
 
 {% assign mf = page.metafields.custom.questionnaire.value %}
 {% assign current_country = localization.country.iso_code %}
+{%- if
+   localization.country.iso_code == "AE"
+   or localization.country.iso_code == "BH"
+   or localization.country.iso_code == "EG"
+   or localization.country.iso_code == "OM"
+   or localization.country.iso_code == "KW"
+   or localization.country.iso_code == "QA"
+   or localization.country.iso_code == "SA"
+-%}
+  {% assign isArabicMarket = true %}
+{% else %}
+  {% assign isArabicMarket = false %}
+{% endif %}
 
 <div class="qtnr__page_container {% if localization.language.iso_code == 'ar' %}qtnr__page_container__arabic{% endif %}" data-market-handle="{{ localization.market.handle }}">
+  <div class="qtnr__progress_bar_v1">
+    <div class="qtnr__progress_bar"></div>
+    {% comment %}
+    <div class="qtnr__progress_bar__catseq__nodes">
+      {% for cs in mf.category_sequence.value %}
+        <div class="qtnr__progress_bar_v2__catseq__node"></div>
+      {% endfor %}
+    </div>
+    {% endcomment %}
+  </div>
   <div class="qtnr__page_header">
     <button class="qtnr__page_nav_back hidden">
       {% render 'svg-arrow-left' %}
@@ -15,7 +38,9 @@
       </a>
     </div>
     {% endcomment %}
+    {% comment %}
     <div class="qtnr__progress_bar"></div>
+    {% endcomment %}
   </div>
   <div class="qtnr__main_container">
     {% for q in mf.questions.value %}
@@ -40,7 +65,16 @@
             data-question-default-answer="{% if q.type == "disclaimer" and q.default_answer %}{{ q.default_answer.value.value }}{% endif %}"
             data-question-popup-details="{{ q.popup_details | escape }}"
             data-question-market-scope="{{ market_scope.countries.value }}"
+            data-question-category="{{ q.category.value.key }}"
+            data-question-category-name="{{ q.category.value.name }}"
+            data-question-answer-presentation="{{ q.answer_presentation }}"
+            data-question-progress-label="{{ q.progress_label }}"
           >
+            {% if q.image %}
+              {% unless q.type == "creamLabel" %}
+                <img class="qtnr__question__image" src="{{ q.image | image_url }}" loading="lazy" alt="{{ q.question_id }}" />
+              {% endunless %}
+            {% endif %}
             <p class="qtnr__question__main">{{ q.question }}</p>
             {% if q.description %}
               <p class="qtnr__question__desc">{{ q.description }}</p>
@@ -58,150 +92,210 @@
                 </div>
               </div>
             {% endif %}
-            <div class="qtnr__answer {% if q.type == "creamLabel" %}qtnr__answer__creamLabel{% endif %}">
-              {% if q.type == 'single' or q.type == 'multiple' %}
-                {% for c in q.choices.value %}
+            <div class="qtnr__answer__outer">
+              <div class="qtnr__answer {% if q.type == "creamLabel" %}qtnr__answer__creamLabel{% endif %}">
+                {% if q.type == 'single' or q.type == 'multiple' %}
+                  {% for c in q.choices.value %}
+                    <div
+                      class="
+                        qtnr__answer__item
+                        qtnr__answer__choice
+                        choice__styling_flex_layout
+                        styling_flex_layout__{{ c.styling_flex_layout }}
+                        {% if forloop.length <= 4  %}
+                        qtnr__answer__choice__oneliner
+                        {% else %}
+                        qtnr__answer__choice__twoliner
+                        {% endif %}
+                        {% if q.show_checkbox == false %}
+                        qtnr__answer__choice__no_checkbox
+                        {% endif %}
+                        {% if q.answer_presentation == 'slides' %}
+                          {% if forloop.first %}
+                            a_slide_left
+                          {% else %}
+                            a_slide_further_right
+                          {% endif %}
+                        {% endif %}
+                        qtnr__answer__choice__white_bg
+                      "
+                      data-question-index="{{ forloop.index }}"
+                      data-question-type="{{ q.type }}"
+                      data-answer-id="{{ c.answer_id }}"
+                      data-answer-value="{{ c.value }}"
+                      data-answer-text="{{ c.answer }}"
+                      data-answer-type="{{ c.data_type }}"
+                      data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                      data-answer-isnota="{{ c.is_nota }}"
+                      data-answer-icon="{% if c.icon %}true{% else %}false{% endif %}"
+                      data-answer-image="{% if c.image %}true{% else %}false{% endif %}"
+                    >
+                      {% if c.image %}
+                        <div class="qtnr__answer__choice__img">
+                          <img src="{{ c.image | image_url }}" loading="lazy">
+                        </div>
+                      {% elsif c.icon %}
+                        <div class="qtnr__answer__choice__icon">
+                          <img src="{{ c.icon | image_url }}" loading="lazy">
+                        </div>
+                      {% endif %}
+                      {% if c.alternate_image %}
+                        <div class="qtnr__answer__choice__img__alternate hidden">
+                          <img src="{{ c.alternate_image | image_url }}" loading="lazy">
+                        </div>
+                      {% endif %}
+                      <div class="qtnr__answer__choice__text">
+                        {% if q.type == "multiple" and q.show_checkbox %}
+                          <div class="qtnr__answer__choice__checkbox qtnr__answer__choice__checkbox__unchecked"></div>
+                        {% endif %}
+                        <div class="qtnr__answer__choice__main">
+                          {% comment %}
+                          {% if q.type == "multiple" and c.icon %}
+                            <div class="qtnr__answer__choice__icon">
+                              <img src="{{ c.icon | image_url }}" loading="lazy">
+                            </div>
+                          {% endif %}
+                          {% endcomment %}
+                          {{ c.answer }}
+                          {% if q.answer_presentation == "range" %}
+                            <div class="qtnr__answer__choice__range_cord"></div>
+                          {% endif %}
+                        </div>
+                        {% if c.description %}
+                          <div class="qtnr__answer__choice__desc">{{ c.description }}</div>
+                        {% endif %}
+                      </div>
+                      
+                      {% if q.answer_presentation == "slides" %}
+                        <div class="qtnr__answer__item__slide__navs">
+                          <button class="qtnr__answer__item__slide__navs__left">
+                            <svg width="10" height="17" viewBox="0 0 10 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path fill-rule="evenodd" clip-rule="evenodd" d="M8.57117 16.6451C8.20548 16.6451 7.8398 16.5092 7.56125 16.2387L0.418899 9.30339C-0.139633 8.76105 -0.139633 7.88442 0.418899 7.34208L7.56125 0.406757C8.11978 -0.135586 9.02257 -0.135586 9.5811 0.406757C10.1396 0.949099 10.1396 1.82572 9.5811 2.36807L3.44868 8.32273L9.5811 14.2774C10.1396 14.8197 10.1396 15.6964 9.5811 16.2387C9.30255 16.5092 8.93686 16.6451 8.57117 16.6451Z" fill="#F1BF9F"/>
+                            </svg>
+                          </button>
+                          <button class="qtnr__answer__item__slide__navs__right">
+                            <svg width="10" height="17" viewBox="0 0 10 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                              <path fill-rule="evenodd" clip-rule="evenodd" d="M1.42883 16.6451C1.06314 16.6451 0.69745 16.5092 0.418899 16.2387C-0.139633 15.6964 -0.139633 14.8197 0.418899 14.2774L6.55132 8.32273L0.418899 2.36807C-0.139633 1.82572 -0.139633 0.949099 0.418899 0.406757C0.97743 -0.135586 1.88022 -0.135586 2.43875 0.406757L9.5811 7.34208C10.1396 7.88442 10.1396 8.76105 9.5811 9.30339L2.43875 16.2387C2.1602 16.5092 1.79451 16.6451 1.42883 16.6451Z" fill="#F1BF9F"/>
+                            </svg>
+                          </button>
+                        </div>
+                        {% comment %}
+                        <div class="qtnr__answer__item__slide__counter">
+                          <span class="qtnr__answer__item__slide__counter__current">1</span> of <span class="qtnr__answer__item__slide__counter__length">{{ forloop.length }}</span>
+                        </div>
+                        {% endcomment %}
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                {% elsif q.type == 'creamLabel' %}
                   <div
-                    class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }} {% if forloop.length <= 4  %}qtnr__answer__choice__oneliner{% else %}qtnr__answer__choice__twoliner{% endif %} qtnr__answer__choice__white_bg"
+                    class="qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
                     data-question-index="{{ forloop.index }}"
                     data-question-type="{{ q.type }}"
-                    data-answer-id="{{ c.answer_id }}"
-                    data-answer-value="{{ c.value }}"
-                    data-answer-text="{{ c.answer }}"
-                    data-answer-type="{{ c.data_type }}"
+                    data-answer-id=""
+                    data-answer-value=""
+                    data-answer-type=""
                     data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
-                    data-answer-isnota="{{ c.is_nota }}"
-                    data-answer-icon="{% if c.icon %}true{% else %}false{% endif %}"
-                    data-answer-image="{% if c.image %}true{% else %}false{% endif %}"
                   >
-                    {% if c.image %}
+                    {% if q.image %}
                       <div class="qtnr__answer__choice__img">
-                        <img src="{{ c.image | image_url }}" loading="lazy">
-                      </div>
-                    {% elsif c.icon %}
-                      <div class="qtnr__answer__choice__icon">
-                        <img src="{{ c.icon | image_url }}" loading="lazy">
+                        <img src="{{ q.image | image_url }}" loading="lazy">
+                        <label
+                          class="qtnr__answer__creamLabel__label qtnr__answer__creamLabel__{{ q.question_id }}"
+                        ></label>
+                        <input type="text" placeholder="{{ q.input_placeholder }}">
                       </div>
                     {% endif %}
-                    <div class="qtnr__answer__choice__text">
-                      {% if q.type == "multiple" %}
-                        <div class="qtnr__answer__choice__checkbox qtnr__answer__choice__checkbox__unchecked"></div>
-                      {% endif %}
-                      <div class="qtnr__answer__choice__main">{{ c.answer }}</div>
-                      {% if c.description %}
-                        <div class="qtnr__answer__choice__desc">{{ c.description }}</div>
-                      {% endif %}
-                    </div>
                   </div>
-                {% endfor %}
-              {% elsif q.type == 'creamLabel' %}
-                <div
-                  class="qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
-                  data-question-index="{{ forloop.index }}"
-                  data-question-type="{{ q.type }}"
-                  data-answer-id=""
-                  data-answer-value=""
-                  data-answer-type=""
-                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
-                >
-                  {% if q.image %}
-                    <div class="qtnr__answer__choice__img">
-                      <img src="{{ q.image | image_url }}" loading="lazy">
-                      <label
-                        class="qtnr__answer__creamLabel__label qtnr__answer__creamLabel__{{ q.question_id }}"
-                      ></label>
-                      <input type="text" placeholder="{{ q.input_placeholder }}">
+                {% elsif q.type == 'boolean' %}
+                  {% for c in q.choices.value %}
+                    <div
+                      class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                      data-question-index="{{ forloop.index }}"
+                      data-question-type="{{ q.type }}"
+                      data-answer-value="{{ c.value }}"
+                      data-answer-text="{{ c.answer }}"
+                      data-answer-type="{{ c.data_type }}"
+                      data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                    >
+                      <div class="qtnr__answer__choice__boolean">
+                        {% comment %}
+                          <div class="choice__boolean__outer_circle">
+                            <div class="choice__boolean__inner_circle"></div>
+                          </div>
+                        {% endcomment %}
+                        <p>{{ c.answer }}</p>
+                      </div>
                     </div>
-                  {% endif %}
-                </div>
-              {% elsif q.type == 'boolean' %}
-                {% for c in q.choices.value %}
+                  {% endfor %}
+                {% elsif q.type == 'input' %}
                   <div
-                    class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                    class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
+                    data-question-id="{{ q.question_id }}"
                     data-question-index="{{ forloop.index }}"
                     data-question-type="{{ q.type }}"
-                    data-answer-value="{{ c.value }}"
-                    data-answer-text="{{ c.answer }}"
+                    data-question-regex="{{ q.regex }}"
                     data-answer-type="{{ c.data_type }}"
                     data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
                   >
-                    <div class="qtnr__answer__choice__boolean">
-                      {% comment %}
-                        <div class="choice__boolean__outer_circle">
-                          <div class="choice__boolean__inner_circle"></div>
-                        </div>
-                      {% endcomment %}
-                      <p>{{ c.answer }}</p>
-                    </div>
+                    <input
+                      type="text"
+                      placeholder="{{ q.input_placeholder }}"
+                      maxlength="{% if q.question_id == 'phoneNumber' %}15{% elsif q.question_id == 'age' %}2{% else %}200{% endif %}"
+                      style="{% if q.question_id == "phoneNumber" and localization.country.iso_code == 'IN' %}background: url('{{ localization.country | image_url }}') no-repeat scroll 5px center;text-indent:30px;background-size:30px;{% endif %}"
+                    >
+                    <p class="qtnr__error_msg hidden">{{ q.regex_error_message }}</p>
                   </div>
-                {% endfor %}
-              {% elsif q.type == 'input' %}
-                <div
-                  class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
-                  data-question-id="{{ q.question_id }}"
-                  data-question-index="{{ forloop.index }}"
-                  data-question-type="{{ q.type }}"
-                  data-question-regex="{{ q.regex }}"
-                  data-answer-type="{{ c.data_type }}"
-                  data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
-                >
-                  <input
-                    type="text"
-                    placeholder="{{ q.input_placeholder }}"
-                    maxlength="{% if q.question_id == 'phoneNumber' %}15{% elsif q.question_id == 'age' %}2{% else %}200{% endif %}"
-                    style="{% if q.question_id == "phoneNumber" and localization.country.iso_code == 'IN' %}background: url('{{ localization.country | image_url }}') no-repeat scroll 5px center;text-indent:30px;background-size:30px;{% endif %}"
-                  >
-                  <p class="qtnr__error_msg hidden">{{ q.regex_error_message }}</p>
-                </div>
-              {% elsif q.type == 'faceScan' %}
-                <div
-                  class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
-                  data-question-index="{{ forloop.index }}"
-                  data-question-type="{{ q.type }}"
-                  data-answer-type=""
-                  data-answer-leads-to=""
-                >
-                  {% if localization.language.iso_code == 'en' or localization.language.iso_code == 'de' %}
-                    <iframe
-                      id="faceScanFrame"
-                      src="https://metrics-staging-1.web.app/{{ localization.language.iso_code }}/session_id/21"
-                      onload="faceScanFrameLoaded( this )"
-                      style="width: 100%; height: 1024px; border: none;"
-                      allow="camera *;microphone *"
-                    ></iframe>
-                  {% elsif localization.language.iso_code == 'ar' %}
-                    <iframe
-                      id="faceScanFrame"
-                      src="https://metrics-staging-1.web.app/{{ localization.language.iso_code }}-{{ localization.country.iso_code | downcase }}/session_id/21"
-                      onload="faceScanFrameLoaded( this )"
-                      style="width: 100%; height: 1024px; border: none;"
-                      allow="camera *;microphone *"
-                    ></iframe>
-                  {% endif %}
-                </div>
-              {% elsif q.type == 'disclaimer' %}
-                {% for c in q.choices.value %}
+                {% elsif q.type == 'faceScan' %}
                   <div
-                    class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                    class="qtnr__answer__item choice__styling_flex_layout styling_flex_layout__single"
                     data-question-index="{{ forloop.index }}"
                     data-question-type="{{ q.type }}"
-                    data-answer-value="{{ c.value }}"
-                    data-answer-text="{{ c.answer }}"
-                    data-answer-type="{{ c.data_type }}"
-                    data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                    data-answer-type=""
+                    data-answer-leads-to=""
                   >
-                    <div class="qtnr__answer__choice__main hidden">{{ c.answer }}</div>
+                    {% if localization.language.iso_code == 'en' or localization.language.iso_code == 'de' %}
+                      <iframe
+                        id="faceScanFrame"
+                        src="https://ave-and-you-selfiescan-v2.web.app/{{ localization.language.iso_code }}/session_id/21"
+                        onload="faceScanFrameLoaded( this )"
+                        style="width: 100%; height: 1024px; border: none;"
+                        allow="camera *;microphone *"
+                      ></iframe>
+                    {% elsif localization.language.iso_code == 'ar' %}
+                      <iframe
+                        id="faceScanFrame"
+                        src="https://ave-and-you-selfiescan-v2.web.app/{{ localization.language.iso_code }}-{{ localization.country.iso_code | downcase }}/session_id/21"
+                        onload="faceScanFrameLoaded( this )"
+                        style="width: 100%; height: 1024px; border: none;"
+                        allow="camera *;microphone *"
+                      ></iframe>
+                    {% endif %}
                   </div>
-                {% endfor %}
-              {% elsif q.type == 'endScreen' %}
-                <div
-                  class="qtnr__endscreen qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__single"
-                  data-question-index="{{ forloop.index }}"
-                  data-question-type="{{ q.type }}"
-                >
-                  <button class="qtnr__endscreen__pdp_btn">VIEW RESULT</button>
-                </div>
-              {% endif %}
+                {% elsif q.type == 'disclaimer' %}
+                  {% for c in q.choices.value %}
+                    <div
+                      class="qtnr__answer__item qtnr__answer__choice choice__styling_flex_layout styling_flex_layout__{{ c.styling_flex_layout }}"
+                      data-question-index="{{ forloop.index }}"
+                      data-question-type="{{ q.type }}"
+                      data-answer-value="{{ c.value }}"
+                      data-answer-text="{{ c.answer }}"
+                      data-answer-type="{{ c.data_type }}"
+                      data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
+                    >
+                      <div class="qtnr__answer__choice__main hidden">{{ c.answer }}</div>
+                    </div>
+                  {% endfor %}
+                {% elsif q.type == 'endScreen' %}
+                  <div
+                    class="qtnr__endscreen qtnr__answer__item qtnr__answer__choice qtnr__answer__choice__no_border choice__styling_flex_layout styling_flex_layout__single"
+                    data-question-index="{{ forloop.index }}"
+                    data-question-type="{{ q.type }}"
+                  >
+                    <button class="qtnr__endscreen__pdp_btn">VIEW RESULT</button>
+                  </div>
+                {% endif %}
+              </div>
             </div>
             {% if q.popup_details %}
             <button class="qtnr__popup_details__btn">{% render "svg-question" %}</button>
@@ -245,7 +339,7 @@
 
 {% schema %}
 {
-  "name": "Skin Test Q8",
+  "name": "Skin Test Local",
   "settings": [
     {
         "type": "image_picker",
@@ -284,7 +378,14 @@
 
 <script>
   let faceScanEl = document.querySelector(".qtnr__question[data-question-id='faceScan']");
-  let faceScanElPrevSibling = faceScanEl.previousSiblingElement;
+  let faceScanElPrevSibling = undefined;
+  if (faceScanEl) {
+    faceScanElPrevSibling = faceScanEl.previousSiblingElement;
+  }
+  let xDown = null; // for swiping event
+  let yDown = null; // for swiping event
+  let categorySeqs = {{ mf.category_sequence.value | json }};
+  var swipeData = undefined // for swiping event
   var ay_quiz_data = {q7: {faceScan: null}};
   var isEndScreen = false;
   var nextBtns = {};
@@ -366,7 +467,7 @@
   function faceScanFrameLoaded(e) {
     let frameIsLoaded = false;
     window.addEventListener( "message", ( event ) => {
-      if (event.origin.includes("metrics-staging-1.web.app")) {
+      if (event.origin.includes("metrics-staging-1.web.app") || event.origin.includes("ave-and-you-selfiescan-v2.web.app") || event.origin.includes("https://ay-skintest.web.app")) {
         const { data } = event;
         console.log("faceScanFrameData", data);
         if( data.label == 'skin_id' ) {
@@ -395,6 +496,10 @@
             faceScanEl.nextElementSibling.classList.remove("q_slide_further_right");
             faceScanEl.nextElementSibling.classList.add("q_slide_left");
             currentQuestion = faceScanEl.nextElementSibling.getAttribute("data-question-id");
+            let answerEl = faceScanEl.querySelector(".qtnr__answer__item");
+            if (answerEl) {
+              progressBar(answerEl, "forward");
+            }
           }
         }
         if( data.label === 'face_scan_loaded' ) {
@@ -433,6 +538,335 @@
       }
     }
   }
+  function handleTouchStart(evt) {
+    let touches = evt.touches || // browser API
+         evt.originalEvent.touches;
+    xDown = touches[0].clientX;                                      
+    yDown = touches[0].clientY;
+  }
+  function getSwipeDirection(evt) {
+    let dir = undefined;
+
+    if ( ! xDown || ! yDown ) {
+        return;
+    }
+
+    var xUp = evt.touches[0].clientX;                                    
+    var yUp = evt.touches[0].clientY;
+
+    var xDiff = xDown - xUp;
+    var yDiff = yDown - yUp;
+                                                                         
+    if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
+        if ( xDiff > 0 ) {
+            dir = "left";
+        } else {
+            dir = "right";
+        }                       
+    } else {
+        if ( yDiff > 0 ) {
+            dir = "down";
+        } else { 
+            dir = "up";
+        }                                                                 
+    }
+    /* reset values */
+    // xDown = null;
+    // yDown = null; 
+    
+    return {
+      direction: dir,
+      xPoint: xUp,
+    };
+  }
+  function buildCategoryProgress() { // used for categorized progress bar (progress bar v2)
+    if (categorySeqs && categorySeqs.length > 0) {
+      let progressBarEl = document.querySelector(".qtnr__progress_bar");
+      if (progressBarEl) {
+        categorySeqs.map((seq, i) => {
+          let progressContainer = document.createElement('div');
+          let progress = document.createElement('div');
+          let progressHead = document.createElement('div');
+          let progressTail = document.createElement('div');
+          let relativeQuestionEls = document.querySelectorAll(`[data-question-category='${seq.key}'`);
+
+          progressContainer.setAttribute("data-progress-category-key", seq.key);
+          progressContainer.setAttribute("data-progress-category-name", seq.name);
+          
+          progressHead.classList.add("qtnr__progress_bar__progress__head");
+          progressHead.setAttribute("data-progress-head-category", seq.key);
+          
+          progressTail.classList.add("qtnr__progress_bar__progress__tail");
+          
+          progress.classList.add("qtnr__progress_bar__progress__progress");
+          
+          progressContainer.style.display = "flex";
+          progressContainer.style.justifyContent = "space-between";
+          progressContainer.style.width = `${100 / categorySeqs.length}%`;
+          
+          progress.classList.add("qtnr__progress");
+          progress.style.width = `100%`;
+          progress.style.display = `flex`;
+          if (relativeQuestionEls) {
+            relativeQuestionEls.forEach((el) => {
+              let innerProgress = document.createElement("div");
+              innerProgress.setAttribute("data-inner-progress-question-id", el.getAttribute("data-question-id"));
+              innerProgress.setAttribute("data-inner-progress-category", seq.key);
+              innerProgress.style.width = `${100 / relativeQuestionEls.length}%`;
+              progress.appendChild(innerProgress);
+            });
+          }
+          
+          progressHead.style.width = "10px";
+          progressHead.style.height = "10px";
+          progressHead.style.borderRadius = "100px";
+          progressHead.style.background = "#DCDCDC";
+          progressHead.style.marginTop = "-3px";
+          
+          progressTail.style.width = "10px";
+          progressTail.style.height = "10px";
+          progressTail.style.borderRadius = "100px";
+          progressTail.style.background = "#DCDCDC";
+          progressTail.style.marginTop = "-3px";
+
+          if (i >= 0 && i < categorySeqs.length) {
+            progressContainer.appendChild(progressHead);
+          }
+          progressContainer.appendChild(progress);
+          if (i === (categorySeqs.length - 1)) {
+            progressContainer.appendChild(progressTail);
+          }
+          progressBarEl.appendChild(progressContainer)
+        });
+      }
+    }
+  }
+  function initializeProgressBar() {
+    let progressBarEl = document.querySelector(".qtnr__progress_bar");
+    let questionEls = document.querySelectorAll(".qtnr__question");
+    if (questionEls) {
+      let width = 100 / (questionEls.length + 3);
+      let firstQ = questionEls[0];
+      let q_progressLabel = firstQ.getAttribute("data-question-progress-label");
+      let progressEl = document.createElement("div");
+      let progressHeadEl = document.createElement("div");
+      let progressHeadLabelEl = document.createElement("div");
+      progressEl.classList.add("qtnr__progress");
+      progressEl.style.width = `${width}%`;
+      progressHeadEl.classList.add("qtnr__progress__head");
+      progressHeadEl.classList.add("qtnr__progress__head__current");
+      progressHeadLabelEl.classList.add("qtnr__progress__head__label");
+      progressHeadLabelEl.classList.add("qtnr__progress__head__label__current");
+      progressHeadLabelEl.innerText = q_progressLabel;
+      progressEl.appendChild(progressHeadEl);
+      progressEl.appendChild(progressHeadLabelEl);
+      progressBarEl.appendChild(progressEl);
+    }
+  }
+  function progressBar(answerEl, direction) {
+    let questionEls = document.querySelectorAll(".qtnr__question");
+    let progressBarEl = document.querySelector(".qtnr__progress_bar");
+    let progressEls = progressBarEl.querySelectorAll(".qtnr__progress");
+    if (direction === "forward") {
+      let questionEl = answerEl.closest(`.qtnr__question`);
+      let nextEl = questionEl.nextElementSibling;
+      let q_progressLabel = nextEl ? nextEl.getAttribute("data-question-progress-label") : "";
+      let leadsTo = answerEl.getAttribute("data-answer-leads-to");
+      let questionLeadEl = document.createElement("div");
+
+      // hide previous heads
+      if (progressEls) {
+        progressEls.forEach((el) => {
+          let progressHeadCurrentEl = el.querySelector(".qtnr__progress__head__current");
+          let progressHeadLabelCurrentEl = el.querySelector(".qtnr__progress__head__label__current");
+          if (progressHeadCurrentEl) {
+            progressHeadCurrentEl.classList.remove("qtnr__progress__head__current");
+            progressHeadLabelCurrentEl.classList.remove("qtnr__progress__head__label__current");
+          }
+        });
+      }
+      
+      progress = parseInt(questionEl.getAttribute("data-question-index"));
+      let _progress = 0;
+      if (leadsTo) {
+        questionLeadEl = document.querySelector(`.qtnr__question[data-question-id='${leadsTo}']`);
+        _progress = parseInt(questionLeadEl.getAttribute("data-question-index"));
+        // progress = _progress - progress;
+      }
+      if (questionEl) {
+        if (leadsTo) {
+          for (let i = progress; i <= _progress; i++) {
+            console.log("III", i)
+            console.log("QELS LEN", questionEls.length)
+            let width = 100 / (questionEls.length + 3);
+            let progressEl = document.createElement("div");
+            let progressHeadEl = document.createElement("div");
+            let progressHeadLabelEl = document.createElement("div");
+            progressEl.setAttribute("data-question-id", questionEl.getAttribute("data-question-id"));
+            progressEl.setAttribute("data-leads-to", leadsTo);
+            progressEl.setAttribute("data-progress-value", progress);
+            progressEl.classList.add("qtnr__progress");
+            progressEl.style.width = `${width}%`;
+            progressHeadEl.classList.add("qtnr__progress__head");
+            progressHeadLabelEl.classList.add("qtnr__progress__head__label");
+            q_progressLabel = questionLeadEl ? questionLeadEl.getAttribute("data-question-progress-label") : "";
+            progressHeadLabelEl.innerText = q_progressLabel;
+            if (i === parseInt(questionLeadEl.getAttribute("data-question-index"))) {
+              progressHeadEl.classList.add("qtnr__progress__head__current");
+              progressHeadLabelEl.classList.add("qtnr__progress__head__label__current");
+              progressEl.appendChild(progressHeadEl);
+              progressEl.appendChild(progressHeadLabelEl);
+            }
+            // if (nextEl) {
+            // }
+            progressBarEl.appendChild(progressEl);
+          }
+        } else {
+          let width = 100 / (questionEls.length + 3);
+          let progressEl = document.createElement("div");
+          let progressHeadEl = document.createElement("div");
+          let progressHeadLabelEl = document.createElement("div");
+          progressEl.classList.add("qtnr__progress");
+          progressEl.style.width = `${width}%`;
+          progressHeadEl.classList.add("qtnr__progress__head");
+          progressHeadEl.classList.add("qtnr__progress__head__current");
+          progressHeadLabelEl.classList.add("qtnr__progress__head__label");
+          progressHeadLabelEl.classList.add("qtnr__progress__head__label__current");
+          progressHeadLabelEl.innerText = q_progressLabel;
+          progressEl.appendChild(progressHeadEl);
+          progressEl.appendChild(progressHeadLabelEl);
+          progressBarEl.appendChild(progressEl);
+        }
+      }
+    } else {
+      let progressEls = progressBarEl.querySelectorAll(".qtnr__progress");
+      let leadsToCount = 0;
+      if (progressEls) {
+        progressEls.forEach((el) => {
+          if (el.getAttribute("data-question-id") === currentQuestion) {
+            leadsToCount += 1;
+          }
+        });
+      }
+      
+      if (leadsToCount === 0) {
+        if (progressBarEl.children.length > 1) {
+          progressBarEl.removeChild(progressBarEl.lastChild);
+          let currentProgressEl = progressBarEl.lastChild;
+          if (currentProgressEl) {
+            let progressHeadCurrentEl = currentProgressEl.querySelector(".qtnr__progress__head");
+            let progressHeadLabelCurrentEl = currentProgressEl.querySelector(".qtnr__progress__head__label");
+            if (progressHeadCurrentEl && progressHeadLabelCurrentEl) {
+              progressHeadCurrentEl.classList.add("qtnr__progress__head__current");
+              progressHeadLabelCurrentEl.classList.add("qtnr__progress__head__label__current");
+            }
+          }
+        } else {
+          progressBarEl.innerHTML = null;
+        }
+      } else {
+        for (let i = 0; i < leadsToCount; i++) {
+          if (progressBarEl.children.length > 1) {
+            progressBarEl.removeChild(progressBarEl.lastChild);
+            let currentProgressEl = progressBarEl.lastChild;
+            if (currentProgressEl) {
+              let progressHeadCurrentEl = currentProgressEl.querySelector(".qtnr__progress__head");
+              let progressHeadLabelCurrentEl = currentProgressEl.querySelector(".qtnr__progress__head__label");
+              if (progressHeadCurrentEl && progressHeadLabelCurrentEl) {
+                progressHeadCurrentEl.classList.add("qtnr__progress__head__current");
+                progressHeadLabelCurrentEl.classList.add("qtnr__progress__head__label__current");
+              }
+            }
+          } else {
+            progressBarEl.innerHTML = null;
+          }
+        }
+      }
+    }
+
+    // use this for progress bar configuration of categorized questions
+    // if (direction === "forward") {
+    //   let questionEl = answerEl.closest(`.qtnr__question`);
+    //   let nextQuestionEl = document.querySelector(`.qtnr__question[data-question-id='${currentQuestion}']`);
+    //   let q_id = questionEl.getAttribute("data-question-id");
+    //   let q_category = questionEl.getAttribute("data-question-category");
+    //   let progressContainer = document.querySelector(`[data-progress-category-key="${questionEl.getAttribute('data-question-category')}"]`);
+    //   let nextProgressContainer = document.querySelector(`[data-progress-category-key="${nextQuestionEl.getAttribute('data-question-category')}"]`);
+
+    //   if (nextProgressContainer) {
+    //     let progressHead = nextProgressContainer.querySelector(".qtnr__progress_bar__progress__head");
+    //     if (progressHead) {
+    //       progressHead.style.background = "#F1BF9F";
+    //     }
+    //   }
+    //   if (progressContainer) {
+    //     let progress = progressContainer.querySelector(".qtnr__progress");
+    //     if (progress) {
+    //       let innerProgress = progress.querySelector(`[data-inner-progress-question-id="${q_id}"]`);
+    //       console.log(innerProgress)
+    //       if (innerProgress) {
+    //         innerProgress.style.background = "#F1BF9F";
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   let questionEl = document.querySelector(`[data-question-id="${currentQuestion}"]`);
+    //   let q_id = questionEl.getAttribute("data-question-id");
+    //   let q_category = questionEl.getAttribute("data-question-category");
+    //   let progressContainer = document.querySelector(`[data-progress-category-key="${questionEl.getAttribute('data-question-category')}"]`);
+      
+    //   if (progressContainer) {
+    //     let nextContainerSiblings = progressContainer.nextElementSibling;
+    //     if (nextContainerSiblings) {
+    //       let progressHead = nextContainerSiblings.querySelector(".qtnr__progress_bar__progress__head");
+    //       if (progressHead) {
+    //         progressHead.style.background = "#DCDCDC";
+    //       }
+    //     }
+        
+    //     let progress = progressContainer.querySelector(".qtnr__progress");
+    //     if (progress) {
+    //       let innerProgress = progress.querySelector(`[data-inner-progress-question-id="${q_id}"]`);
+    //       console.log(innerProgress)
+    //       if (innerProgress) {
+    //         innerProgress.style.background = "#DCDCDC";
+    //       }
+    //     }
+    //   }
+    // }
+  }
+
+  // this function switches to male or female images
+  // for the skin type question if based on the answer to the gender question
+  function handleDynamicSkinTypeImage(questionEl, showMain) {
+    let pigmentQuestionEl = document.querySelector(".qtnr__question[data-question-id='pigmenttationType']");
+    console.log(pigmentQuestionEl)
+    if (pigmentQuestionEl) {
+      if (questionEl) {
+        let imageEls = pigmentQuestionEl.querySelectorAll(".qtnr__answer__choice__img");
+        console.log(imageEls)
+        let alterImageEls = pigmentQuestionEl.querySelectorAll(".qtnr__answer__choice__img__alternate");
+        if (imageEls) {
+          imageEls.forEach((img) => {
+            if (showMain) {
+              img.classList.remove("hidden");
+            } else {
+              img.classList.add("hidden");
+            }
+          });
+        }
+        if (alterImageEls) {
+          alterImageEls.forEach((img) => {
+            if (!showMain) {
+              img.classList.remove("hidden");
+            } else {
+              img.classList.add("hidden");
+            }
+          });
+        }
+      }
+    }
+  }
   
   window.addEventListener("DOMContentLoaded", async (event) => {
     var faceScanFrame = document.querySelector("#faceScanFrame");
@@ -444,69 +878,6 @@
     var matchId = null;
     var answerAccessToken = null;
     let progress = 1;
-
-    function progressBar(answerEl, direction) {
-      let questionEls = document.querySelectorAll(".qtnr__question");
-      let progressBarEl = document.querySelector(".qtnr__progress_bar");
-      if (direction === "forward") {
-        let questionEl = answerEl.closest(`.qtnr__question`);
-        let leadsTo = answerEl.getAttribute("data-answer-leads-to");
-        let questionLeadEl = document.createElement("div");
-        
-        progress = parseInt(questionEl.getAttribute("data-question-index"));
-        if (leadsTo) {
-          questionLeadEl = document.querySelector(`.qtnr__question[data-question-id='${leadsTo}']`);
-          let _progress = parseInt(questionLeadEl.getAttribute("data-question-index"));
-          progress = _progress - progress;
-        }
-        if (questionEl) {
-          if (leadsTo) {
-            for (let i = 0; i < progress; i++) {
-              let width = 100 / (questionEls.length - 2);
-              let progressEl = document.createElement("div");
-              progressEl.setAttribute("data-question-id", questionEl.getAttribute("data-question-id"));
-              progressEl.setAttribute("data-leads-to", leadsTo);
-              progressEl.setAttribute("data-progress-value", progress);
-              progressEl.classList.add("qtnr__progress");
-              progressEl.style.width = `${width}%`;
-              progressBarEl.appendChild(progressEl);
-            }
-          } else {
-            let width = 100 / (questionEls.length - 2);
-            let progressEl = document.createElement("div");
-            progressEl.classList.add("qtnr__progress");
-            progressEl.style.width = `${width}%`;
-            progressBarEl.appendChild(progressEl);
-          }
-        }
-      } else {
-        let progressEls = progressBarEl.querySelectorAll(".qtnr__progress");
-        let leadsToCount = 0;
-        if (progressEls) {
-          progressEls.forEach((el) => {
-            if (el.getAttribute("data-question-id") === currentQuestion) {
-              leadsToCount += 1;
-            }
-          });
-        }
-        
-        if (leadsToCount === 0) {
-          if (progressBarEl.children.length > 1) {
-            progressBarEl.removeChild(progressBarEl.lastChild);
-          } else {
-            progressBarEl.innerHTML = null;
-          }
-        } else {
-          for (let i = 0; i < leadsToCount; i++) {
-            if (progressBarEl.children.length > 1) {
-              progressBarEl.removeChild(progressBarEl.lastChild);
-            } else {
-              progressBarEl.innerHTML = null;
-            }
-          }
-        }
-      }
-    }
 
     function loadPopupDetails() {
       let questionEl = document.querySelector(`.qtnr__question[data-question-id='${currentQuestion}']`)
@@ -664,8 +1035,8 @@
         // 1) manage selections
         if (answerEl.classList.contains("multiple-selected")) {
           answerEl.classList.remove("multiple-selected");
-          checkbox.classList.remove("qtnr__answer__choice__checkbox__checked");
-          checkbox.classList.add("qtnr__answer__choice__checkbox__unchecked");
+          checkbox && checkbox.classList.remove("qtnr__answer__choice__checkbox__checked");
+          checkbox && checkbox.classList.add("qtnr__answer__choice__checkbox__unchecked");
           if (isMultiAnswerQuestionsStore) {
             multiAnswerQuestions[`${questionId}`] = multiAnswerQuestions[`${questionId}`].filter((i) => i !== answerValue);
           } else {
@@ -682,8 +1053,8 @@
             }
           }
           answerEl.classList.add("multiple-selected");
-          checkbox.classList.add("qtnr__answer__choice__checkbox__checked");
-          checkbox.classList.remove("qtnr__answer__choice__checkbox__unchecked");
+          checkbox && checkbox.classList.add("qtnr__answer__choice__checkbox__checked");
+          checkbox && checkbox.classList.remove("qtnr__answer__choice__checkbox__unchecked");
           if (nextBtns[questionId]) {
             nextBtns[questionId].a_text.push(answerEl.getAttribute("data-answer-text"));
           }
@@ -713,14 +1084,14 @@
               let el_checkbox = el.querySelector(".qtnr__answer__choice__checkbox");
               if (el.classList.contains("multiple-selected")) {
                 el.classList.remove("multiple-selected");
-                el_checkbox.classList.remove("qtnr__answer__choice__checkbox__checked");
-                el_checkbox.classList.add("qtnr__answer__choice__checkbox__unchecked");
+                el_checkbox && el_checkbox.classList.remove("qtnr__answer__choice__checkbox__checked");
+                el_checkbox && el_checkbox.classList.add("qtnr__answer__choice__checkbox__unchecked");
               }
             });
           }
           answerEl.classList.add("multiple-selected");
-          checkbox.classList.add("qtnr__answer__choice__checkbox__checked");
-          checkbox.classList.remove("qtnr__answer__choice__checkbox__unchecked");
+          checkbox && checkbox.classList.add("qtnr__answer__choice__checkbox__checked");
+          checkbox && checkbox.classList.remove("qtnr__answer__choice__checkbox__unchecked");
           multiAnswerQuestions[`${questionId}`] = [];
           multiAnswerQuestions[`${questionId}`].push(answerValue);
           if (nextBtns[questionId]) {
@@ -731,8 +1102,8 @@
           if (isNotaEl) {
             let isNotEl_checkbox = isNotaEl.querySelector(".qtnr__answer__choice__checkbox");
             isNotaEl.classList.remove("multiple-selected");
-            isNotEl_checkbox.classList.remove("qtnr__answer__choice__checkbox__checked");
-            isNotEl_checkbox.classList.add("qtnr__answer__choice__checkbox__unchecked");
+            isNotEl_checkbox && isNotEl_checkbox.classList.remove("qtnr__answer__choice__checkbox__checked");
+            isNotEl_checkbox && isNotEl_checkbox.classList.add("qtnr__answer__choice__checkbox__unchecked");
             let answerToRemove = multiAnswerQuestions[`${questionId}`].indexOf(isNotaEl.getAttribute("data-answer-value"));
             if (answerToRemove !== -1) {
               multiAnswerQuestions[`${questionId}`].splice(answerToRemove, 1);
@@ -821,6 +1192,17 @@
           topBackBtn.classList.add("hidden");
         }
       }
+      
+      // handle dynamic switch of images for skin type question
+      if (questionEl && questionId && questionId === "gender") {
+          if (answerValue) {
+            if (answerValue === "male") {
+              handleDynamicSkinTypeImage(questionEl, false);
+            } else if (answerValue === "female" || answerValue === "Nonbinary") {
+              handleDynamicSkinTypeImage(questionEl, true);
+            }
+          }
+      }
     }
 
     function ensureFiringOnce(e, nextBtn, qtrQuestion, ac, questionId, q_type, a_value, a_type, questionIdx, a_text) {
@@ -862,6 +1244,72 @@
       }
     }
 
+    function buildSwipableAnswerCounter() {
+      let questionEls = document.querySelectorAll(".qtnr__question");
+      if (questionEls) {
+        questionEls.forEach((el) => {
+          if (el.getAttribute("data-question-answer-presentation") === "slides") {
+            let counterDiv = document.createElement("div");
+            let counterCurrentSpan = document.createElement("span");
+            let counterOf = document.createElement("span");
+            let counterLengthSpan = document.createElement("span");
+            let answerItemEls = el.querySelectorAll(".qtnr__answer__item");
+            counterDiv.classList.add("qtnr__answer__item__slide__counter");
+            counterCurrentSpan.classList.add("qtnr__answer__item__slide__counter__current");
+            counterCurrentSpan.innerText = "1"
+            counterOf.innerText = " of ";
+            counterLengthSpan.classList.add("qtnr__answer__item__slide__counter__length");
+            counterLengthSpan.innerText = `${answerItemEls.length}`;
+            counterDiv.appendChild(counterCurrentSpan);
+            counterDiv.appendChild(counterOf);
+            counterDiv.appendChild(counterLengthSpan);
+            el.appendChild(counterDiv);
+          }
+        });
+      }
+    }
+
+    function handleSwipe(evt, ac) {
+      swipeData = getSwipeDirection(evt);
+      // if (swipeData.direction === "left") {
+      //   ac.style.transform = `translateX(-${swipeData.xPoint}px)`
+      // } else if (swipeData.direction === "right") {
+      //   ac.style.transform = `translateX(${swipeData.xPoint}px)`;
+      // }
+    }
+
+    // handles animation when swiping around a swipable choices
+    // swipable choices are question choices to which people can swipe between answers
+    // or use the left/right navigation buttons provided
+    function handleSwipableAnswer(ac, prevEl, nextEl, direction) {
+      let questionEl = ac.closest(".qtnr__question");
+      let counterEl = questionEl.querySelector(".qtnr__answer__item__slide__counter");
+      let counterCurrentEl = questionEl.querySelector(".qtnr__answer__item__slide__counter__current");
+      
+      if (direction === "right") {
+        if (prevEl) {
+          ac.classList.remove("a_slide_left");
+          ac.classList.add("a_slide_further_right");
+          prevEl.classList.remove("a_slide_further_left");
+          prevEl.classList.add("a_slide_right");
+        }
+        if (counterCurrentEl) {
+          counterCurrentEl.innerText = `${parseInt(counterCurrentEl.innerText) - 1}`;
+        }
+      } else if (direction === "left") {
+        if (nextEl) {
+          ac.classList.remove("a_slide_left");
+          ac.classList.remove("a_slide_right");
+          ac.classList.add("a_slide_further_left");
+          nextEl.classList.remove("a_slide_further_right");
+          nextEl.classList.add("a_slide_left");
+        }
+        if (counterCurrentEl) {
+          counterCurrentEl.innerText = `${parseInt(counterCurrentEl.innerText) + 1}`;
+        }
+      }
+    }
+
     function trackQuestion() {
       let answerChoices = document.querySelectorAll(".qtnr__answer__item");
       if (answerChoices) {
@@ -877,10 +1325,13 @@
           let nextBtn = qtrQuestion.querySelector(".qtnr__navigation__next");
           let q_type = ac.getAttribute("data-question-type");
           let q_regex = ac.getAttribute("data-question-regex");
+          let q_answer_presentation = ac.closest(".qtnr__question").getAttribute("data-question-answer-presentation");
           let a_text = ac.getAttribute("data-answer-text");
           let a_type = ac.getAttribute("data-answer-type");
           let a_value = ac.getAttribute("data-answer-value");
           let a_isnota = ac.getAttribute("data-answer-isnota");
+          let a_slidenav_left = ac.querySelector(".qtnr__answer__item__slide__navs__left");
+          let a_slidenav_right = ac.querySelector(".qtnr__answer__item__slide__navs__right");
 
           if (q_type === "endScreen") {
             let pdpBtn = document.querySelector(".qtnr__endscreen__pdp_btn");
@@ -993,8 +1444,9 @@
             }
             //nextBtns[`${questionId}`].addEventListener("click", (e) => ensureFiringOnce(e, nextBtns[`${questionId}`], qtrQuestion, ac, questionId, q_type, a_value, a_type, questionIdx, a_text));
           }
-          
+
           ac.addEventListener("click", (e) => {
+            console.log(swipeData && swipeData.xPoint)
             if (q_type !== "input") {
               // Prevent triggering NEXT question
               // if anywhere in answer container is clicked
@@ -1014,9 +1466,61 @@
                 gtmSkinTestTrack(questionIdx, questionId, a_value, a_text);
                 doesQuestionTriggerFirstApiCall(questionId);
                 doesQuestionTriggerSecondApiCall(questionId);
+                
+                if (q_answer_presentation === "range") {
+                  let currentSelectedAnswer = qtrQuestion.querySelector(".qtnr__answer__item.qtnr__answer__item__selected");
+                  if (currentSelectedAnswer) {
+                    currentSelectedAnswer.classList.remove("qtnr__answer__item__selected");
+                  }
+                  ac.classList.add("qtnr__answer__item__selected");
+                }
               }
             }
-          })
+          });
+
+          // handler for swipe events
+          // applicable to answers with "slides" presentation
+          ac.addEventListener("touchstart", (evt) => {
+            handleTouchStart(evt);
+          });
+          ac.addEventListener("touchmove", (evt) => {
+            handleSwipe(evt, ac);
+          });
+          ac.addEventListener("touchend", (evt) => {
+            if (swipeData && swipeData.direction && swipeData.xPoint > 0) {
+              let prevEl = ac.previousElementSibling;
+              let nextEl = ac.nextElementSibling;
+        
+              if (swipeData.direction === "left") {
+                if (nextEl) {
+                  handleSwipableAnswer(ac, prevEl, nextEl, "left");
+                }
+              } else if (swipeData.direction === "right") {
+                if (prevEl) {
+                  handleSwipableAnswer(ac, prevEl, nextEl, "right");
+                }
+              }
+              swipeData = undefined;
+            }
+          });
+          if (a_slidenav_left) {
+            a_slidenav_left.addEventListener("click", (e) => {
+              e.stopPropagation();
+              let prevEl = ac.previousElementSibling;
+              if (prevEl) {
+                handleSwipableAnswer(ac, prevEl, null, "right");
+              }
+            });
+          }
+          if (a_slidenav_right) {
+            a_slidenav_right.addEventListener("click", (e) => {
+              e.stopPropagation();
+              let nextEl = ac.nextElementSibling;
+              if (nextEl) {
+                handleSwipableAnswer(ac, null, nextEl, "left");
+              }
+            });
+          }
         });
       }
     }
@@ -1068,9 +1572,12 @@
 
     // FUNCTION CALLS
     trackQuestion();
-    loadPopupDetails()
-    
+    loadPopupDetails();
+    // buildCategoryProgress(); // use to build small dots on progress bar for grouped questions
+    initializeProgressBar();
+    buildSwipableAnswerCounter();
 
+    
     // handle click event for next buttons
     if (nextBtns && Object.keys(nextBtns).length > 0) {
       Object.keys(nextBtns).map((el) => {
@@ -1082,5 +1589,6 @@
         }
       });
     }
+    
   });
 </script>

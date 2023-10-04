@@ -1,7 +1,20 @@
-{{ 'skintest_local.css' | asset_url | stylesheet_tag }}
+{{ 'skintest_dev.css' | asset_url | stylesheet_tag }}
 
 {% assign mf = page.metafields.custom.questionnaire.value %}
 {% assign current_country = localization.country.iso_code %}
+{%- if
+   localization.country.iso_code == "AE"
+   or localization.country.iso_code == "BH"
+   or localization.country.iso_code == "EG"
+   or localization.country.iso_code == "OM"
+   or localization.country.iso_code == "KW"
+   or localization.country.iso_code == "QA"
+   or localization.country.iso_code == "SA"
+-%}
+  {% assign isArabicMarket = true %}
+{% else %}
+  {% assign isArabicMarket = false %}
+{% endif %}
 
 <div class="qtnr__page_container {% if localization.language.iso_code == 'ar' %}qtnr__page_container__arabic{% endif %}" data-market-handle="{{ localization.market.handle }}">
   <div class="qtnr__progress_bar_v1">
@@ -118,12 +131,17 @@
                       data-answer-image="{% if c.image %}true{% else %}false{% endif %}"
                     >
                       {% if c.image %}
-                        <div class="qtnr__answer__choice__img">
+                        <div class="qtnr__answer__choice__img hidden">
                           <img src="{{ c.image | image_url }}" loading="lazy">
                         </div>
                       {% elsif c.icon %}
                         <div class="qtnr__answer__choice__icon">
                           <img src="{{ c.icon | image_url }}" loading="lazy">
+                        </div>
+                      {% endif %}
+                      {% if c.alternate_image %}
+                        <div class="qtnr__answer__choice__img__alternate hidden">
+                          <img src="{{ c.alternate_image | image_url }}" loading="lazy">
                         </div>
                       {% endif %}
                       <div class="qtnr__answer__choice__text">
@@ -179,14 +197,26 @@
                     data-answer-type=""
                     data-answer-leads-to="{% if c.leads_to %}{{ c.leads_to.value.question_id }}{% endif %}"
                   >
-                    {% if q.image %}
-                      <div class="qtnr__answer__choice__img">
-                        <img src="{{ q.image | image_url }}" loading="lazy">
-                        <label
-                          class="qtnr__answer__creamLabel__label qtnr__answer__creamLabel__{{ q.question_id }}"
-                        ></label>
-                        <input type="text" placeholder="{{ q.input_placeholder }}">
-                      </div>
+                    {% if isArabicMarket %}
+                      {% if q.alternate_image %}
+                        <div class="qtnr__answer__choice__img__arabic">
+                          <img src="{{ q.alternate_image | image_url }}" loading="lazy">
+                          <label
+                            class="qtnr__answer__creamLabel__namelabel qtnr__answer__creamLabel__label__alternate qtnr__answer__creamLabel__{{ q.question_id }}"
+                          ></label>
+                          <input type="text" placeholder="{{ q.input_placeholder }}">
+                        </div>
+                      {% endif %}
+                    {% else %}
+                      {% if q.image %}
+                        <div class="qtnr__answer__choice__img">
+                          <img src="{{ q.image | image_url }}" loading="lazy">
+                          <label
+                            class="qtnr__answer__creamLabel__namelabel qtnr__answer__creamLabel__label qtnr__answer__creamLabel__{{ q.question_id }}"
+                          ></label>
+                          <input type="text" placeholder="{{ q.input_placeholder }}">
+                        </div>
+                      {% endif %}
                     {% endif %}
                   </div>
                 {% elsif q.type == 'boolean' %}
@@ -765,57 +795,37 @@
         }
       }
     }
-
-    // use this for progress bar configuration of categorized questions
-    // if (direction === "forward") {
-    //   let questionEl = answerEl.closest(`.qtnr__question`);
-    //   let nextQuestionEl = document.querySelector(`.qtnr__question[data-question-id='${currentQuestion}']`);
-    //   let q_id = questionEl.getAttribute("data-question-id");
-    //   let q_category = questionEl.getAttribute("data-question-category");
-    //   let progressContainer = document.querySelector(`[data-progress-category-key="${questionEl.getAttribute('data-question-category')}"]`);
-    //   let nextProgressContainer = document.querySelector(`[data-progress-category-key="${nextQuestionEl.getAttribute('data-question-category')}"]`);
-
-    //   if (nextProgressContainer) {
-    //     let progressHead = nextProgressContainer.querySelector(".qtnr__progress_bar__progress__head");
-    //     if (progressHead) {
-    //       progressHead.style.background = "#F1BF9F";
-    //     }
-    //   }
-    //   if (progressContainer) {
-    //     let progress = progressContainer.querySelector(".qtnr__progress");
-    //     if (progress) {
-    //       let innerProgress = progress.querySelector(`[data-inner-progress-question-id="${q_id}"]`);
-    //       console.log(innerProgress)
-    //       if (innerProgress) {
-    //         innerProgress.style.background = "#F1BF9F";
-    //       }
-    //     }
-    //   }
-    // } else {
-    //   let questionEl = document.querySelector(`[data-question-id="${currentQuestion}"]`);
-    //   let q_id = questionEl.getAttribute("data-question-id");
-    //   let q_category = questionEl.getAttribute("data-question-category");
-    //   let progressContainer = document.querySelector(`[data-progress-category-key="${questionEl.getAttribute('data-question-category')}"]`);
-      
-    //   if (progressContainer) {
-    //     let nextContainerSiblings = progressContainer.nextElementSibling;
-    //     if (nextContainerSiblings) {
-    //       let progressHead = nextContainerSiblings.querySelector(".qtnr__progress_bar__progress__head");
-    //       if (progressHead) {
-    //         progressHead.style.background = "#DCDCDC";
-    //       }
-    //     }
-        
-    //     let progress = progressContainer.querySelector(".qtnr__progress");
-    //     if (progress) {
-    //       let innerProgress = progress.querySelector(`[data-inner-progress-question-id="${q_id}"]`);
-    //       console.log(innerProgress)
-    //       if (innerProgress) {
-    //         innerProgress.style.background = "#DCDCDC";
-    //       }
-    //     }
-    //   }
-    // }
+  }
+  // this function switches to male or female images
+  // for the skin type question if based on the answer to the gender question
+  function handleDynamicSkinTypeImage(questionEl, showMain) {
+    let pigmentQuestionEl = document.querySelector(".qtnr__question[data-question-id='pigmenttationType']");
+    console.log(pigmentQuestionEl)
+    if (pigmentQuestionEl) {
+      if (questionEl) {
+        let imageEls = pigmentQuestionEl.querySelectorAll(".qtnr__answer__choice__img");
+        console.log(imageEls)
+        let alterImageEls = pigmentQuestionEl.querySelectorAll(".qtnr__answer__choice__img__alternate");
+        if (imageEls) {
+          imageEls.forEach((img) => {
+            if (showMain) {
+              img.classList.remove("hidden");
+            } else {
+              img.classList.add("hidden");
+            }
+          });
+        }
+        if (alterImageEls) {
+          alterImageEls.forEach((img) => {
+            if (!showMain) {
+              img.classList.remove("hidden");
+            } else {
+              img.classList.add("hidden");
+            }
+          });
+        }
+      }
+    }
   }
   
   window.addEventListener("DOMContentLoaded", async (event) => {
@@ -1142,6 +1152,17 @@
           topBackBtn.classList.add("hidden");
         }
       }
+
+      // handle dynamic switch of images for skin type question
+      if (questionEl && questionId && questionId === "gender") {
+          if (answerValue) {
+            if (answerValue === "male") {
+              handleDynamicSkinTypeImage(questionEl, false);
+            } else if (answerValue === "female" || answerValue === "Nonbinary") {
+              handleDynamicSkinTypeImage(questionEl, true);
+            }
+          }
+      }
     }
 
     function ensureFiringOnce(e, nextBtn, qtrQuestion, ac, questionId, q_type, a_value, a_type, questionIdx, a_text) {
@@ -1348,7 +1369,7 @@
               }
 
               if (q_type === "creamLabel") {
-                let labelEl = qtrQuestion.querySelector("label.qtnr__answer__creamLabel__label");
+                let labelEl = qtrQuestion.querySelector("label.qtnr__answer__creamLabel__namelabel");
                 if (labelEl) {
                   if (e.target.value.length <= 8) {
                     labelEl.innerText = e.target.value;
