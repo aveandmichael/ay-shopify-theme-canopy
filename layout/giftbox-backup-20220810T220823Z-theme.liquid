@@ -138,7 +138,9 @@
 {{ 'wiremo-styles.css' | asset_url | stylesheet_tag }} 
  {% render "wiremo-installed" %}
  
-  {% include "globale-js.liquid" %}
+  
+
+  {% include "globale-js" %}
 </head>
 
 {%- assign homepage_divider_col_opacity = settings.homepage_divider_col | color_extract: 'alpha' -%}

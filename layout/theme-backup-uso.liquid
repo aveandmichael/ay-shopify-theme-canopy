@@ -158,7 +158,9 @@
 
 {% comment %}ly_dir_styles_begin{% endcomment %}{%- assign language_code = '_' | append: request.locale.iso_code -%}{%- if '_ar_he_fa_ur' contains language_code -%}{{- 'ly-rtl.css' | asset_url | stylesheet_tag -}}{%- endif -%}{% comment %}ly_dir_styles_end{% endcomment %}
   
-  {% include "globale-js.liquid" %}
+  
+
+  {% include "globale-js" %}
 </head>
 
 

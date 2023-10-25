@@ -10,7 +10,7 @@ class LocalizationForm extends HTMLElement {
       };
       this.elements.button.addEventListener('click', this.openSelector.bind(this));
       this.elements.button.addEventListener('focusout', this.closeSelector.bind(this));
-      this.addEventListener('keyup', this.onContainerKeyUp.bind(this));
+      this.addEventListener('input', this.onContainerKeyUp.bind(this));
       this.addEventListener('load', this.onPageLoad.bind(this));
   
       this.querySelectorAll('a.disclosure-list__option').forEach(item => item.addEventListener('click', this.onItemClick.bind(this)));
@@ -27,10 +27,11 @@ class LocalizationForm extends HTMLElement {
     }
   
     onContainerKeyUp(event) {
-      if (event.code.toUpperCase() !== 'ESCAPE') return;
+      // console.log(event)
+      // if (event.code.toUpperCase() !== 'ESCAPE') return;
   
-      this.hidePanel();
-      this.elements.button.focus();
+      // this.hidePanel();
+      // this.elements.button.focus();
     }
   
     onItemClick(event) {
@@ -78,10 +79,14 @@ class LocalizationForm extends HTMLElement {
             }
           window.sessionStorage.setItem('explicitLocale', 'DE')
         }
+      } else if (event.currentTarget.dataset.preferred_locale === 'AR') {
+        this.elements.input.value = `ar`
+        this.elements.input_country.value = `${event.currentTarget.dataset.country_code}`
+        window.sessionStorage.setItem('explicitLocale', event.currentTarget.dataset.country_code)
       } else {
         this.elements.input.value = `en`
         this.elements.input_country.value = `${event.currentTarget.dataset.country_code}`
-          window.sessionStorage.setItem('explicitLocale', event.currentTarget.dataset.country_code)
+        window.sessionStorage.setItem('explicitLocale', event.currentTarget.dataset.country_code)
       }
       
       if (form) form.submit();
@@ -144,15 +149,18 @@ const handleGeolocationAutoLocale = () => {
 }
 
 const handleCountrySearch = (input) => {
-  var filter = input.value.toUpperCase();
+  var filter = "";
+  filter = input.value.toUpperCase();
   var lis = document.querySelectorAll('#CountryList li');
   for (var i = 0; i < lis.length; i++) {
       // var name = lis[i].getElementsByClassName('name')[0].innerHTML;
       var name = lis[i].getAttribute("name")
-      if (name.toUpperCase().includes(filter)) 
-          lis[i].style.display = 'list-item';
-      else
-          lis[i].style.display = 'none';
+      if (name !== "search_input") {
+        if (name.toUpperCase().includes(filter)) 
+            lis[i].style.display = 'list-item';
+        else
+            lis[i].style.display = 'none';
+      }
   }
 }
 
@@ -167,19 +175,24 @@ function populateCountryOptions() {
 }
 
 document.addEventListener("DOMContentLoaded", function(event) {
-  //handleGeolocationAutoLocale()
+  handleGeolocationAutoLocale()
   var input = document.getElementById('CountryList_input');
   input.onkeydown = function () {
     handleCountrySearch(input)
   }
-  input.ontouchstart = function (e) {
-    e.preventDefault()
-    input.focus()
-    handleCountrySearch(input)
-  }
-  input.addEventListener('compositionupdate', function(e) {
-    handleCountrySearch(this)
-  })
+  // if (input) {
+  //   input.addEventListener("keyup", () => {
+  //     alert("test")
+  //   })
+  // }
+  // input.ontouchstart = function (e) {
+  //   e.preventDefault()
+  //   input.focus()
+  //   handleCountrySearch(input)
+  // }
+  // input.addEventListener('compositionupdate', function(e) {
+  //   handleCountrySearch(this)
+  // })
   // input.on('keyup input', function(){
   //   handleCountrySearch(input)
   // });

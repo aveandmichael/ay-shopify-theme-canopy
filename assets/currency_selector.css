@@ -1,33 +1,48 @@
+.localization--header {
+  width: auto!important;
+}
 .localization #CurrencyBtn {
   border: none;
   font-weight: 300;
 }
-.localization #CurrencyBtn span img,
+.localization #CurrencyBtn span {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+/* .localization #CurrencyBtn span img,
 #CountryList li a img{
   vertical-align: middle;
-}
+} */
 .localization.localization--mobile {
-  margin-top: 35px;
+  margin-top: 85px;
 }
 #CountryList .en_de__option, #CountryList .en_de__option-separator {
   color: #767676;
   font-size: .85rem;
 }
 #CountryList {
-  width: 100%;
+  width: auto;
+  max-width: 260px;
   overflow-x: hidden;
-  min-width: 265px;
+  /* min-width: 265px; */
   padding: 6px;
+  margin-top: 10px;
 }
 #CountryList_divider {
   border: 1px solid #d1d1d1;
 }
 #CountryList li {
+  width: 100%;
   list-style: none;
-  padding-bottom: 7px;display: flex;
-  align-items: center;
-  gap: 10px;
-  justify-content: flex-start;
+  padding-bottom: 7px;
+  font-size: 1rem;
+  white-space: normal;
+}
+#CountryList li.disclosure-list__item {
+  padding: 10px 15px 10px 15px!important;
+}
+#CountryList li.disclosure-list__item__arabic {
+  text-align: right;
 }
 #CountryList_input {
   border-radius: 5px;
@@ -35,4 +50,49 @@
   outline: none;
   border: 1px solid #d1d1d1;
   margin-bottom: 10px;
+}
+.img-icon img {
+  vertical-align: unset!important;
+}
+@media only screen and (min-width: 768px) {
+  #CountryList {
+    max-width: unset;
+    margin-top: 0;
+  }
+  #CountryList:has(li.disclosure-list__item__arabic) {
+    right: -100px;
+  }
+  #CountryList li {
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  #CountryList li.disclosure-list__item {
+    padding: 10px 45px 10px 15px!important;
+  }
+  #CountryList li.disclosure-list__item__arabic {
+    text-align: right;
+  }
+}
+
+.disclosure {
+  display: flex;
+  justify-content: space-between;
+}
+.disclosure__toggle {
+  display: flex;
+  align-items: center;
+}
+.disclosure__quick_locale_switcher {
+  /* padding-left: 15px; */
+  /* padding-right: 15px; */
+}
+.disclosure__quick_locale_switcher a {
+  color: #000!important;
+  font-size: 1rem;
+}
+@media only screen and (min-width: 768px) {
+  .disclosure__quick_locale_switcher a {
+    color: #fff!important;
+    font-size: 1rem;
+  }
 }

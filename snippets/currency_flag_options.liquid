@@ -325,4 +325,14 @@
 </span>
 {% endcomment %}
 
-{{ country | image_url: width: 16 | image_tag }}
+<span class="img-icon">
+  <img
+    src="https://flagcdn.com/16x12/{{ country.iso_code | downcase }}.png"
+    srcset="https://flagcdn.com/16x12/{{ country.iso_code | downcase }}.png,
+    https://flagcdn.com/16x12/{{ country.iso_code | downcase }}.png"
+    alt="{{ country.iso_code | downcase }}"
+    width="16"
+    height="12"
+    loading="lazy"
+  />
+</span>

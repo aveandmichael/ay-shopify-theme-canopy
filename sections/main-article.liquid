@@ -6,8 +6,10 @@
     </div>
     {% endif %}
 
+    {% unless article.handle == "skincare/digital-aging" %}
     <h1 class="page-title" data-cc-animate data-cc-animate-delay="0.2s">{{ article.title }}</h1>
-
+    {% endunless %}
+    
     <div class="rte" data-cc-animate data-cc-animate-delay="0.4s">
       {{ article.content | replace: 'fullwidth"', '" data-fullwidth="true"' }}
     </div>

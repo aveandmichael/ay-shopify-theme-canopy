@@ -84,7 +84,11 @@
             {%- if collection.title != blank or collection.description != blank -%}
               <div class="image-overlay overlay--v-{{ section.settings.text_alignment | split: ' ' | first }} overlay--h-{{ section.settings.text_alignment | split: ' ' | last }} ">
                 <div class="inner {% if section.settings.text_alignment contains "left" or  section.settings.text_alignment contains "right" %}container{% endif %}">
-                  {%- if collection.title != blank -%}
+                  {% if collection.metafields.custom.page_title %}
+                    <h1 class="line-1  line-1--large" data-cc-animate data-cc-animate-delay="0.3s">
+                      {{ collection.metafields.custom.page_title }}
+                    </h1>
+                  {%- elsif collection.title != blank -%}
                     <h1 class="line-1  line-1--large" data-cc-animate data-cc-animate-delay="0.3s">
                       {{ collection.title }}
                     </h1>
@@ -103,6 +107,7 @@
           <div class="collection-header
             {{ section.settings.header_mode }}
             {% if section.settings.height == "fixed" %}collection-header--fixed-height{% endif %} {% if collection.featured_image %}has-image{% endif %} handle-{{ collection.handle }}" data-cc-animate>
+            {% comment %}
             <div class="header-text
               overlay--v-{{ section.settings.text_alignment | split: ' ' | first }}
               overlay--h-{{ section.settings.text_alignment | split: ' ' | last }}">
@@ -112,6 +117,7 @@
                 <div class="rte">{{ collection.description }}</div>
               {% endif %}
             </div>
+            {% endcomment %}
 
             {% if section.settings.header_mode == "coloured-split" and collection.featured_image %}
               <div class="header-image">
@@ -152,8 +158,10 @@
       <div id="collection" data-cc-animate data-ajax-scroll-to>
 				{% capture sort_by %}
 					{% if section.settings.enable_sorting %}
-						<span class="filter">
+						<span class="filter toolbar-sort">
+                            {% comment %}
 							<label for="sort-by">{{ 'collections.sorting.title' | t }}:</label>
+                            {% endcomment %}
 							<select id="sort-by" name="sort_by" class="sort-by" data-default-value="{{ collection.sort_by | default: collection.default_sort_by  }}">
 								{%- for option in collection.sort_options -%}
 									{%- if option.value == "manual" and section.settings.collection_sort_show_featured -%}
@@ -171,6 +179,23 @@
 					{% endif %}
 				{% endcapture %}
 
+                <div class="custom__filter__container">
+                  <div class="header-text
+                    overlay--v-{{ section.settings.text_alignment | split: ' ' | first }}
+                    overlay--h-{{ section.settings.text_alignment | split: ' ' | last }}">
+
+                  {% if collection.metafields.custom.page_title %}
+                    <h1 class="page-title">
+                      {{ collection.metafields.custom.page_title }}
+                    </h1>
+                  {%- else -%}
+                    <h1 class="page-title">{{ collection.title }}</h1>
+                  {%- endif -%}
+          
+                    {% if collection.description != blank %}
+                      <div class="rte">{{ collection.description }}</div>
+                    {% endif %}
+                  </div>
 				{%- unless section.settings.filter_mode == "none" and section.settings.enable_sorting == false -%}
 					<form id="CollectionFilterFormTopBar" data-collection-form>
 						{%- comment -%}Preserve automatic vendor/type collections & sorting{%- endcomment -%}
@@ -184,48 +209,49 @@
 
 						<div class="product-list-toolbar {% if section.settings.collection_filters_sticky %}product-list-toolbar--sticky{% endif %}"
 								 data-cc-animate data-cc-animate-delay="0.2s">
-							<div class="cc-toolbar-buttons cc-toolbar-buttons--filters">
-							{% comment %}	{% if section.settings.filter_mode == "sidebar" %}
-									<a href="#" class="cc-toolbar-filter-toggle">
-										{% render 'svg-filter.liquid' %}
-										{{ 'collections.filtering.filter' | t }}
-										<span class="filter-count"></span>
-									</a>
-								{% endif %} {% endcomment %}
-                              
-                                 
+
+                            {% unless collection.metafields.custom.disable_filter %}
+                            <div class="cc-toolbar-buttons cc-toolbar-buttons--filters">
+                              {% comment %}	{% if section.settings.filter_mode == "sidebar" %}
+                                      <a href="#" class="cc-toolbar-filter-toggle">
+                                          {% render 'svg-filter.liquid' %}
+                                          {{ 'collections.filtering.filter' | t }}
+                                          <span class="filter-count"></span>
+                                      </a>
+                                  {% endif %}
+                              {% endcomment %}
+                  
                               <div style="position:relative;">
-                             
-                           {%- for filter in collection.filters -%}
-										{%- case filter.type -%}
-											{%- when "list" -%}
-												<span class="tags filter">
-													<label for="filter-by-{{ filter.label | handleize }}">{{ filter.label }}:</label>
-													<select class="ly_type" id="filter-by-{{ filter.label | handleize }}"
-																	name="{{ filter.values.first.param_name }}">
-														<option value="">{{ 'collections.filtering.all' | t }}</option>
-														{%- for value in filter.values -%}
-															<option  id="ly_type"value="{{ value.value | escape }}"
-																			{% if value.active %}selected{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
-																{{ value.label }}{% if section.settings.show_filter_counts %} ({{ value.count }}){% endif %}
-															</option>
-														{%- endfor -%}
-													</select>
-												</span>
-											
-
-										{%- endcase -%}
-									{%- endfor -%}
- </div>
-
-								{% comment %}<span class="results-count desktop">{{ 'collections.general.results' | t: count: collection.products_count }}</span>{% endcomment %}
-
+                                 {%- for filter in collection.filters -%}
+                                    {%- case filter.type -%}
+                                        {%- when "list" -%}
+                                            <span class="tags filter toolbar-filter">
+                                                {% comment %}
+                                                <label for="filter-by-{{ filter.label | handleize }}">{{ filter.label }}:</label>
+                                                {% endcomment %}
+                                                <select class="ly_type" id="filter-by-{{ filter.label | handleize }}"
+                                                                name="{{ filter.values.first.param_name }}">
+                                                    <option value="">{{ 'collections.filtering.all' | t }}</option>
+                                                    {%- for value in filter.values -%}
+                                                        <option  id="ly_type"value="{{ value.value | escape }}"
+                                                                        {% if value.active %}selected{% endif %} {% if value.count == 0 and value.active == false %}disabled{% endif %}>
+                                                            {{ value.label }}{% if section.settings.show_filter_counts %} ({{ value.count }}){% endif %}
+                                                        </option>
+                                                    {%- endfor -%}
+                                                </select>
+                                            </span>
+                                    {%- endcase -%}
+                                {%- endfor -%}
+                               </div>
+                              {% comment %}<span class="results-count desktop">{{ 'collections.general.results' | t: count: collection.products_count }}</span>{% endcomment %}
 								{% if section.settings.filter_mode == "simple" %}
 									{%- for filter in collection.filters -%}
 										{%- case filter.type -%}
 											{%- when "list" -%}
 												<span class="tags filter">
+                                                    {% comment %}
 													<label for="filter-by-{{ filter.label | handleize }}">{{ filter.label }}:</label>
+                                                    {% endcomment %}
 													<select id="filter-by-{{ filter.label | handleize }}"
 																	name="{{ filter.values.first.param_name }}">
 														<option value="">{{ 'collections.filtering.all' | t }}</option>
@@ -288,6 +314,7 @@
 									{%- endfor -%}
 								{% endif %}
 							</div>
+                            {% endunless %}
 
 							<div class="cc-toolbar-buttons {% if section.settings.filter_mode == "simple" %}desktop-only{% endif %}">
 								{{ sort_by }}
@@ -301,6 +328,7 @@
 						</div>
 					</form>
 				{% endunless %}
+                </div>
 
 				<div class="{% if section.settings.filter_mode == "sidebar" %}cc-product-filter-container{% endif %}"
 						 data-ajax-container>
@@ -775,3 +803,119 @@
 	]
 }
 {% endschema %}
+
+<style>
+  .rich-text.section {
+    padding-top: 0!important;
+    padding-bottom: 0!important;
+  }
+  .rich-text-section__text {
+    padding: 44px 1em;
+  }
+  .rte p {
+    margin: 0;
+    font-size: .9rem;
+  }
+  .main-collection-section {
+    margin-top: -4rem;
+  }
+  #content .section.rich-text {
+    margin-top: 0;
+  }
+  .cc-toolbar-buttons .filter {
+    display: flex;
+    align-items: center;
+    padding: 5px 8px;
+    border: 1px solid #222;
+  }
+  .cc-toolbar-buttons .toolbar-filter {
+    width: 150px;
+  }
+  .cc-toolbar-buttons .toolbar-sort {
+    width: 190px;
+  }
+  .cc-toolbar-buttons .filter .pretty-select {
+    top: 0!important;
+    display: flex;
+    justify-content: space-between;
+    width: 100%!important;
+  }
+  .cc-toolbar-buttons .filter .pretty-select span.text span.value {
+    max-width: 150px!important;
+  }
+  .custom__filter__container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+  }
+  .custom__filter__container .product-list-toolbar {
+    display: flex;
+    gap: 10px;
+    padding: 0 10px;
+  }
+  @media only screen and (min-width: 768px) {
+    .rte p {
+      font-size: 1rem;
+    }
+    .main-collection-section {
+      margin-top: -7rem;
+    }
+    .custom__filter__container {
+      flex-direction: row;
+      padding-top: 80px;
+      text-align: left;
+    }
+    .custom__filter__container #CollectionFilterFormTopBar {
+      display: flex;
+    }
+  }
+</style>
+
+{% comment %}
+<style>
+  .rich-text.section {
+    padding-top: 0!important;
+    padding-bottom: 0!important;
+  }
+  .rich-text-section__text {
+    padding: 44px 1em;
+  }
+  .rte p {
+    margin: 0;
+    font-size: .9rem;
+  }
+  .main-collection-section {
+    margin-top: -4rem;
+  }
+  #content .section.rich-text {
+    margin-top: 0;
+  }
+  .cc-toolbar-buttons .filter {
+    display: flex;
+    align-items: center;
+    padding: 5px 8px;
+    border: 1px solid #222;
+  }
+  .cc-toolbar-buttons .toolbar-filter {
+    width: 150px;
+  }
+  .cc-toolbar-buttons .toolbar-sort {
+    width: 190px;
+  }
+  .cc-toolbar-buttons .filter .pretty-select {
+    top: 0!important;
+    display: flex;
+    justify-content: space-between;
+    width: 100%!important;
+  }
+  @media only screen and (min-width: 768px) {
+    .rte p {
+      font-size: 1rem;
+    }
+    .main-collection-section {
+      margin-top: -7rem;
+    }
+  }
+</style>
+{% endcomment %}

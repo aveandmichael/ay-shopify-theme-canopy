@@ -1,18 +1,35 @@
-{{ 'pdp-20230526.css' | asset_url | stylesheet_tag }}
+{% comment %}
+  PDP v2 - 2023.05.26
+{% endcomment %}
+
+{{ 'pdp-20230526-test.css' | asset_url | stylesheet_tag }}
 
 {% assign recommendations = collections[section.settings.recommendation_collection_source] %}
 
-<div class="pdp-page_loading_indicator pdp-section__padded__all hidden">
+<div class="pdp-page_loading_indicator pdp-section__padded__all">
+    {% comment %}
 	<?xml version="1.0" encoding="utf-8"?>
 	<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto; width:30px; height:30px;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
 	<circle cx="50" cy="50" fill="none" stroke="#000" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
 		<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
 	</circle>
 	</svg>
-	<p>ANALYZING YOUR DATA</p>
+   {% endcomment %}
+   <div class="pdp-page_loading_indicator__header">
+	<p>{{ section.settings.loading_header }}</p>
+   </div>
+    <div class="pdp-page_loading_indicator__quotes">
+      {% if product.metafields.custom.quotes %}
+        {% for quote in product.metafields.custom.quotes.value %}
+          <div class="pdp-page_loading_indicator__quotes__item {% if forloop.first %}slide_left{% else %}slide_further_right{% endif %}">
+            <div class="pdp-page_loading_indicator__quotes__text">{{ quote.quote }}</div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
 </div>
 
-<div class="pdp-main_section" data-section-type="product-template" data-components="accordion">
+<div class="pdp-main_section hidden" data-section-type="product-template" data-components="accordion">
 	{% comment %} BANNER SECTION {% endcomment %}
 	<div class="pdp-section pdp-banner" data-locale="{{ localization.country.iso_code }}">
 		{% if section.settings.banner %}
@@ -39,6 +56,12 @@
 			<p class="pdp-customer_info__name__label_name">Michael</p>
 		</div>
 		{% endcomment %}
+		<div class="pdp-customer_info__row pdp-customer_info__matchid hidden">
+			<div class="pdp-customer_info__header">
+				MATCH ID
+			</div>
+			<div class="pdp-customer_info__value"></div>
+		</div>
 		<div class="pdp-customer_info__row pdp-customer_info__skintype">
 			<div class="pdp-customer_info__header">
 				{{ section.settings.customer_info_skintype_header }}
@@ -97,6 +120,9 @@
 						</div>
 						<div class="pdp-recommendation__description">
 							{{ recommendation.description }}
+						</div>
+						<div class="pdp-recommendation__short_description">
+							{{ recommendation.metafields.custom.product_short_description_2 }}
 						</div>
 						<div class="pdp-recommendation__price">
 							{{ current_variant.price }}
@@ -163,6 +189,9 @@
 						<div class="pdp-recommendation__description">
 							{{ gobeyond.description }}
 						</div>
+						<div class="pdp-recommendation__short_description">
+							{{ gobeyond.metafields.custom.product_short_description_2 }}
+						</div>
 						<div class="pdp-recommendation__price">
 							{{ current_variant.price }}
 						</div>
@@ -228,7 +257,7 @@
 	{% comment %} STICKY CHECKOUT {% endcomment %}
    {% comment %}
     <div class="pdp-cta__sticky hidden">
-      <button class="pdp-cta__checkout_btn">{{ section.settings.checkout_button_text }}</button>
+      <button class="pdp-cta__checkout_btn__custom">{{ section.settings.checkout_button_text }}</button>
       {% if localization.country.iso_code == "DE" %}
   		{% if cart.total_price > 50 %}
   			<div class="pdp-cta__checkout_subtext">{{ section.settings.checkout_subtext_above_de }}</div>
@@ -239,7 +268,7 @@
     </div>
     {% endcomment %}
     <div class="pdp-cta__sticky hidden">
-  	<div class="pdp-cta__subscription-container">
+  	<div class="pdp-cta__subscription-container hidden">
         <div class="pdp-cta__subscription-checkbox">
     		<input id="recharge_subscription" name="recharge_subscription" type="checkbox" />
     		<label for="recharge_subscription">Purchase via subscription</label>
@@ -261,8 +290,10 @@
         </div>
   	</div>
   	<div class="pdp-cta__action-container">
-  		<button class="pdp-cta__checkout_btn">{{ section.settings.checkout_button_text }}</button>
+  		<button class="pdp-cta__checkout_btn__custom">{{ section.settings.checkout_button_text }}</button>
+        {% comment %}
   		<div class="pdp-cta__total"></div>
+        {% endcomment %}
   	</div>
       {% if localization.country.iso_code == "DE" %}
   		{% if cart.total_price > 50 %}
@@ -275,7 +306,7 @@
 
     {% comment %}
 	<div style="height:150px"></div>
-   {% endcomment %}
+    {% endcomment %}
 </div>
 
 {%- render 'pdp-20230526-test-js'
@@ -521,6 +552,12 @@
             "type": "text",
             "id": "checkout_subtext_above_de",
             "label": "Checkout Subtext Above € (DE)"
+        },
+        {
+            "type": "text",
+            "id": "loading_header",
+            "label": "Loading Header",
+            "default": "We are analyzing your formulation..."
         }
 	]
 }

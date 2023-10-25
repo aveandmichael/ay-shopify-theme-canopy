@@ -1,3 +1,21 @@
+{%- if
+   localization.country.iso_code == "AE"
+   or localization.country.iso_code == "BH"
+   or localization.country.iso_code == "EG"
+   or localization.country.iso_code == "JO"
+   or localization.country.iso_code == "KW"
+   or localization.country.iso_code == "OM"
+   or localization.country.iso_code == "QA"
+   or localization.country.iso_code == "SA"
+-%}
+  {% assign isArabicMarket = true %}
+{% else %}
+  {% assign isArabicMarket = false %}
+{% endif %}
+{% if localization.language.iso_code == "ar" %}
+  {% assign isArabicLocale = true %}
+{% endif %}
+
 {% if localization.available_countries.size > 1 %} 
   <localization-form>
     {% form 'localization' %}
@@ -7,18 +25,23 @@
       
           <span class="disclosure__toggle-arrow" role="presentation">{% render 'svg-chevron-down' %}</span>
         </button>
-        <ul id="CountryList" role="list" class="disclosure-list" hidden data-disclosure-list data-lang="{{ localization.language.iso_code }}" {% if localization.language.iso_code == "ar" %}style="right: -200px;"{% endif %}>
-          <input class="desktop-only" id="CountryList_input" type="text" placeholder="Type your country" />
+        <ul id="CountryList" role="list" class="disclosure-list" hidden data-disclosure-list data-lang="{{ localization.language.iso_code }}" {% if localization.language.iso_code == "ar" %}style="{% unless isArabicMarket %}right: -200px;{% endunless %}"{% endif %}>
+          <li name="search_input">
+            <input class="desktop-only" id="CountryList_input" type="text" placeholder="Type your country" />
+          </li>
           {% for country in localization.available_countries %}
             {% if country.iso_code == 'AT' or country.iso_code == 'DE' or country.iso_code == 'CH' %}
-              <li class="disclosure-list__item" name="{{ country.name }}" tabindex="-1">
+              <li class="disclosure-list__item {% if isArabicMarket and isArabicLocale %}disclosure-list__item__arabic{% endif %}" name="{{ country.name }}" tabindex="-1">
                 {% comment %}
                 <a class="disclosure-list__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-disclosure-option>
                   {% render 'currency_flag_options', country: country %} {{ country.name }}
                 </a>
               {% endcomment %}
-                {% render 'currency_flag_options', country: country %} {{ country.name }}
-                <span>
+                {% render 'currency_flag_options', country: country %}
+                <a class="disclosure-list__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-preferred_locale="DE" data-disclosure-option>
+                  {{ country.name }}
+                </a>
+                <span class="disclosure-list__option__container">
                   <a class="disclosure-list__option en_de__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-preferred_locale="DE" data-disclosure-option>
                     DE
                   </a>
@@ -28,18 +51,50 @@
                   </a>
                 </span>
               </li>
+            {% elsif country.iso_code == 'AE'
+              or country.iso_code == 'QA'
+              or country.iso_code == 'SA'  %}
+              <li class="disclosure-list__item {% if isArabicMarket and isArabicLocale %}disclosure-list__item__arabic{% endif %}" name="{{ country.name }}" tabindex="-1">
+                {% render 'currency_flag_options', country: country %}
+                <a class="disclosure-list__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-preferred_locale="EN" data-disclosure-option>
+                  {{ country.name }}
+                </a>
+                <span class="disclosure-list__option__container">
+                  <a class="disclosure-list__option en_de__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-preferred_locale="AR" data-disclosure-option>
+                    عربي
+                  </a>
+                  <span> / </span>
+                  <a class="disclosure-list__option en_de__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-preferred_locale="EN" data-disclosure-option>
+                    EN
+                  </a>
+                </span>
+              </li>
             {% elsif country.iso_code == 'US' %}
-              <li class="disclosure-list__item" name="{{ country.name }}" tabindex="-1">
+              <li class="disclosure-list__item {% if isArabicMarket and isArabicLocale %}disclosure-list__item__arabic{% endif %}" name="{{ country.name }}" tabindex="-1">
                   <a class="disclosure-list__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-disclosure-option>
-                    {% render 'currency_flag_options', country: country %} {{ country.name }}
+                    {% render 'currency_flag_options', country: country %}
+                    <span>{{ country.name }}</span>
                   </a>
               </li>
             {% endif %}
           {% endfor %}
           <div id="CountryList_divider"></div>
           {% for country in localization.available_countries %}
-            {% if country.iso_code != 'AT' and country.iso_code != 'DE' and country.iso_code != 'CH' and country.iso_code != 'US' and country.iso_code != 'AE' %}
-              <li class="disclosure-list__item" name="{{ country.name }}" tabindex="-1">
+            {% if
+              country.iso_code != 'AT'
+              and country.iso_code != 'DE'
+              and country.iso_code != 'CH'
+              and country.iso_code != 'US'
+              and country.iso_code != 'AE'
+              and country.iso_code != 'BH'
+              and country.iso_code != 'EG'
+              and country.iso_code != 'JO'
+              and country.iso_code != 'KW'
+              and country.iso_code != 'OM'
+              and country.iso_code != 'QA'
+              and country.iso_code != 'SA'
+            %}
+              <li class="disclosure-list__item {% if isArabicMarket and isArabicLocale %}disclosure-list__item__arabic{% endif %}" name="{{ country.name }}" tabindex="-1">
                 <a class="disclosure-list__option" href="#"{% if country.iso_code == localization.country.iso_code %} aria-current="true"{% endif %} data-value="{{ country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ country.iso_code }}" data-disclosure-option>
                   {% render 'currency_flag_options', country: country %} {{ country.name }}
                 </a>
@@ -47,9 +102,34 @@
             {% endif %}
           {% endfor %}
         </ul>
-
         <input type="hidden" name="locale_code" value="{{ form.country.iso_code | downcase }}">
         <input type="hidden" name="country_code" value="{{ country.iso_code }}">
+
+        <div class="disclosure__quick_locale_switcher">
+          {% if localization.country.iso_code == 'AT' or localization.country.iso_code == 'DE' or localization.country.iso_code == 'CH' %}
+            <span>
+              <a class="disclosure-list__option en_de__option" href="#" data-value="{{ localization.country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ localization.country.iso_code }}" data-preferred_locale="DE" data-disclosure-option>
+                DE
+              </a>
+            </span>
+            <span> | </span>
+            <span>
+              <a class="disclosure-list__option en_de__option" href="#" data-value="{{ localization.country.iso_code | downcase }}" data-country="{{ country.name }}" data-country_code="{{ localization.country.iso_code }}" data-preferred_locale="EN" data-disclosure-option>
+                EN
+              </a>
+            </span>
+          {% elsif isArabicMarket %}
+            <span>
+              <a class="disclosure-list__option en_de__option" href="#" data-value="{{ localization.country.iso_code | downcase }}" data-country="{{ localization.country.name }}" data-country_code="{{ localization.country.iso_code }}" data-preferred_locale="AR" data-disclosure-option>
+                عربي
+              </a>
+              <span> | </span>
+              <a class="disclosure-list__option en_de__option" href="#" data-value="en" data-country="{{ localizaion.country.name }}" data-country_code="EN" data-preferred_locale="EN" data-disclosure-option>
+                EN
+              </a>
+            </span>
+          {% endif %}
+        </div>
       </div>
     {% endform %}
   </localization-form>

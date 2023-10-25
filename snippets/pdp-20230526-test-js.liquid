@@ -18,7 +18,7 @@
 		},
 	}
 	const routes = {{ routes | json}};
-	var apiHost = `https://europe-west1-metrics-production-1.cloudfunctions.net`;
+	var apiHost = `https://europe-west1-metrics-staging-1.cloudfunctions.net`;
 	var siteLocale = {{ localization.language.iso_code | json }};
 	var productCountText = "{{ product_count_text }}";
 	var lifestyleButtonText = "{{ lifestyle_button_text }}";
@@ -28,9 +28,9 @@
 	var descriptionShowMoreText = "{{ description_show_more_text }}";
 	var descriptionShowLessText = "{{ description_show_less_text }}";
 	var moreDayCreamButtonText = "{{ more_daycream_button_text }}";
-	var moreNightCreamButtonText = "{{ more_nightcream_button_text }}";
     var jarButtonText = "{{ jar_button_text }}";
     var dispenserButtonText = "{{ dispenser_button_text }}";
+	var moreNightCreamButtonText = "{{ more_nightcream_button_text }}";
 	var step1HeaderText = "{{ step_1_header_text }}";
 	var step2HeaderText = "{{ step_2_header_text }}";
 	var step3HeaderText = "{{ step_3_header_text }}";
@@ -56,66 +56,86 @@
 	var skinTypeTranslation = {
 		"VeryDry": {
 			en: "Very Dry",
-			de: "Sehr Trocken"
+			de: "Sehr Trocken",
+            ar: "شديدة الجفاف",
 	  },
 		"Dry": {
 			en: "Dry",
-			de: "Trocken"
+			de: "Trocken",
+            ar: "جافة",
 	  },
 		"Mischhaut": {
 			en: "Combination",
-			de: "Mischhaut"
+			de: "Mischhaut",
+            ar: "مختلطة",
 	  },
 		"Oily": {
 			en: "Oily",
-			de: "Fettig"
+			de: "Fettig",
+            ar: "دهني",
 	  },
 		"normal": {
 			en: "Normal",
-			de: "Normal"
+			de: "Normal",
+            ar: "عادية",
 	  }
 	};
 	var skinGoalsTranslation = {
 		"MehrFeuchtigkeit": {
 			en: "Increase Hydration",
-			de: "Mehr Feuchtigkeit"
+			de: "Mehr Feuchtigkeit",
+			ar: "زيادة الترطيب",
 	  },
 		"WenigerAustrocknung": {
 			en: "Reduce Dry Areas",
-			de: "Weniger trockene Stellen"
+			de: "Weniger trockene Stellen",
+			ar: "تقليل الجفاف",
 	  },
 		"Reddening": {
 			en: "Reduce Redness",
-			de: "Weniger Rötungen"
+			de: "Weniger Rötungen",
+			ar: "تقليل الإحمرار",
 	  },
 		"Falten": {
 			en: "Reduce Wrinkles",
-			de: "Weniger Falten"
+			de: "Weniger Falten",
+			ar: "تقليل التجاعيد",
 	  },
 		"BlueLightProtection": {
 			en: "Blue Light Protection",
-			de: "Schutz vor Display-Licht"
+			de: "Schutz vor Display-Licht",
+			ar: "الحماية من الأشعة الزرقاء",
 	  },
 		"WenigerPigmentflecken": {
 			en: "Reduce Pigmentation",
-			de: "Weniger Pigmentflecken"
+			de: "Weniger Pigmentflecken",
+			ar: "التقليل من التصبغات",
 	  },
 		"ReinereHaut": {
 			en: "Reduce Pimples",
-			de: "Reinere Haut"
+			de: "Reinere Haut",
+			ar: "التقليل من ظهور البثور",
 	  },
 		"StrahlendererTeint": {
 			en: "Skin Glow",
-			de: "Strahlender Teint"
+			de: "Strahlender Teint",
+			ar: "نضارة البشرة",
 	  },
 		"PorenVerfeinerung": {
 			en: "Refine Pores",
-			de: "Verfeinerung des Porenbildes"
+			de: "Verfeinerung des Porenbildes",
+			ar: "تصغير المسام",
 	  },
 		"AntiPollution": {
 			en: "Anti Pollution",
-			de: "Schutz gegen Umwelteinflüsse"
-	  }
+			de: "Schutz gegen Umwelteinflüsse",
+			ar: "ضد التلوث",
+	  },
+        "Redenning": {
+          en: "Redenning",
+          de: "Redenning",
+          ar: "Redenning"
+      },
 	};
 	var lifeStyle = null;
     var lifestyleAllData = [];
@@ -144,68 +164,99 @@
 	}
 
 	async function updateProductQtyInputFromActualCart() {
-		let excludedItems = { }
-		let cart = await getCart();
-		if (cart && cart.token) {
-			if (cart.items && cart.items.length > 0) {
-				await Promise.all(cart.items.map(async (c) => {
-					console.log("_Set", c.properties._Set)
-					let variantOptions = document.querySelectorAll(".pdp-product__variant_option.variant_option_personalized");
-					if (variantOptions) {
-						variantOptions.forEach((vo) => {
-						let voVariantId = vo.getAttribute('data-variant-id');
-							if (Number(voVariantId) !== c.id) {
-								vo.classList.remove("selected");
-							} else {
-								vo.classList.add("selected");
-							}
-						});
-					}
-				}));
-				await Promise.all(cart.items.map(async (c) => {
-					console.log(c)
-					let variant = document.querySelector(`[data-variant-id="${c.id}"]`);
-					if (variant) {
-						variant.classList.add("selected");
-						let variantParentForm = variant.closest(".pdp-product__form");
-						if (variantParentForm) {
-							let qtyInput = variantParentForm.querySelector(".pdp-product__quantity__selector__input");
-							if (qtyInput) {
-								qtyInput.value = c.quantity
-								excludedItems[`${c.id}`] = 0;
-							}
-						}
-					}
-				}));
-				//await removeCartItemAJAX(excludedItems)
+    	let excludedItems = {}
+        let personalizedCreamsInCart = []
+    	let cart = await getCart();
+    	if (cart && cart.token) {
+          if (cart.items && cart.items.length > 0) {
+            //cartItems = []
+            await Promise.all(cart.items.map(async (c) => {
+        		cartItems.push({
+        			id: c.id,
+        			quantity: c.quantity,
+        			properties: c.properties,
+        			price: c.price
+        		});
+            }));
+        	console.log("CI", cartItems);
+            
+            // first check if cart has the personalized creams, then add to array
+            await Promise.all(cart.items.map(async (c) => {
+              if (c.handle === "product-detail" || c.handle === "product-detail-test") {
+                personalizedCreamsInCart.push(`${c.id}`);
+              }
+            }))
 
+            // then select/deselect variant option for personalized cream if variant id
+            // is in the array above
+            let variantOptions = document.querySelectorAll(".pdp-product__variant_option.variant_option_personalized");
+            variantOptions.forEach((vo) => {
+              let voVariantId = vo.getAttribute('data-variant-id');
+              let variantParentForm = vo.closest(".pdp-product__form");
+              let qtyInput = variantParentForm.querySelector(".pdp-product__quantity__selector__input");
+              if (personalizedCreamsInCart) {
+                if (personalizedCreamsInCart.includes(`${voVariantId}`)) {
+                  vo.classList.add("selected");
+                } else {
+                  qtyInput.value = 0;
+                  vo.classList.remove("selected");
+                  cartItems.map((c) => {
+                    if (`${c.id}` === `${voVariantId}`) {
+                      c.quantity = 0;
+                    }
+                  })
+                }
+              }
+            });
+                  
+    		// await Promise.all(cart.items.map(async (c) => {
+    		// 	// console.log("_Set", c.properties._Set)
+    		// 	let variantOptions = document.querySelectorAll(".pdp-product__variant_option.variant_option_personalized");
+    		// 	if (variantOptions) {
+    		// 		variantOptions.forEach((vo) => {
+    		// 			let voVariantId = vo.getAttribute('data-variant-id');
+      //                   console.log("CCC", c)
+    		// 			if (`${voVariantId}` !== `${c.id}`) {
+    		// 				vo.classList.remove("selected");
+    		// 			} else {
+    		// 				vo.classList.add("selected");
+    		// 			}
+    		// 		});
+    		// 	}
+    		// }));
+            
+            await Promise.all(cart.items.map(async (c) => {
+        		console.log(c)
+                let variant = document.querySelector(`[data-variant-id="${c.id}"]`);
+            	if (variant) {
+            		variant.classList.add("selected");
+                	let variantParentForm = variant.closest(".pdp-product__form");
+                	if (variantParentForm) {
+                		let qtyInput = variantParentForm.querySelector(".pdp-product__quantity__selector__input");
+                    	if (qtyInput) {
+                    		qtyInput.value = c.quantity
+                            excludedItems[`${c.id}`] = 0;
+                        }
+                    }
+                }
+            }));
+            //await removeCartItemAJAX(excludedItems)
 
-					//cartItems = []
-				await Promise.all(cart.items.map(async (c) => {
-					cartItems.push({
-						id: c.id,
-						quantity: c.quantity,
-						properties: c.properties,
-						price: c.price
-					});
-				}));
-				console.log("CI", cartItems);
-
-				const dict = { };
-				await Promise.all(cartItems.map((obj) => {
-					const id = obj.id;
-					if (dict.hasOwnProperty(id)) {
-						if (obj.quantity > dict[id].quantity) {
-							dict[id] = obj;
-						}
-					} else {
-						dict[id] = obj;
-					}
-				}))
-				cartItems = Object.values(dict);
-			}
-		}
-	}
+        	const dict = { };
+            await Promise.all(cartItems.map((obj) => {
+              const id = obj.id;
+              if (dict.hasOwnProperty(id)) {
+                if (obj.quantity > dict[id].quantity) {
+                  dict[id] = obj;
+                }
+              } else {
+                  dict[id] = obj;
+              }
+            }))
+          	cartItems = Object.values(dict);
+          }
+        }
+      }
 
 	async function handleStickyCheckoutUpsellText(mode) {
 		let cartTotal = 0;
@@ -442,6 +493,34 @@
 			}
 		}
 	}
+    function animateLoadingIndicatorQuotes() {
+      let parentEl = document.querySelector(".pdp-page_loading_indicator__quotes");
+      if (parentEl) {
+        let quoteEls = parentEl.querySelectorAll(".pdp-page_loading_indicator__quotes__item");
+        let currentQuoteEl = parentEl.querySelector(".pdp-page_loading_indicator__quotes__item.slide_left");
+        let firstEl = parentEl.querySelectorAll(".pdp-page_loading_indicator__quotes__item")[0];
+
+        if (currentQuoteEl) {
+          let nextEl = currentQuoteEl.nextElementSibling;
+          if (nextEl) {
+            currentQuoteEl.classList.remove("slide_left");
+            currentQuoteEl.classList.add("slide_further_left");
+            currentQuoteEl.classList.add("slide_further_right");
+            nextEl.classList.remove("slide_further_left");
+            nextEl.classList.remove("slide_further_right");
+            nextEl.classList.add("slide_left");
+          } else {
+            if (firstEl) {
+              currentQuoteEl.classList.remove("slide_left");
+              currentQuoteEl.classList.add("slide_further_left");
+              firstEl.classList.remove("slide_further_left");
+              firstEl.classList.remove("slide_further_right");
+              firstEl.classList.add("slide_left");
+            }
+          }
+        }
+      }
+    }
 
 	async function toggleSubscriptionOption() {
 	  console.log("REC SP", standardProducts)
@@ -548,7 +627,7 @@
                       priceParent.querySelector("h3").style.color = "#fb5250";
                       strikePrice.classList.remove("hidden");
                     }
-                    
+                  
 					if (qtyInput) {
 						let optionParent = option.closest('.pdp-product__form__variants');
 						if (option.classList.contains("selected")) {
@@ -567,7 +646,7 @@
 								}
 							});
 							if (parseInt(qtyInput.value) <= 0) {
-								qtyInput.value = 1;
+								// qtyInput.value = 1;
 							}
 							priceParent.querySelector('h3').innerText = theme.formatMoney(parseFloat(option.getAttribute("data-variant-price") * parseFloat(qtyInput.value)), theme.money_format);
 							addToCart([
@@ -934,6 +1013,8 @@
 
 
 	async function translateCustomerInfo() {
+		let matchIdEl = document.querySelector(".pdp-customer_info__matchid .pdp-customer_info__value");
+        let parentMatchIdEl = matchIdEl.closest(".pdp-customer_info__matchid");
 		let skinTypeEl = document.querySelector(".pdp-customer_info__skintype .pdp-customer_info__value");
 		let skinGoalsEl = document.querySelector(".pdp-customer_info__skingoals .pdp-customer_info__value");
 		if (siteLocale) {
@@ -948,6 +1029,12 @@
 					}));
 					skinGoalsEl.innerText = translatedSkinGoals.join(", ");
 				}
+                if (quizData.short_skin_id) {
+                  //parentMatchIdEl.classList.remove("hidden");
+                  matchIdEl.innerText = quizData.short_skin_id;
+                } else {
+                  parentMatchIdEl.classList.add("hidden");
+                }
 			}
 		}
 	}
@@ -955,225 +1042,224 @@
 
 	async function loadPersonalizedCreamInciDataSummary(inciData) {
 		let inciListDay = document.querySelector(".pdp-product__incis__personalized__day");
-	let inciListNight = document.querySelector(".pdp-product__incis__personalized__night");
-			if (inciData && inciData.ingredients && inciData.ingredients.length > 0) {
-		await Promise.all(inciData.ingredients.map((inci) => {
-			if (inci.ofCream.includes('day')) {
-				inciListDay.insertAdjacentHTML('beforeend', `
-							<div class="pdp-product__incis__item">
-								<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
-								<p class="pdp-product__inci__title">${inci.name}</p>
-							</div>
-						`);
-			}
-			if (inci.ofCream.includes('night')) {
-				inciListNight.insertAdjacentHTML('beforeend', `
-							<div class="pdp-product__incis__item">
-								<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
-								<p class="pdp-product__inci__title">${inci.name}</p>
-							</div>
-						`);
-			}
-		}));
-			}
+		let inciListNight = document.querySelector(".pdp-product__incis__personalized__night");
+		if (inciData && inciData.ingredients && inciData.ingredients.length > 0) {
+			await Promise.all(inciData.ingredients.map((inci) => {
+				if (inci.ofCream.includes('day')) {
+					inciListDay.insertAdjacentHTML('beforeend', `
+						<div class="pdp-product__incis__item">
+							<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
+							<p class="pdp-product__inci__title">${inci.name}</p>
+						</div>
+					`);
+				}
+				if (inci.ofCream.includes('night')) {
+					inciListNight.insertAdjacentHTML('beforeend', `
+						<div class="pdp-product__incis__item">
+							<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
+							<p class="pdp-product__inci__title">${inci.name}</p>
+						</div>
+					`);
+				}
+			}));
 		}
+	}
 
 
 
 	async function loadPersonalizedProducts() {
 		console.log(standardProducts)
-			let dayLabel = ""
-	let nightLabel = "";
-	let description = "";
+		let dayLabel = ""
+		let nightLabel = "";
+		let description = "";
 
-	if (personalizedProduct) {
-		let targetParent = document.querySelector('.pdp-personalized_container');
-	let labelName = {
-		day: '',
-	night: ''
-				}
-	let creams = { };
-	let variants = {
-		day: {
-		"30ml": null,
-	"50ml": null,
-					},
-	night: {
-		"30ml": null,
-	"50ml": null,
-					},
-				}
+		if (personalizedProduct) {
+			let targetParent = document.querySelector('.pdp-personalized_container');
+			let labelName = {
+				day: '',
+				night: ''
+			}
+			let creams = { };
+			let variants = {
+				day: {
+					"30ml": null,
+					"50ml": null,
+				},
+				night: {
+					"30ml": null,
+					"50ml": null,
+				},
+			}
 
-	if (quizData) {
-					if (quizData.cream && quizData.cream.day) {
-		creams['day'] = quizData.cream.day.id;
-	labelName['day'] = quizData.cream.day.name ?? '';
-					}
-	if (quizData.cream && quizData.cream.night) {
-		creams['night'] = quizData.cream.night.id;
-	labelName['night'] = quizData.cream.night.name ?? '';
-					}
+			if (quizData) {
+				if (quizData.cream && quizData.cream.day) {
+					creams['day'] = quizData.cream.day.id;
+					labelName['day'] = quizData.cream.day.name ?? '';
 				}
+				if (quizData.cream && quizData.cream.night) {
+					creams['night'] = quizData.cream.night.id;
+					labelName['night'] = quizData.cream.night.name ?? '';
+				}
+			}
 	
-				await Promise.all(Object.keys(creams).map((cream) => {
-		let found = "";
-	if (cream.includes('day')) {
-		description = dayCreamDescription;
-					} else if (cream.includes('night')) {
-		description = nightCreamDescription;
-					}
-					personalizedProduct.variants.map(async (variant) => {
-						if (variant.sku.includes(cream) && variant.sku.includes(creams[cream])) {
-							if (cream.includes('day')) {
-								if (variant.sku.includes('day30')) {
-		variants['day']['30ml'] = variant;
-		let _dayCreamInActualCart = await personalizedCreamExistsInActualCart('day');
-		console.log("PC SPlan", personalizedProduct.selling_plan_groups)
-		if (!_dayCreamInActualCart) {
-			cartItems.push({
-				id: variant.id,
-			quantity: 1,
-			properties: personalizedCreamCartProperties['day'],
-			price: variant.price,
-			//selling_plan: personalizedProduct.selling_plan_groups[0].selling_plans[0].id
-											});
-		}
-	console.log(cartItems)
-								} else if (variant.sku.includes('day50')) {
-		variants['day']['50ml'] = variant;
+			await Promise.all(Object.keys(creams).map((cream) => {
+				let found = "";
+				if (cream.includes('day')) {
+					description = dayCreamDescription;
+				} else if (cream.includes('night')) {
+					description = nightCreamDescription;
+				}
+				personalizedProduct.variants.map(async (variant) => {
+					if (variant.sku.includes(cream) && variant.sku.includes(creams[cream])) {
+						if (cream.includes('day')) {
+							if (variant.sku.includes('day30')) {
+								variants['day']['30ml'] = variant;
+								let _dayCreamInActualCart = await personalizedCreamExistsInActualCart('day');
+								console.log("PC SPlan", personalizedProduct.selling_plan_groups)
+								if (!_dayCreamInActualCart) {
+									cartItems.push({
+										id: variant.id,
+										quantity: 1,
+										properties: personalizedCreamCartProperties['day'],
+										price: variant.price,
+										//selling_plan: personalizedProduct.selling_plan_groups[0].selling_plans[0].id
+									});
 								}
-							} else if (cream.includes('night')) {
-								if (variant.sku.includes('night30')) {
-									variants['night']['30ml'] = variant;
-		let _nightCreamInActualCart = await personalizedCreamExistsInActualCart('night');
-		if (!_nightCreamInActualCart) {
-			cartItems.push({
-				id: variant.id,
-				quantity: 1,
-				properties: personalizedCreamCartProperties['night'],
-				price: variant.price,
-			//selling_plan: personalizedProduct.selling_plan_groups[0].selling_plans[0].id
-			});
-		}
-	console.log(cartItems)
-								} else if (variant.sku.includes('night50')) {
-		variants['night']['50ml'] = variant;
+								console.log(cartItems)
+							} else if (variant.sku.includes('day50')) {
+								variants['day']['50ml'] = variant;
+							}
+						} else if (cream.includes('night')) {
+							if (variant.sku.includes('night30')) {
+								variants['night']['30ml'] = variant;
+								let _nightCreamInActualCart = await personalizedCreamExistsInActualCart('night');
+								if (!_nightCreamInActualCart) {
+									cartItems.push({
+										id: variant.id,
+										quantity: 1,
+										properties: personalizedCreamCartProperties['night'],
+										price: variant.price,
+									//selling_plan: personalizedProduct.selling_plan_groups[0].selling_plans[0].id
+									});
 								}
+								console.log(cartItems)
+							} else if (variant.sku.includes('night50')) {
+								variants['night']['50ml'] = variant;
 							}
 						}
-					});
-	productCount += 1;
-	pdpProductCount.innerText = `${productCount} ${productCountText}`;
-				}));
-
-				Object.keys(variants).map((cream) => {
-		let inciSection = '';
-	inciSection = `
-	<div class="pdp-product__incis pdp-product__incis__personalized__${cream.includes('day') ? 'day' : 'night'}"></div>
-	`;
-	if (inciData && inciData.ingredients && inciData.ingredients.length) {
-		inciData.ingredients.map((inci) => {
-			if (inci.ofCream.includes(cream)) {
-				inciItems += `
-									<div class="pdp-product__incis__item">
-										<img width="50" height="50" src="${inci.imageUrl}?w=50" alt="${inci.name}" />
-										<p class="pdp-product__inci__title">${inci.name}</p>
-									</div>
-								`;
-			}
-		});
-	inciSection = `
-	<div class="pdp-product__incis">
-		${inciItems}
-	</div>
-	`;
 					}
-	targetParent.insertAdjacentHTML('beforeend', `
-	<div class="pdp-product_group__container">
-		<div class="pdp-product_group__container__header">
-			<h2>${cream.includes('day') ? dayCreamHeaderText : nightCreamHeaderText}</h2>
-			<div class="pdp-product__header__cream_label">
-				${labelName[cream] && `
-											<img src="${creamLabelImgSrc}" alt="cream_label" class="pdp-product__cream_label__image" />
-											<span>${labelName[cream]}</span>
-										`}
-			</div>
-		</div>
-
-		<div class="pdp-product__grid">
-			<div class="pdp-product__grid__item">
-				<div class="pdp-product__info">
-					<div class="pdp-product__media">
-						<img
-							src="${personalizedProduct.featured_image}&width=150"
-							alt="${personalizedProduct.title}"
-							width="150"
-						/>
-					</div>
-					<div class="pdp-product__details">
-						<div class="pdp-product__price">
-							<h3 style="color:#fb5250;" class="${window.location.pathname.includes('/ar-') ? 'ar-price-text-reduced' : ''}">${theme.formatMoney(variants[cream]['30ml'].price, theme.money_format)}</h3>
-							<h2 class="struck-out-price ${window.location.pathname.includes('/ar-') && 'ar-price-text-reduced'}">${theme.formatMoney(variants[cream]['50ml'].price, theme.money_format)}</h2>
-							<span>50ml</span>
-						</div>
-						<div class="pdp-product__review">
-							<div class="pdp-product__review_badge">
-								${personalizedProductJudgemeBadge}
-							</div>
-							<span class="pdp-product__review_rating">
-								${parseFloat(personalizedProductRating).toFixed(1)}/5.0
-							</span>
-						</div>
-						<div class="pdp-product__form">
-							<div class="pdp-product__form__variants">
-								<div
-									class="pdp-product__variant_option variant_option_personalized selected"
-									data-variant-id="${variants[cream]['30ml'].id}"
-									data-variant-price="${variants[cream]['30ml'].price}"
-									data-variant-sku="${variants[cream]['30ml'].sku}"
-									data-variant-for="${cream}"
-								>
-									${dispenserButtonText}
-								</div>
-								<div
-									class="pdp-product__variant_option variant_option_personalized"
-									data-variant-id="${variants[cream]['50ml'].id}"
-									data-variant-price="${variants[cream]['50ml'].price}"
-									data-variant-sku="${variants[cream]['50ml'].sku}"
-									data-variant-for="${cream}"
-								>
-									${jarButtonText}
-								</div>
-							</div>
-							<div class="pdp-product__quantity">
-								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__dec" data-qty-for="${cream}">-</div>
-								<input class="pdp-product__quantity__selector pdp-product__quantity__selector__input" type="number" value="1" readonly />
-								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc" data-qty-for="${cream}">+</div>
-							</div>
-							<div class="pdp-product__form__qty"></div>
-						</div>
-						<div class="pdp-product__description">
-							<div class="pdp-product__description__short">
-								${description.length > 250 ? `${description.substring(0, 250)}...<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">[${descriptionShowMoreText}]</span>` : description}
-							</div>
-							<div class="pdp-product__description__long hidden">
-								${description}...<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
-							</div>
-						</div>
-						<div class="pdp-product__more_result pdp-product__more_result__cream" data-result-for="${cream.includes('day') ? 'day' : 'night'}cream">
-							<h5>${cream.includes('day') ? moreDayCreamButtonText : moreNightCreamButtonText}</h5>
-						</div>
-					</div>
-				</div>
-				${inciSection}
-			</div>
-		</div>
-	</div>
-	`
-	);
 				});
-			}
+				productCount += 1;
+				pdpProductCount.innerText = `${productCount} ${productCountText}`;
+			}));
+
+			Object.keys(variants).map((cream) => {
+				let inciItems = '';
+				let inciSection = '';
+				inciSection = `
+					<div class="pdp-product__incis pdp-product__incis__personalized__${cream.includes('day') ? 'day' : 'night'}"></div>
+				`;
+				if (quizData && quizData.cream && quizData.cream[cream] && quizData.cream[cream].ingredients.length) {
+					quizData.cream[cream].ingredients.map((inci) => {
+						inciItems += `
+							<div class="pdp-product__incis__item">
+								<img width="50" height="50" src="${inci.assets.reference.image.src}?w=50" alt="${inci.name.value}" />
+								<p class="pdp-product__inci__title">${inci.name.value}</p>
+							</div>
+						`;
+					});
+					inciSection = `
+						<div class="pdp-product__incis">
+							${inciItems}
+						</div>
+					`;
+				}
+				targetParent.insertAdjacentHTML('beforeend', `
+					<div class="pdp-product_group__container">
+						<div class="pdp-product_group__container__header">
+							<h2>${cream.includes('day') ? dayCreamHeaderText : nightCreamHeaderText}</h2>
+							<div class="pdp-product__header__cream_label">
+								${labelName[cream] && `
+									<img src="${creamLabelImgSrc}" alt="cream_label" class="pdp-product__cream_label__image" />
+									<span>${labelName[cream]}</span>
+								`}
+							</div>
+						</div>
+
+						<div class="pdp-product__grid">
+							<div class="pdp-product__grid__item">
+								<div class="pdp-product__info">
+									<div class="pdp-product__media">
+										<img
+											src="${personalizedProduct.featured_image}&width=150"
+											alt="${personalizedProduct.title}"
+											width="150"
+										/>
+									</div>
+									<div class="pdp-product__details">
+										<div class="pdp-product__price">
+											<h3 style="color:#fb5250;" class="${window.location.pathname.includes('/ar-') ? 'ar-price-text-reduced' : ''}">${theme.formatMoney(variants[cream]['30ml'].price, theme.money_format)}</h3>
+											<h2 class="struck-out-price ${window.location.pathname.includes('/ar-') && 'ar-price-text-reduced'}">${theme.formatMoney(variants[cream]['50ml'].price, theme.money_format)}</h2>
+											<span>50ml</span>
+										</div>
+										<div class="pdp-product__review">
+											<div class="pdp-product__review_badge">
+												${personalizedProductJudgemeBadge}
+											</div>
+											<span class="pdp-product__review_rating">
+												${parseFloat(personalizedProductRating).toFixed(1)}/5.0
+											</span>
+										</div>
+										<div class="pdp-product__form">
+											<div class="pdp-product__form__variants">
+												<div
+													class="pdp-product__variant_option variant_option_personalized selected"
+													data-variant-id="${variants[cream]['30ml'].id}"
+													data-variant-price="${variants[cream]['30ml'].price}"
+													data-variant-sku="${variants[cream]['30ml'].sku}"
+													data-variant-for="${cream}"
+												>
+													${dispenserButtonText}
+												</div>
+												<div
+													class="pdp-product__variant_option variant_option_personalized"
+													data-variant-id="${variants[cream]['50ml'].id}"
+													data-variant-price="${variants[cream]['50ml'].price}"
+													data-variant-sku="${variants[cream]['50ml'].sku}"
+													data-variant-for="${cream}"
+												>
+													${jarButtonText}
+												</div>
+											</div>
+											<div class="pdp-product__quantity">
+												<div class="pdp-product__quantity__selector pdp-product__quantity__selector__dec" data-qty-for="${cream}">-</div>
+												<input class="pdp-product__quantity__selector pdp-product__quantity__selector__input" type="number" value="1" readonly />
+												<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc" data-qty-for="${cream}">+</div>
+											</div>
+											<div class="pdp-product__form__qty"></div>
+										</div>
+										<div class="pdp-product__description">
+											<div class="pdp-product__description__short">
+												${description.length > 250 ? `${description.substring(0, 250)}...<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">[${descriptionShowMoreText}]</span>` : description}
+											</div>
+											<div class="pdp-product__description__long hidden">
+												${description}...<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
+											</div>
+										</div>
+										<div class="pdp-product__more_result pdp-product__more_result__cream" data-result-for="${cream.includes('day') ? 'day' : 'night'}cream">
+											<h5>${cream.includes('day') ? moreDayCreamButtonText : moreNightCreamButtonText}</h5>
+										</div>
+									</div>
+								</div>
+								${inciSection}
+							</div>
+						</div>
+					</div>
+				`
+				);
+			});
 		}
+	}
 
 
 
@@ -1301,10 +1387,6 @@
 																						<div class="pdp-product__title">
 																							${recommendationCommons.querySelector(".pdp-recommendation__title").innerHTML}
 																						</div>
-																						<div class="pdp-product__price">
-																							<h3>${theme.formatMoney(exp.getAttribute("data-prc"), theme.money_format)}</h3>
-																							<span>${recommendationCommons.querySelector(".pdp-recommendation__product_size").innerText}</span>
-																						</div>
 																						<div class="pdp-product__review">
 																							<div class="pdp-product__review_badge">
 																								${recommendationCommons.querySelector(".pdp-recommendation__review_badge").innerHTML}
@@ -1313,7 +1395,21 @@
 																								${recommendationCommons.querySelector(".pdp-recommendation__review_rating").innerText}
 																							</div>
 																						</div>
-																						<div class="pdp-product__form">
+																						<div class="pdp-product__description">
+																							<div class="pdp-product__description__short hidden">
+																								${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.substring(0, 250)}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.length > 250 ? `...[${descriptionShowMoreText}]` : ""}</span>
+																							</div>
+																							<div class="pdp-product__description__long hidden">
+																								${recommendationCommons.querySelector(".pdp-recommendation__description").innerText}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
+																							</div>
+																							<div class="pdp-product__description__short">
+																								${recommendationCommons.querySelector(".pdp-recommendation__short_description").innerText}
+																							</div>
+																						</div>
+																						<div class="pdp-product__more_result pdp-product__more_result__standard" data-result-for="standardproduct">
+																							<h5>${moreStandardProductButtonText}</h5>
+																						</div>
+																						<div class="pdp-product__form"> 
 																							<div class="pdp-product__form__variants hidden">
 																								<div
 																									class="pdp-product__variant_option selected"
@@ -1329,17 +1425,10 @@
 																								<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc">+</div>
 																							</div>
 																							<div class="pdp-product__form__qty"></div>
-																						</div>
-																						<div class="pdp-product__description">
-																							<div class="pdp-product__description__short">
-																								${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.substring(0, 250)}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.length > 250 ? `...[${descriptionShowMoreText}]` : ""}</span>
-																							</div>
-																							<div class="pdp-product__description__long hidden">
-																								${recommendationCommons.querySelector(".pdp-recommendation__description").innerText}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
-																							</div>
-																						</div>
-																						<div class="pdp-product__more_result pdp-product__more_result__standard" data-result-for="standardproduct">
-																							<h5>${moreStandardProductButtonText}</h5>
+    																						<div class="pdp-product__price">
+    																							<h3>${theme.formatMoney(exp.getAttribute("data-prc"), theme.money_format)}</h3>
+    																							<span hidden>${recommendationCommons.querySelector(".pdp-recommendation__product_size").innerText}</span>
+    																						</div>
 																						</div>
 																						<div class="pdp-product__incis product__incis__desktop">
 																							${inciItems}
@@ -1429,10 +1518,6 @@
 															<div class="pdp-product__title">
 																${recommendationCommons.querySelector(".pdp-recommendation__title").innerHTML}
 															</div>
-															<div class="pdp-product__price">
-																<h3>${theme.formatMoney(exp.getAttribute("data-prc"), theme.money_format)}</h3>
-																<span></span>
-															</div>
 															<div class="pdp-product__review">
 																<div class="pdp-product__review_badge">
 																	${recommendationCommons.querySelector(".pdp-recommendation__review_badge").innerHTML}
@@ -1440,6 +1525,20 @@
 																<div class="pdp-product__review_rating">
 																	${recommendationCommons.querySelector(".pdp-recommendation__review_rating").innerText}
 																</div>
+															</div>
+															<div class="pdp-product__description">
+																<div class="pdp-product__description__short hidden">
+																	${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.substring(0, 250)}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.length > 250 ? `...[${descriptionShowMoreText}]` : ""}</span>
+																</div>
+																<div class="pdp-product__description__long hidden">
+																	${recommendationCommons.querySelector(".pdp-recommendation__description").innerText}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
+																</div>
+                                                                <div class="pdp-product__description__short">
+                                                                    ${recommendationCommons.querySelector(".pdp-recommendation__short_description").innerText}
+                                                                </div>
+															</div>
+															<div class="pdp-product__more_result pdp-product__more_result__standard" data-result-for="standardproduct">
+																<h5>${moreStandardProductButtonText}</h5>
 															</div>
 															<div class="pdp-product__form">
 																<div class="pdp-product__form__variants hidden">
@@ -1457,17 +1556,10 @@
 																	<div class="pdp-product__quantity__selector pdp-product__quantity__selector__inc">+</div>
 																</div>
 																<div class="pdp-product__form__qty"></div>
-															</div>
-															<div class="pdp-product__description">
-																<div class="pdp-product__description__short">
-																	${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.substring(0, 250)}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__more">${recommendationCommons.querySelector(".pdp-recommendation__description").innerText.length > 250 ? `...[${descriptionShowMoreText}]` : ""}</span>
-																</div>
-																<div class="pdp-product__description__long hidden">
-																	${recommendationCommons.querySelector(".pdp-recommendation__description").innerText}<span class="pdp-product__description__show__toggle pdp-product__description__show__toggle__less">[${descriptionShowLessText}]</span>
-																</div>
-															</div>
-															<div class="pdp-product__more_result pdp-product__more_result__standard" data-result-for="standardproduct">
-																<h5>${moreStandardProductButtonText}</h5>
+    															<div class="pdp-product__price">
+    																<h3>${theme.formatMoney(exp.getAttribute("data-prc"), theme.money_format)}</h3>
+    																<span></span>
+    															</div>
 															</div>
 															<div class="pdp-product__incis product__incis__desktop">
 																${inciItems}
@@ -1494,69 +1586,71 @@
 
 
 	async function toggleCheckout() {
-		let btn = document.querySelector(".pdp-cta__checkout_btn");
-	btn.innerHTML = await `
-	<div style="display:inline-flex;gap:10px;align-items:center;">
-		<?xml version="1.0" encoding="utf-8"?>
-		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto; width:20px; height:20px;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-			<circle cx="50" cy="50" fill="none" stroke="#fff" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
-				<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
-			</circle>
-		</svg>
-		<span>CHECKING OUT</span>
-	</div>
-	`;
+      console.log("CI DURING CHECKOUT", cartItems);
+      let btn = document.querySelector(".pdp-cta__checkout_btn__custom");
+      btn.innerHTML = await `
+    	<div style="display:inline-flex;gap:10px;align-items:center;">
+    		<?xml version="1.0" encoding="utf-8"?>
+    		<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto; width:20px; height:20px;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+    			<circle cx="50" cy="50" fill="none" stroke="#fff" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
+    				<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
+    			</circle>
+    		</svg>
+    		<span>CHECKING OUT</span>
+    	</div>
+    	`;
 	  //let formData = {
 		//  items: cartItems
-		//}
-		//console.log(formData)
-		//await updateProductQtyInputFromActualCart();
-		let cart = await getCart();
-	const {matchingItems, nonMatchingItems} = cartItems.reduce((r, ci) =>  {
-				const matchingItm = cart.items.find((c) => {
-					if (c.id === ci.id) {
-						if (c.quantity === ci.quantity) {
-		c["cartResolve"] = "ignore";
-						} else if (ci.quantity > c.quantity || ci.quantity < c.quantity) {
-		c["cartResolve"] = "update";
-	c.quantity = ci.quantity
-						} else {
-		c["cartResolve"] = "add";
-						}
-	return c;
-					}
-	return undefined;
-				});
-	if (matchingItm && matchingItm.cartResolve === "update") {
-		r.matchingItems.push(ci)
-	} else if (!matchingItm || (matchingItm && matchingItm.cartResolve === "add")) {
-		r.nonMatchingItems.push(ci)
-	}
-	return r
-			}, {matchingItems: [], nonMatchingItems: [] })
-	console.log("matching", matchingItems)
-	console.log("non matching", nonMatchingItems)
-	if (matchingItems) {
-		let formData = { }
-	let updates = { }
-				await Promise.all(matchingItems.map((d) => {
-		updates[d.id] = d.quantity
-	}))
-	formData = {
-		updates,
-				}
-	await fetch('/cart/update.js', {
-		method: 'POST',
-	headers: {
-		'Content-Type': 'application/json'
-					},
-	body: JSON.stringify(formData)
-				})
-			}
-	if (nonMatchingItems) {
+      //}
+      //console.log(formData)
+      //await updateProductQtyInputFromActualCart();
+      let cart = await getCart();
+      const {matchingItems, nonMatchingItems} = cartItems.reduce((r, ci) =>  {
+        const matchingItm = cart.items.find((c) => {
+          if (c.id === ci.id) {
+            if (c.quantity === ci.quantity) {
+        		c["cartResolve"] = "ignore";
+            } else if (ci.quantity > c.quantity || ci.quantity < c.quantity) {
+        		c["cartResolve"] = "update";
+            	c.quantity = ci.quantity
+            } else {
+        		c["cartResolve"] = "add";
+            }
+        	return c;
+          }
+          return undefined;
+        });
+    	if (matchingItm && matchingItm.cartResolve === "update") {
+    		r.matchingItems.push(ci)
+    	} else if (!matchingItm || (matchingItm && matchingItm.cartResolve === "add")) {
+    		r.nonMatchingItems.push(ci)
+    	}
+    	return r
+      }, {matchingItems: [], nonMatchingItems: [] })
+      console.log("matching", matchingItems)
+      console.log("non matching", nonMatchingItems)
+      if (matchingItems) {
+          let formData = { }
+          let updates = { }
+          await Promise.all(matchingItems.map((d) => {
+    		updates[d.id] = d.quantity
+          }))
+          console.log(updates)
+          formData = {
+    		updates,
+          }
+          await fetch('/cart/update.js', {
+    		method: 'POST',
+        	headers: {
+        		'Content-Type': 'application/json'
+            },
+        	body: JSON.stringify(formData)
+          })
+      }
+      if (nonMatchingItems) {
 		let formData = {
-		items: nonMatchingItems
-				}
+    		items: nonMatchingItems
+        }
 				//fetch('/cart/add.js', {
 		//	method: 'POST',
 		//	headers: {
@@ -1575,13 +1669,13 @@
 			},
 			body: JSON.stringify(formData)
 		})
-	}
-	window.location.href = "/checkout"
+      }
+      window.location.href = "/checkout"
 	}
 
-		document.querySelector(".pdp-cta__checkout_btn").addEventListener("click", () => {
-		toggleCheckout();
-		});
+    document.querySelector(".pdp-cta__checkout_btn__custom").addEventListener("click", () => {
+      toggleCheckout();
+    }, { once: true });
 
 	// CALLS
 	// *
@@ -1599,28 +1693,31 @@
 			}
 		}
 
-	//togglePageLoadingIndicator();
+	togglePageLoadingIndicator();
+    setInterval(() => {
+      animateLoadingIndicatorQuotes();
+    }, 2000);
 	await toggleSubscriptionOption();
 	toggleSubscriptionSelect();
 	quizData = await loadQuizData();
 	await presetPersonalizedCreamProperties(quizData);
-	//togglePageLoadingIndicator();
+	togglePageLoadingIndicator();
 
 	let inciDataCalled = false;
 	var stickyCheckoutContainer = document.querySelector('.pdp-cta__sticky');
 	window.onscroll = async function() {
-			if (window.scrollY >= 50 && !inciData && !inciDataCalled) {
-		inciDataCalled = true;
-	inciData = await loadInciData({
-		creamId: {
-		day: quizData.cream.day.id,
-	night: quizData.cream.night.id
-					},
-	locale: siteLocale,
-	creamVersion: 21
-				});
-	await loadPersonalizedCreamInciDataSummary(inciData);
-			}
+     //  if (window.scrollY >= 50 && !inciData && !inciDataCalled) {
+     //    inciDataCalled = true;
+    	// inciData = await loadInciData({
+     //      creamId: {
+     //          day: quizData.cream.day.id,
+     //          night: quizData.cream.night.id
+     //      },
+     //      locale: siteLocale,
+     //      creamVersion: 21
+     //    });
+    	// await loadPersonalizedCreamInciDataSummary(inciData);
+     //  }
 
 	if (stickyCheckoutContainer) {
 				if (window.scrollY >= 100) {

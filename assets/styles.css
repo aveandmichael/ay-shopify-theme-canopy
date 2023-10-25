@@ -18,8 +18,8 @@ File structure:
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src: url("https://fonts.shopifycdn.com/montserrat/montserrat_n4.1d581f6d4bf1a97f4cbc0b88b933bc136d38d178.woff2?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=00eeae8d2760bfd902ca376549b36b8e906a43715fa7f7c841c16a3af8c25a48") format("woff2"),
-       url("https://fonts.shopifycdn.com/montserrat/montserrat_n4.cfce41a967758ce5a9b7d48daeb5b028fd977a9b.woff?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=24ac25c74932852b627e9e9d7e2acdaf3e34b04b22a5df813a0d460255448179") format("woff");
+  src: url("//aveandyou.com/cdn/fonts/montserrat/montserrat_n4.1d581f6d4bf1a97f4cbc0b88b933bc136d38d178.woff2?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=4448c3c5d841070e0cceb9275df52edbd5997bfccb5e4f92b4f3236fe45abacb") format("woff2"),
+       url("//aveandyou.com/cdn/fonts/montserrat/montserrat_n4.cfce41a967758ce5a9b7d48daeb5b028fd977a9b.woff?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=299585c76b63e7bc298d56e130059a58d298a057741a82e883f7e1a64040e493") format("woff");
 }
 
 @font-face {
@@ -27,8 +27,8 @@ File structure:
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  src: url("https://fonts.shopifycdn.com/montserrat/montserrat_n7.c496e9cf2031deec4c4bca338faa81971c8631d4.woff2?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=61d533e48e528e125632425321f9be4ac74bf3de23058569bc646955152d725f") format("woff2"),
-       url("https://fonts.shopifycdn.com/montserrat/montserrat_n7.78b0223375c94b39ce1af7e09a0225f2bb3d05f7.woff?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=57159d256632207afe9e7c19f7ffbc6cc9080de14e60c1bc41d6141ded7ae282") format("woff");
+  src: url("//aveandyou.com/cdn/fonts/montserrat/montserrat_n7.c496e9cf2031deec4c4bca338faa81971c8631d4.woff2?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=7fac9871c6cd85fcb15867a054f2e42d9580494414f0dd8e2d75e62e8b88f851") format("woff2"),
+       url("//aveandyou.com/cdn/fonts/montserrat/montserrat_n7.78b0223375c94b39ce1af7e09a0225f2bb3d05f7.woff?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=391a595badc5f24565e60c2262716aa396dfeea32dda8e73217cb4b5472e874b") format("woff");
 }
 
 @font-face {
@@ -36,8 +36,8 @@ File structure:
   font-weight: 400;
   font-style: italic;
   font-display: swap;
-  src: url("https://fonts.shopifycdn.com/montserrat/montserrat_i4.ae02483b3d5e8777d0d4a4ccf396482c364d8955.woff2?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=3917bb7d125a3e94573ac01042ef552f1aa7f88ac66f16bfa789015334ba3beb") format("woff2"),
-       url("https://fonts.shopifycdn.com/montserrat/montserrat_i4.ba28d1a04ec09448de486d83c63235903dfc0af8.woff?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=3a14f44757229d885c3bfa8683a4b426760f174f5dca8278f33ee80a7d8c1811") format("woff");
+  src: url("//aveandyou.com/cdn/fonts/montserrat/montserrat_i4.ae02483b3d5e8777d0d4a4ccf396482c364d8955.woff2?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=2eedcc7667b9c0f3c4f97aed8e1e6509289d1f5bb6b25128cf68aa10a8841b21") format("woff2"),
+       url("//aveandyou.com/cdn/fonts/montserrat/montserrat_i4.ba28d1a04ec09448de486d83c63235903dfc0af8.woff?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=6b3f99edd552c79bf2ea77f7532a2de5404e65c344b6f2a677dc0ce2be6d9131") format("woff");
 }
 
 @font-face {
@@ -45,8 +45,8 @@ File structure:
   font-weight: 700;
   font-style: italic;
   font-display: swap;
-  src: url("https://fonts.shopifycdn.com/montserrat/montserrat_i7.83866c3eec90071fa974c17980ffb42977f9e667.woff2?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=110875742bdaddfbf4d4dad77acd65c7655d9dbdeff808f471e99a2d91e5cc16") format("woff2"),
-       url("https://fonts.shopifycdn.com/montserrat/montserrat_i7.25524241b12d864609c85325613d60efcf1a87e3.woff?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=8c07289fd98ffed920be5891a74d3ec3e7d5b50afcef698ff2d1d406ddb33bff") format("woff");
+  src: url("//aveandyou.com/cdn/fonts/montserrat/montserrat_i7.83866c3eec90071fa974c17980ffb42977f9e667.woff2?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=2da2712d73d1fb80bbd85af185fab7381010eb2cb8629a3d4962b039e2e9f6be") format("woff2"),
+       url("//aveandyou.com/cdn/fonts/montserrat/montserrat_i7.25524241b12d864609c85325613d60efcf1a87e3.woff?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=a0d0d28143246b1340802d90d428b7a56f3d78b4d22d81d5a8f927db39b32f92") format("woff");
 }
 
 @font-face {
@@ -54,8 +54,8 @@ File structure:
   font-weight: 700;
   font-style: normal;
   font-display: swap;
-  src: url("https://fonts.shopifycdn.com/montserrat/montserrat_n7.c496e9cf2031deec4c4bca338faa81971c8631d4.woff2?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=61d533e48e528e125632425321f9be4ac74bf3de23058569bc646955152d725f") format("woff2"),
-       url("https://fonts.shopifycdn.com/montserrat/montserrat_n7.78b0223375c94b39ce1af7e09a0225f2bb3d05f7.woff?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=57159d256632207afe9e7c19f7ffbc6cc9080de14e60c1bc41d6141ded7ae282") format("woff");
+  src: url("//aveandyou.com/cdn/fonts/montserrat/montserrat_n7.c496e9cf2031deec4c4bca338faa81971c8631d4.woff2?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=7fac9871c6cd85fcb15867a054f2e42d9580494414f0dd8e2d75e62e8b88f851") format("woff2"),
+       url("//aveandyou.com/cdn/fonts/montserrat/montserrat_n7.78b0223375c94b39ce1af7e09a0225f2bb3d05f7.woff?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=391a595badc5f24565e60c2262716aa396dfeea32dda8e73217cb4b5472e874b") format("woff");
 }
 
 @font-face {
@@ -63,8 +63,8 @@ File structure:
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src: url("https://fonts.shopifycdn.com/montserrat/montserrat_n4.1d581f6d4bf1a97f4cbc0b88b933bc136d38d178.woff2?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=00eeae8d2760bfd902ca376549b36b8e906a43715fa7f7c841c16a3af8c25a48") format("woff2"),
-       url("https://fonts.shopifycdn.com/montserrat/montserrat_n4.cfce41a967758ce5a9b7d48daeb5b028fd977a9b.woff?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=24ac25c74932852b627e9e9d7e2acdaf3e34b04b22a5df813a0d460255448179") format("woff");
+  src: url("//aveandyou.com/cdn/fonts/montserrat/montserrat_n4.1d581f6d4bf1a97f4cbc0b88b933bc136d38d178.woff2?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=4448c3c5d841070e0cceb9275df52edbd5997bfccb5e4f92b4f3236fe45abacb") format("woff2"),
+       url("//aveandyou.com/cdn/fonts/montserrat/montserrat_n4.cfce41a967758ce5a9b7d48daeb5b028fd977a9b.woff?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=299585c76b63e7bc298d56e130059a58d298a057741a82e883f7e1a64040e493") format("woff");
 }
 
 @font-face {
@@ -72,8 +72,8 @@ File structure:
   font-weight: 400;
   font-style: normal;
   font-display: swap;
-  src: url("https://fonts.shopifycdn.com/tenor_sans/tenorsans_n4.ef7b684f1cfa0d3a90338d1fa5f36acdf7889632.woff2?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=ad9f433a268515770809c7c46c53b0a271a3fefcbffe0d389d0ef4afbefbe95b") format("woff2"),
-       url("https://fonts.shopifycdn.com/tenor_sans/tenorsans_n4.514efc84ed8364b455bb5dd12e65583fe93ccf0f.woff?h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlYW5keW91Lmlu&hmac=aece09480b4f5149cce216e888ac815fe564f4162f3b3f87c5a0402112c98e60") format("woff");
+  src: url("//aveandyou.com/cdn/fonts/tenor_sans/tenorsans_n4.ef7b684f1cfa0d3a90338d1fa5f36acdf7889632.woff2?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=cff391fc87f16972115d646a7647fae1d95131843986c618b5bc90cc8e8d93c3") format("woff2"),
+       url("//aveandyou.com/cdn/fonts/tenor_sans/tenorsans_n4.514efc84ed8364b455bb5dd12e65583fe93ccf0f.woff?h10=YXZlYW5keW91Lmlu&h1=YXZlYW5kZWRhbS5jb20&h2=ZGUuYXZlYW5kZWRhbS5jb20&h3=ZW4uYXZlYW5kZWRhbS5jb20&h4=aGFsbG9oYXV0LmRl&h5=aGFsbG9oYXV0LmV1&h6=YXZlYW5keW91LmNvbQ&h7=ZW4uYXZlYW5keW91LmNvbQ&h8=ZGUuYXZlYW5keW91LmNvbQ&h9=YXZlLWVkYW0uYWNjb3VudC5teXNob3BpZnkuY29t&hmac=74f15c56fbaf19bfb7fe275c49797a0d8b42a31c398d016f94385d26dab6492b") format("woff");
 }
 
 /* Misc */
@@ -6400,7 +6400,7 @@ body:not(.tab-used) .main-search__form .id-main-search__product-types select:foc
 
 @media (min-width: 768px) {
   .has-full-width-section + .has-full-width-section {
-    margin-top: -4.5em !important;
+    /* margin-top: -4.5em !important; */
   }
 
   #shopify-section-template--16144206168332__1660744198f4fe1d1c{
@@ -13370,8 +13370,8 @@ h1, h2, h3, h4, h5, h6, strong {
 
 @media screen and (max-width: 767px) {
   #content .section.rich-text {
-    padding-top: 2.5em !important;
-    padding-bottom: 2.5em !important;
+    padding-top: 2.5em;
+    padding-bottom: 2.5em;
   }
   
   .template-sfx-about-us #content .section.rich-text {
@@ -13385,8 +13385,8 @@ h1, h2, h3, h4, h5, h6, strong {
   }
   
   .template-collection #content .section.rich-text, .template-sfx-about-us #content .section.rich-text {
-    margin-top:0px !important;
-    margin-bottom:0px !important;}
+    margin-top:0px;
+    margin-bottom:0px;}
 }
 
 
@@ -13464,8 +13464,8 @@ h1, h2, h3, h4, h5, h6, strong {
 
 
 .template-collection #content .rich-text.section {
-  padding-top: 1.5em !important;
-  padding-bottom: 0 !important;
+  padding-top: 1.5em;
+  padding-bottom: 0;
 }
 .template-collection .product-block .product-block__inner {
   padding: 20px;
@@ -13730,8 +13730,8 @@ h1, h2, h3, h4, h5, h6, strong {
 @media screen and (min-width: 768px) {
   .template-product #content .section.product-container {
     max-width: 1000px;
-    padding-top: 2.5em !important;
-    padding-bottom: 2.5em !important;
+    padding-top: 2.5em;
+    padding-bottom: 2.5em;
   }
   .template-product #content .section.product-container .product-gallery {
     width: 50%;

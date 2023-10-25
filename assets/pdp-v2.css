@@ -100,7 +100,7 @@
   font-weight: 400;
 }
 .pdp-product__price h3 {
-	font-size: 1.6rem;
+	font-size: 1.2rem;
 	margin: 0;
 }
 .pdp-product__review {
@@ -480,7 +480,7 @@
 
 /* STICKY CHECKOUT */
 .pdp-cta__sticky {
-	position: fixed;
+	position: sticky;
 	bottom: 0;
 	background: #fff;
 	width: 100%;
@@ -511,8 +511,9 @@
 	display: flex;
 	gap: 15px;
 	align-items: center;
+    justify-content: center;
 }
-.pdp-cta__sticky .pdp-cta__checkout_btn {
+.pdp-cta__sticky .pdp-cta__checkout_btn__custom {
 	width: 100%;
 	border-radius: 0;
 	padding: 10px 0;
@@ -605,7 +606,7 @@
 		margin: 0 20%;
 	}
 
-	.pdp-cta__sticky .pdp-cta__checkout_btn {
+	.pdp-cta__sticky .pdp-cta__checkout_btn__custom {
 		width: 20%;
         margin: 0 40%;
 	}

@@ -1,0 +1,101 @@
+<div class="container container--narrow">
+
+  <div class="page__content rte">
+   
+{%- comment -%} Start of HTML SiteMap code {%- endcomment -%}
+<div class="row">
+  
+   {% if section.settings.heading %}
+    <div class="col-md-6">
+        <h2>{{ section.settings.heading }}</h2>
+        <ul>
+            {% for c in collections %}
+                <li>
+                    <a href="{{ c.url }}">{{ c.title }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+  {% endif %}
+  
+  {% if section.settings.product_heading %}
+    <div class="col-md-6">
+        <h2>{{ section.settings.product_heading }}</h2>
+        <ul>
+  
+            {% paginate collections.all.products by 1000 %}
+                {% for product in collections.all.products %}
+                    <li>
+                        <a href="{{ product.url }}">{{ product.title }}</a>
+                    </li>
+                {% endfor %}
+            {% endpaginate %}
+  
+        </ul>
+    </div>
+  {% endif %}
+
+  {% if section.settings.page_heading %}
+  <div class="col-md-6">
+  <h2>{{ section.settings.page_heading }}</h2>
+   <ul>
+         {% for link in linklists.sitemap-menu.links %}
+            <li>
+               <a href="{{ link.url }}">{{ link.title }}</a>
+            </li>
+      {% endfor %}
+  </ul>
+  </div>
+  {% endif %}
+  
+  {% if section.settings.blog_heading %}
+  <div class="col-md-6">
+  <h2>{{ section.settings.blog_heading }}</h2>
+   <ul>
+         {%- for article in blog.articles -%}
+            <li>
+               <a href="{{ article.url }}">{{ article.title }}</a>
+            </li>
+      {% endfor %}
+  </ul>
+  </div>
+  {% endif %}
+   
+</div>
+
+
+{% schema %}
+  {
+    "name": "Sitemap",
+    "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Collections Heading"
+    },      
+    {
+      "type": "text",
+      "id": "product_heading",
+      "label": "Product Heading"
+    },
+    {
+      "type": "text",
+      "id": "page_heading",
+      "label": "Page Heading"
+    },      
+    {
+      "type": "text",
+      "id": "blog_heading",
+      "label": "Blog Heading"
+    }
+  ],
+    "presets": [
+      {
+      "name": "Sitemap",
+          "category": "Blog",
+          "settings": {
+          }
+      }
+    ]
+  }
+{% endschema %}

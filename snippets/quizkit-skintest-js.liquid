@@ -1,0 +1,1458 @@
+<script>
+  let locale = {{ localization.language.iso_code | json }};
+  let country = {{ localization.country.iso_code | json }};
+  let subfolder = "";
+  let storeURL = "https://aveandyou.com";
+
+  if (country !== "DE") {
+    subfolder = `${locale}-${country.toLowerCase()}`;
+    storeURL = `${storeURL}/${subfolder}`;
+  }
+    
+  function frameLoaded() {
+    window.addEventListener( "message", ( event ) => {
+      const { data } = event;
+      if( data.label == 'skin_id' ) {
+        //skinId = data.request.id;
+      }
+      if( data.label == 'results' ) {
+        console.log("LABEL", data.label)
+        console.log("REQUEST", data)
+        var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+        getItem["q7"]["faceScan"] = data.request;
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) );
+        $( 'button:contains(Skip)' ).text( 'Next' );
+        $( 'button:contains(Überspringen)' ).text( 'Nächste' );
+      }
+    });
+  }
+  let skinId = "";
+  let accessToken = "";
+     
+  function routineListBackEd(val){
+    var actualVal = val.toLowerCase();
+    var backEdVal = "";
+    if(actualVal == "cleanser." || actualVal == "reiniger." ){
+      backEdVal = "Cleanser"
+    } else if(actualVal == "face mask." || actualVal == "gesichtsmaske."){
+      backEdVal = "Face Mask"
+    }else if(actualVal == "serum." || actualVal == "serum."){
+      backEdVal = "Serum"
+    }else if(actualVal == "toner." || actualVal == "toner."){
+      backEdVal = "Toner"
+    }else if(actualVal == "day cream." || actualVal == "tagescreme."){
+      backEdVal = "DayCream"
+    }else if(actualVal == "make-up remover." || actualVal == "make-up entferner."){
+      backEdVal = "MakeUpRemover"
+    }else if(actualVal == "other." || actualVal == "anderes."){
+      backEdVal = "Other"
+    }else if(actualVal == "eye cream." || actualVal == "augencreme."){
+      backEdVal = "Eye Cream"
+    }else if(actualVal == "face oil." || actualVal == "gesichtsöl."){
+      backEdVal = "Face Oil"
+    }else if(actualVal == "sunscreen." || actualVal == "sonnenschutz."){
+      backEdVal = "Sun Cream"
+    }else if(actualVal == "night cream." || actualVal == "nachtcreme."){
+      backEdVal = "NightCream"
+    }
+    return backEdVal;
+  } 
+  function skinImprovementListBackEd(val){
+    var actualVal = val.toLowerCase();
+    var backEdVal = "";
+    console.log(actualVal);
+    if(actualVal == "increase hydration." || actualVal == "mehr feuchtigkeit."){
+      backEdVal = "MehrFeuchtigkeit"
+    } else if(actualVal == "reduce pigmentation spots." || actualVal == "weniger pigmentflecken."){
+      backEdVal = "WenigerPigmentflecken"
+    } else if(actualVal == "reduce redness." || actualVal == "weniger rötungen."){
+      backEdVal = "Reddening"
+    } else if(actualVal == "increase skin glow."  || actualVal == "strahlender teint."){
+      backEdVal = "StrahlendererTeint"
+    } else if(actualVal == "protection from display light, e.g., from your phone or laptop." || actualVal == "schutz vor display-licht, z.b. vom smartphone oder laptop."){
+      backEdVal = "BlueLightProtection"
+    } else if(actualVal == "protection from pollution, e.g. harmful particles associated with air pollution." || actualVal == "schutz gegen umwelteinflüsse, z.b. feinstaub"){
+      backEdVal = "AntiPollution"
+    } else if(actualVal == "reduce fine lines or wrinkles." || actualVal == "weniger falten."){
+      backEdVal = "Falten"
+    } else if(actualVal == "reduce impurities, e.g., pimples." || actualVal == "weniger unreinheiten, z.b. weniger pickel."){
+      backEdVal = "ReinereHaut"
+    } else if(actualVal == "reduce pigmentation spots." || actualVal == "weniger pigmentflecken."){
+      backEdVal = "WenigerPigmentflecken"
+    } else if (actualVal == "refine pores (smaller pores)." || actualVal == "verfeinerung des porenbildes (kleinere poren)." ){
+      backEdVal = "PorenVerfeinerung"
+    } else {
+      backEdVal = "WenigerAustrocknung"
+    }
+    return backEdVal;
+  }
+  function weeklySportsBackEd(val){
+    var actualVal = val.toLowerCase();
+    var backEdVal = "";
+    if(actualVal == "water sport." || actualVal == "wassersport."){
+      backEdVal = "WaterSports";
+    } else if(actualVal == "indoor workout." ){
+      backEdVal = "IndoorWorkout";
+    }else if(actualVal == "outdoor workout."){
+      backEdVal = "OutdoorWorkout";
+    }else {
+      backEdVal = "NoSports";
+    }
+    return backEdVal;
+  }
+  function nutritionListBackEd(val){
+     var actualVal = val.toLowerCase();
+    var backEdVal = "";
+    if(actualVal == "alcohol." || actualVal == "alkohol."){
+      backEdVal = "alcohol";
+    } else if(actualVal == "junk food." || actualVal == "fast food."){
+      backEdVal = "junkfood";
+    }else if(actualVal == "coffee." || actualVal == "kaffee."){
+      backEdVal = "coffee";
+    }else {
+      backEdVal = "none";
+    }
+    return backEdVal;
+  }
+    
+  //47630
+  $(document).on('click', '#quiz-kit-question-image-box-47630', function(){
+    console.log($(this).find("h3").text());
+    var pigmentTypeVal = $(this).find("h3").text();
+    var pigmentVal = 0;
+    var objTemp = {};
+    if(pigmentTypeVal === "Typ I" ) {
+     pigmentVal = 0;
+    }else if(pigmentTypeVal === "Typ II") {
+     pigmentVal = 1;
+    }else if(pigmentTypeVal === "Typ III") {
+     pigmentVal = 2;
+    }else if(pigmentTypeVal === "Typ IV") {
+     pigmentVal = 3;
+    }else if(pigmentTypeVal === "Typ V") {
+     pigmentVal = 4;
+    }else if(pigmentTypeVal === "Typ VI") {
+     pigmentVal = 5;
+    }
+    objTemp["q7"] = { "pigmenttationType" :pigmentVal} 
+    objTemp["q7"]["pigmenttationType"] =  pigmentVal;
+    objTemp["q7"]["faceScan"] = null;
+    //localStorage.setItem('quiz_answers1', JSON.stringify(objTemp));
+    localStorage.setItem('quiz_answers3', JSON.stringify(objTemp));
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+     getItem["q7"]["faceScan"] = null;
+    localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  });
+ 
+  //47710   
+  $(document).on('click', '#quiz-kit-question-next-button', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var parentCont =  $(this).parent().parent().closest('div');
+      var checkInputType = parentCont.find("h1").attr("id");
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(checkInputType == "quiz-kit-question-title-47635"){
+        getItem["q7"]["age"] =  parentCont.find("input").val();
+      }else if (checkInputType == "quiz-kit-question-title-47631") {
+        getItem["q7"]["firstName"] =  parentCont.find("input").val();
+      } else if (checkInputType == "quiz-kit-question-title-47661") {
+        getItem["q7"]["zipcode"] =  parentCont.find("input").val();
+      } else if (checkInputType == "quiz-kit-question-title-47662") {
+        getItem["q7"]["email"] =  parentCont.find("input").val();
+      }else if (checkInputType == "quiz-kit-question-title-47710") {
+        getItem["q7"]["allergyDisclaimerAck"] =  "1";
+      }else if (checkInputType == "quiz-kit-question-title-47711") {
+        getItem["q7"]["dermatologistAck"] =  "1";
+      } 
+      else if (checkInputType == "quiz-kit-question-title-47645") {
+        var routineNameList = [];
+        $(".active-class").each(function() {
+          var routineName = $(this).text();
+          routineNameList.push(routineListBackEd(routineName));
+        })
+        getItem["q7"]["skincareRegime"] = routineNameList;
+      } else if (checkInputType == "quiz-kit-question-title-47647") { 
+        var skinImprovementList = [];
+        $(".active-class").each(function() {
+          var skinImprovementName = $(this).text();
+          skinImprovementList.push(skinImprovementListBackEd(skinImprovementName));
+        })
+        getItem["q7"]["skinImprovement"] = skinImprovementList;
+      } else if (checkInputType == "quiz-kit-question-title-47651") {
+        var weeklySportsList = [];
+        $(".active-class").each(function() {
+          var weeklySportsName = $(this).text();
+          weeklySportsList.push(weeklySportsBackEd(weeklySportsName));
+        })
+        getItem["q7"]["weeklySports"] = weeklySportsList;
+      } else if (checkInputType == "quiz-kit-question-title-47655") {
+        var nutritionList = [];
+        $(".active-class").each(function() {
+          var nutritionName = $(this).text();
+          nutritionList.push(nutritionListBackEd(nutritionName));
+        })
+        getItem["q7"]["nutrition"] = nutritionList;
+      } else if(checkInputType == "quiz-kit-question-title-47663") {
+        var productDayName = $(this).find("input").val();
+        getItem["q7"]["scent"] = "NoFragrance";
+        //getItem["q7"]["product"] = {};
+        getItem["q7"]["product"]= { "name":parentCont.find("input").val()};    
+      } else if(checkInputType == "quiz-kit-question-title-47664") {
+        var productNightName = $(this).find("input").val();
+        getItem["q7"]["nightCremeScent"] = "NoFragrance";
+        //getItem["q7"]["nightCremeProduct"] = {};
+        getItem["q7"]["nightCremeProduct"] = { "name":parentCont.find("input").val()};
+      }
+   
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) );
+   
+      if (checkInputType == "quiz-kit-question-title-47662") {
+        //var testData = {"main":false,"email":"francisco+231@aveandyou.com","firstName":"ereg","lastName":"","quiz":{"questionnaireId":"q7","answers":{"lastName":"","pigmentationType":"0","firstName":"ereg","age":"23","gender":"Male","skinSensitivity":"2","skinType":"normal","skinSituationMorning":"Normal","skinSituationEvening":"Normal","visibleVeins":"no","reddening":"1","shavingIrritations":"2","faceScan":null,"skincareRegime":["Cleanser","Toner","Serum"],"skinImprovement":["MehrFeuchtigkeit","WenigerPigmentflecken","Reddening"],"hautUnreinheiten":[],"unreinheitenZonen":[],"wrinkles":0,"lifestyleBegin":"1","urbanEnvironment":"4","smoking":"4","flyingFrequency":"4","weeklySports":["WaterSports","IndoorWorkout","OutdoorWorkout"],"stressLevel":"2","sunExposition":"3","bluelightExposition":"3","nutrition":["alcohol","junkfood","coffee"],"glassWaterIntake":"4","sleep":"8","skinAllergies":"no","allergyDisclaimerAck":"1","dermatologistTreatment":"no","dermatologistAck":"1","richness":"reichhaltiger","countryCode":"DE","zipcode":"10719","email":"francisco+231@aveandyou.com"},"utmParams":{},"locale":"en","isDirectPurchase":false},"isDirectPurchase":false,"creamVersion":"21"}
+        var quizData = {};
+        var getStorageData = JSON.parse(localStorage.getItem('quiz_answers3'));
+        quizData["main"] = false;
+        quizData["email"] = getStorageData["q7"]["email"];
+        quizData["firstName"] = getStorageData["q7"]["firstName"];
+        quizData["lastName"] = "";
+        quizData["quiz"] = {};
+        quizData["quiz"]["questionnaireId"] = "q7";
+        quizData["quiz"]["answers"] = getStorageData["q7"];
+        quizData["quiz"]["utmParams"] =  {};
+        quizData["quiz"]["locale"] =  "de";
+        quizData["quiz"]["isDirectPurchase"] =  false;
+        quizData["isDirectPurchase"] = false;
+        quizData["creamVersion"] = "21";
+        quizData["featureRecMS"] = true;
+        console.log(JSON.stringify(quizData));
+        console.log(quizData);
+        var tries = 0;
+        var saveData = $.ajax({
+          type: 'POST',
+          url: "https://europe-west1-metrics-production-1.cloudfunctions.net/saveAnswersNewMapping",
+          data: quizData,
+          dataType: "text",
+          // beforeSend: function() {
+          //   setTimeout( function(){
+          //     // Disable the next button while sending data
+          //     $( '#quiz-kit-question-next-button' ).prop( 'disabled', true );
+          //     $( '#quiz-kit-question-next-button span' ).html( '<img src="https://cdn.shopify.com/s/files/1/0057/5268/4611/files/Spin-1s-16px.gif?v=1673265860">' );
+          //   }, 500 );
+          // },
+          success: function(resultData) {
+            setTimeout( function(){
+              var restData = JSON.parse(resultData);
+              skinId =  restData.skinId;
+              accessToken =  restData.answerAccessToken;
+              console.log("tokens");
+              console.log(accessToken);
+              console.log(skinId);
+              
+              // Enable the next button after successful sent
+              // $( '#quiz-kit-question-next-button' ).prop( 'disabled', false );
+              // $( '#quiz-kit-question-next-button span' ).html( 'NEXT' );
+            }, 500 );
+          },
+          error: function( data ) {
+            var ajax_ = this;
+            setTimeout( function() {
+              if( tries < 5 ) {
+                console.log( 'retrying...' );
+                tries ++;
+                $.ajax( ajax_ );
+              }
+            }, 3000 );
+          }
+        });
+        //saveData.error(function() { alert("Something went wrong"); });
+      }
+     
+      if (checkInputType == "quiz-kit-question-title-47664") {
+        console.log("tok");
+        var quizDataSaveRemaining = {};
+        var getStorageData = JSON.parse(localStorage.getItem('quiz_answers3'));
+        console.log(getStorageData);
+        quizDataSaveRemaining["skinId"] = skinId;
+        quizDataSaveRemaining["answerAccessToken"] = accessToken;
+        console.log("tokens1");
+        quizDataSaveRemaining["scent"] = getStorageData["q7"]["scent"];
+        quizDataSaveRemaining["nightCremeScent"] = getStorageData["q7"]["nightCremeScent"];
+        quizDataSaveRemaining["main"] = true;
+        quizDataSaveRemaining["DirectPurchase"] = false;
+        quizDataSaveRemaining["answers"] = {};
+        console.log("tokens3");
+        quizDataSaveRemaining["answers"]["product"] = {"name":getStorageData["q7"]["product"]["name"]};
+        quizDataSaveRemaining["answers"]["nightCremeProduct"] = {"name":getStorageData["q7"]["nightCremeProduct"]["name"]};
+        quizDataSaveRemaining["creamVersion"] = 21;
+        
+        console.log(quizDataSaveRemaining)
+        var saveDataRemaining = $.ajax({
+          type: 'POST',
+          url: "https://europe-west1-metrics-production-1.cloudfunctions.net/saveRemainingAnswersNewMapping",
+          data: quizDataSaveRemaining,
+          dataType: "text",
+          success: function(resultData) { 
+           console.log(resultData)
+          //var restData = JSON.parse(resultData);
+           accessToken =  resultData;
+          }
+        });
+      }   
+    }
+    // objTemp["q7"] = { "firstName" : "2" };
+  });
+    
+  //visible viens 47784
+  $(document).on('click', '#quiz-kit-question-radio-box-47706', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var visibleViens = $(this).text();
+      var visibleViensVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (visibleViens.toLowerCase() === "ja." ) {
+       getItem["q7"]["visibleVeins"] = "yes";
+      } else  {
+       getItem["q7"]["visibleVeins"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47658', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinAllergies = $(this).text();
+      var skinAllergiesVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (skinAllergies.toLowerCase() === "ja." ) {
+       getItem["q7"]["skinAllergies"] = "yes";
+      } else  {
+        getItem["q7"]["skinAllergies"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+    }
+  })
+  
+  //dermatologistTreatment
+  $(document).on('click', '#quiz-kit-question-radio-box-47659', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var dermatologistTreatment = $(this).text();
+      var dermatologistTreatmentVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (dermatologistTreatment.toLowerCase() === "ja." ) {
+       getItem["q7"]["dermatologistTreatment"] = "yes";
+      } else  {
+       getItem["q7"]["dermatologistTreatment"] = "no";
+      }
+        localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  //47790
+  $(document).on('click', '#quiz-kit-question-radio-box-47708', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var pregnancy = $(this).text();
+      var pregnancyVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (pregnancy.toLowerCase() === "ja." ) {
+       getItem["q7"]["pregnancy"] = "yes";
+      } else  {
+       getItem["q7"]["pregnancy"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+     
+  $(document).on('click', '#quiz-kit-question-radio-box-47709', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var menopause = $(this).text();
+      var menopauseVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (menopause.toLowerCase() === "ja." ) {
+       getItem["q7"]["menopause"] = "yes";
+      } else  {
+       getItem["q7"]["menopause"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+
+  //47636
+  $(document).on('click', '#quiz-kit-question-radio-box-47636', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var genderType = $(this).text();
+      var genderVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (genderType.toLowerCase() === "männlich." ) {
+       getItem["q7"]["gender"] = "male";
+      } else if(genderType.toLowerCase() === "weiblich.") {
+       getItem["q7"]["gender"] = "female";
+      } else  {
+       getItem["q7"]["gender"] = "Nonbinary";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  //47712
+  $(document).on('click', '#quiz-kit-question-text-box-47712', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var sensitiveType = $(this).find("h3").text();
+      var sensitiveVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(sensitiveType.toLowerCase() === "unempfindlich." ) {
+       getItem["q7"]["skinSensitivity"] = "0";
+      } else if(sensitiveType.toLowerCase() === "empfindlich.") {
+       getItem["q7"]["skinSensitivity"] = "2";
+      } else  {
+       getItem["q7"]["skinSensitivity"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+   //47640
+  $(document).on('click', '#quiz-kit-question-radio-box-47640', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinType = $(this).text();
+      var skinVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (skinType.toLowerCase() === "sehr trocken" ) {
+       getItem["q7"]["skinType"] = "VeryDry";
+      } else if(skinType.toLowerCase() === "trocken") {
+       getItem["q7"]["skinType"] = "Dry";
+      } else if(skinType.toLowerCase() === "mischhaut (trocken und fettig)") {
+       getItem["q7"]["skinType"] = "Mischhaut";
+      } else if(skinType.toLowerCase() === "fettig") {
+       getItem["q7"]["skinType"] = "Oily";
+      } else  {
+       getItem["q7"]["skinType"] = "normal";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+  //47641
+  $(document).on('click', '#quiz-kit-question-radio-box-47641', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinSituationMorning = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(skinSituationMorning.toLowerCase() === "trocken und spannend." ) {
+        getItem["q7"]["skinSituationMorning"] = "TrockenUndSpannend";
+      } else if(skinSituationMorning.toLowerCase() === "trocken in bestimmten zonen.") {
+        getItem["q7"]["skinSituationMorning"] = "TrockenInBestimmtenZonen";
+      } else if(skinSituationMorning.toLowerCase() === "fettig.") {
+        getItem["q7"]["skinSituationMorning"] = "Fettig";
+      }else if(skinSituationMorning.toLowerCase() === "fettig nur in der t-zone (stirn, nase, kinn).") {
+        getItem["q7"]["skinSituationMorning"] = "FettigTZone";
+      }else if(skinSituationMorning.toLowerCase() === "normal") {
+        getItem["q7"]["skinSituationMorning"] = "Normal";
+      } else  {
+        getItem["q7"]["skinSituationMorning"] = "DontKnow";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+    }
+  })
+  
+    
+  //47642
+  $(document).on('click', '#quiz-kit-question-radio-box-47642', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinSituationEvening = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(skinSituationEvening.toLowerCase() === "trocken und spannend." ) {
+        getItem["q7"]["skinSituationEvening"] = "TrockenUndSpannend";
+      } else if(skinSituationEvening.toLowerCase() === "trocken in bestimmten zonen.") {
+        getItem["q7"]["skinSituationEvening"] = "TrockenInBestimmtenZonen";
+      } else if(skinSituationEvening.toLowerCase() === "fettig.") {
+        getItem["q7"]["skinSituationEvening"] = "Fettig";
+      } else if(skinSituationEvening.toLowerCase() === "fettig nur in der t-zone (stirn, nase, kinn).") {
+        getItem["q7"]["skinSituationEvening"] = "FettigTZone";
+      } else if(skinSituationEvening.toLowerCase() === "normal.") {
+        getItem["q7"]["skinSituationEvening"] = "Normal";
+      } else  {
+        getItem["q7"]["skinSituationEvening"] = "DontKnow";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+     
+  $(document).on('click', '#quiz-kit-question-radio-box-47643', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var reddeningType = $(this).text();
+      var reddeningVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (reddeningType.toLowerCase() === "nie." ) {
+        getItem["q7"]["reddening"] = "0";
+      } else if(reddeningType.toLowerCase() === "manchmal.") {
+        getItem["q7"]["reddening"] = "1";
+      } else  {
+        getItem["q7"]["reddening"] = "2";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+    }
+  })
+   
+  //47644
+  $(document).on('click', '#quiz-kit-question-radio-box-47644', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var shavingIrritations = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (shavingIrritations.toLowerCase() === "niemals." ) {
+        getItem["q7"]["shavingIrritations"] = "0";
+      } else if(shavingIrritations.toLowerCase() === "manchmal." )  {
+        getItem["q7"]["shavingIrritations"] = "1";
+      } else if(shavingIrritations.toLowerCase() === "häufig." )  {
+        getItem["q7"]["shavingIrritations"] = "2";
+      } else   {
+        getItem["q7"]["shavingIrritations"] = "3";
+      } 
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+  //47648
+  $(document).on('click', '#quiz-kit-question-image-box-47648', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var urbanEnvironment = $(this).find("h3").text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (urbanEnvironment.toLowerCase() === "auf dem land." ) {
+        getItem["q7"]["urbanEnvironment"] = "0";
+      } else if(urbanEnvironment.toLowerCase() === "in einem dorf." )  {
+        getItem["q7"]["urbanEnvironment"] = "1";
+      } else if(urbanEnvironment.toLowerCase() === "in einer kleinstadt." )  {
+        getItem["q7"]["urbanEnvironment"] = "2";
+      } else if (urbanEnvironment.toLowerCase() === "in einer stadt.")  {
+        getItem["q7"]["urbanEnvironment"] = "3";
+      } else {
+        getItem["q7"]["urbanEnvironment"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+    }
+  })
+   
+  //47649
+  $(document).on('click', '#quiz-kit-question-radio-box-47649', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var smoking = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (smoking.toLowerCase() === "nie." ) {
+        getItem["q7"]["smoking"] = "0";
+      } else if(smoking.toLowerCase() === "1-2 mal pro woche.") {
+        getItem["q7"]["smoking"] = "1";
+      } else if(smoking.toLowerCase() === "1-2 mal pro tag.") {
+        getItem["q7"]["smoking"] = "2";
+      } else if(smoking.toLowerCase() === "2-10 mal am tag.") {
+        getItem["q7"]["smoking"] = "3";
+      } else  {
+        getItem["q7"]["smoking"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47650', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var flyingFrequency = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (flyingFrequency.toLowerCase() === "nie." ) {
+        getItem["q7"]["flyingFrequency"] = "0";
+      } else if(flyingFrequency.toLowerCase() === "1-2 mal im jahr.") {
+        getItem["q7"]["flyingFrequency"] = "1";
+      } else if(flyingFrequency.toLowerCase() === "4-8 mal im jahr.") {
+        getItem["q7"]["flyingFrequency"] = "2";
+      } else if(flyingFrequency.toLowerCase() === "jeden monat.") {
+        getItem["q7"]["flyingFrequency"] = "3";
+      } else  {
+        getItem["q7"]["flyingFrequency"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+        
+  //47652
+  $(document).on('click', '#quiz-kit-question-radio-box-47652', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var stressLevel = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (stressLevel.toLowerCase() === "sehr entspannt." ) {
+        getItem["q7"]["stressLevel"] = "0";
+      } else if(stressLevel.toLowerCase() === "meistens entspannt.") {
+        getItem["q7"]["stressLevel"] = "1";
+      } else if(stressLevel.toLowerCase() === "entspannt.") {
+        getItem["q7"]["stressLevel"] = "2";
+      } else if(stressLevel.toLowerCase() === "manchmal gestresst.") {
+        getItem["q7"]["stressLevel"] = "3";
+      }  else  {
+        getItem["q7"]["stressLevel"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47653', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var sunExposition = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (sunExposition.toLowerCase() === "gar nicht." ) {
+        getItem["q7"]["sunExposition"] = "0";
+      } else if(sunExposition.toLowerCase() === "1-2 stunden.") {
+        getItem["q7"]["sunExposition"] = "1";
+      } else if(sunExposition.toLowerCase() === "3-4 stunden.") {
+        getItem["q7"]["sunExposition"] = "2";
+      } else if(sunExposition.toLowerCase() === "5-8 stunden.") {
+        getItem["q7"]["sunExposition"] = "3";
+      } else  {
+        getItem["q7"]["sunExposition"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47654', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var bluelightExposition = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(bluelightExposition.toLowerCase() === "gar nicht." ) {
+        getItem["q7"]["bluelightExposition"] = "0";
+      } else if(bluelightExposition.toLowerCase() === "1-2 stunden.") {
+        getItem["q7"]["bluelightExposition"] = "1";
+      } else if(bluelightExposition.toLowerCase() === "3-4 stunden.") {
+        getItem["q7"]["bluelightExposition"] = "2";
+      } else if(bluelightExposition.toLowerCase() === "5-8 stunden.") {
+        getItem["q7"]["bluelightExposition"] = "3";
+      } else  {
+        getItem["q7"]["bluelightExposition"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+   
+  //47656
+  $(document).on('click', '#quiz-kit-question-radio-box-47656', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var glassWaterIntake = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (glassWaterIntake.toLowerCase() === "2 oder weniger." ) {
+        getItem["q7"]["glassWaterIntake"] = "0";
+      } else if(glassWaterIntake.toLowerCase() === "3-4.") {
+        getItem["q7"]["glassWaterIntake"] = "1";
+      } else if(glassWaterIntake.toLowerCase() === "5-6.") {
+        getItem["q7"]["glassWaterIntake"] = "2";
+      } else if(glassWaterIntake.toLowerCase() === "7-8.") {
+        getItem["q7"]["glassWaterIntake"] = "3";
+      } else  {
+        getItem["q7"]["glassWaterIntake"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+    
+  //47657
+  $(document).on('click', '#quiz-kit-question-radio-box-47657', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var sleep = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (sleep.toLowerCase() === "3-4 stunden." ) {
+        getItem["q7"]["sleep"] = "4";
+      } else if(sleep.toLowerCase() === "5-6 stunden.") {
+        getItem["q7"]["sleep"] = "6";
+      } else if(sleep.toLowerCase() === "7-8 stunden.") {
+        getItem["q7"]["sleep"] = "8";
+      }  else  {
+        getItem["q7"]["sleep"] = "9+";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  //47658
+  $(document).on('click', '#quiz-kit-question-radio-box-47658', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinAllergies = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(skinAllergies.toLowerCase() === "ja." ) {
+        getItem["q7"]["skinAllergies"] = "yes";
+      } else  {
+        getItem["q7"]["skinAllergies"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+     
+  //47660
+  $(document).on('click', '#quiz-kit-question-radio-box-47660', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var richness = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (richness.toLowerCase() === "weniger reichhaltig." ) {
+        getItem["q7"]["richness"] = "weniger-reichhaltig";
+      } else if(richness.toLowerCase() === "normal." ) {
+        getItem["q7"]["richness"] = "normal";
+      } else {
+        getItem["q7"]["richness"] = "reichhaltiger";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+ 
+  document.addEventListener('quizKitQuestionLoaded', function (e) {
+    setTimeout(function() {
+      $("#quiz-kit-question-wrapper-47663").find("picture").parent().css("position", "relative")
+      var input1 = $("#quiz-kit-question-wrapper-47663").find("input").val();
+      var inputVal = "";
+      if(input1 != "") {
+        inputVal = input1;
+      }
+      $("#quiz-kit-question-wrapper-47663").find("picture").append('<div id="dayCreamName" style="position:absolute; bottom: 77px; left: 134px;font-family:RunWild; font-size:26px;">'+inputVal+'</div>');   
+      $("#quiz-kit-question-wrapper-47663").find("input").attr({ maxLength : 8 });
+      $("#quiz-kit-question-wrapper-47663").find("input").on('input',function(e){
+        $("#quiz-kit-question-wrapper-47663").find("picture").find("#dayCreamName").text($(this).val());
+      });
+      $("#quiz-kit-question-47662").append('<p id="noteEmail" style="position: absolute; font-size: 10px;line-height: 1.5; width: 100%;text-align: center;">*Wir verarbeiten für die Personalisierung und Verbesserung der Algorithmen auch besondere Kategorien personenbezogener Daten. Widerruf für die Zukunft jederzeit per E-Mail möglich.  <a style="text-decoration: underline !important;" href="https://aveandyou.com/pages/privacy-policy" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</a></p>') 
+      $("#quiz-kit-question-wrapper-47664").find("picture").parent().css("position", "relative")
+      var input2 = $("#quiz-kit-question-wrapper-47664").find("input").val();
+      var inputVal2 = "";
+      if (input2 != ""){
+        inputVal2 = input2;
+      }
+      $("#quiz-kit-question-wrapper-47635").find("input").attr({ maxLength : 2 });
+      $("#quiz-kit-question-wrapper-47664").find("picture").append('<div id="nightCreamName" style="position:absolute; bottom: 77px; left: 134px;font-family:RunWild; font-size:26px;">'+inputVal2+'</div>');   
+      $("#quiz-kit-question-wrapper-47664").find("input").attr({ maxLength : 8 });
+      $("#quiz-kit-question-wrapper-47664").find("input").on('input',function(e){
+        $("#quiz-kit-question-wrapper-47664").find("picture").find("#nightCreamName").text($(this).val());
+      });
+     
+      $("#quiz-kit-question-wrapper-47780").find("button").on("click", function () {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+        if (params.hasOwnProperty('skuBundle')) {
+          var skuBundle= params.skuBundle;
+          window.location.href = `${storeURL}/products/product-detail?skinid=${skinId}&token=${accessToken}&skuBundle=${skuBundle}`;
+        } else if(params.hasOwnProperty('compaign') && params.compaign.toLowerCase() == "new_funnel") {
+          window.location.href = "https://aveandyou.com/products/your-personalized-formulations-test?skinid="+skinId+"&token="+accessToken;
+        } else {
+          window.location.href = `${storeURL}/products/product-detail?skinid=${skinId}&token=${accessToken}`;
+        }
+      })
+
+      $('input').on('keyup keypress', function(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) { 
+          e.preventDefault();
+          return false;
+        }
+      }); 
+    }, 500);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47663").find("#quiz-kit-container").css("opacity", "0");
+    }, 100);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47663").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+    }, 1000);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47664").find("#quiz-kit-container").css("opacity", "0");
+    }, 100);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47664").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+    }, 1000);
+    
+    setTimeout(function(){
+      $("#quiz-kit-question-47780").find("#quiz-kit-container").css("opacity", "0");
+    }, 100);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47780").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+    }, 1000);
+  }, false);
+    
+    
+  $(document).on('click', "#quiz-kit-question-radio-box-47651", function() {
+    if ($(this).text().toLowerCase() == "wassersport." || $(this).text().toLowerCase() == "indoor workout." || $(this).text().toLowerCase() == "outdoor workout." ) {
+      $("#quiz-kit-question-radio-buttons-47651").find("button:eq(3)").removeClass("active-class");
+    } else{
+      $("#quiz-kit-question-radio-buttons-47651").find("button:eq(0)").removeClass("active-class");
+      $("#quiz-kit-question-radio-buttons-47651").find("button:eq(1)").removeClass("active-class");
+      $("#quiz-kit-question-radio-buttons-47651").find("button:eq(2)").removeClass("active-class");
+    }
+  });
+    
+  $(document).on('click', "#quiz-kit-question-radio-box-47655", function() {
+    if ($(this).text().toLowerCase() == "nichts dergleichen.") {
+      $("#quiz-kit-question-radio-buttons-47655").find("button:eq(0)").removeClass("active-class");
+      $("#quiz-kit-question-radio-buttons-47655").find("button:eq(1)").removeClass("active-class");
+      $("#quiz-kit-question-radio-buttons-47655").find("button:eq(2)").removeClass("active-class");
+    } else {
+      $("#quiz-kit-question-radio-buttons-47655").find("button:eq(3)").removeClass("active-class");
+    }
+  });
+    
+  //english script
+  /// skintest with new the template
+  $(document).on('click', '#quiz-kit-question-image-box-47783', function() {
+    console.log($(this).find("h3").text());
+    var pigmentTypeVal = $(this).find("h3").text();
+    var pigmentVal = 0;
+    var objTemp = {};
+    var objTemp = {};
+    if (pigmentTypeVal === "Type I" ) {
+      pigmentVal = 0;
+    } else if(pigmentTypeVal === "Type II") {
+      pigmentVal = 1;
+    } else if(pigmentTypeVal === "Type III") {
+      pigmentVal = 2;
+    } else if(pigmentTypeVal === "Type IV") {
+      pigmentVal = 3;
+    } else if(pigmentTypeVal === "Type V") {
+      pigmentVal = 4;
+    } else if(pigmentTypeVal === "Type VI") {
+      pigmentVal = 5;
+    }
+    objTemp["q7"] = { "pigmenttationType" :pigmentVal} 
+    objTemp["q7"]["pigmenttationType"] =  pigmentVal;
+    objTemp["q7"]["faceScan"] = null;
+    //localStorage.setItem('quiz_answers1', JSON.stringify(objTemp));
+    localStorage.setItem('quiz_answers3', JSON.stringify(objTemp));
+    var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+     getItem["q7"]["faceScan"] = null;
+    localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+  });
+ 
+  $(document).on('click', '#quiz-kit-question-next-button', function(){
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var parentCont =  $(this).parent().parent().closest('div');
+      var checkInputType = parentCont.find("h1").attr("id");
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (checkInputType == "quiz-kit-question-title-47787"){
+        getItem["q7"]["age"] =  parentCont.find("input").val();
+      } else if (checkInputType == "quiz-kit-question-title-47786") {
+        getItem["q7"]["firstName"] =  parentCont.find("input").val();
+      } else if (checkInputType == "quiz-kit-question-title-47813") {
+        getItem["q7"]["zipcode"] =  parentCont.find("input").val();
+      } else if (checkInputType == "quiz-kit-question-title-47814") {
+        getItem["q7"]["email"] =  parentCont.find("input").val();
+      } else if (checkInputType == "quiz-kit-question-title-47809") {
+        getItem["q7"]["allergyDisclaimerAck"] =  "1";
+      } else if (checkInputType == "quiz-kit-question-title-47811") {
+        getItem["q7"]["dermatologistAck"] =  "1";
+      } else if (checkInputType == "quiz-kit-question-title-47797") {
+        var routineNameList = [];
+        $(".active-class").each(function() {
+          var routineName = $(this).text();
+          routineNameList.push(routineListBackEd(routineName));
+        })
+        getItem["q7"]["skincareRegime"] = routineNameList;
+      } else if (checkInputType == "quiz-kit-question-title-47792") { 
+        var skinImprovementList = [];
+        $(".active-class").each(function() {
+          var skinImprovementName = $(this).text();
+          skinImprovementList.push(skinImprovementListBackEd(skinImprovementName));
+        })
+        getItem["q7"]["skinImprovement"] = skinImprovementList;
+      } else if (checkInputType == "quiz-kit-question-title-47803") {
+        var weeklySportsList = [];
+        $(".active-class").each(function() {
+          var weeklySportsName = $(this).text();
+          weeklySportsList.push(weeklySportsBackEd(weeklySportsName));
+        })
+        getItem["q7"]["weeklySports"] = weeklySportsList;
+      } else if (checkInputType == "quiz-kit-question-title-47804") {
+        var nutritionList = [];
+        $(".active-class").each(function() {
+          var nutritionName = $(this).text();
+          nutritionList.push(nutritionListBackEd(nutritionName));
+        })
+        getItem["q7"]["nutrition"] = nutritionList;
+      } else if(checkInputType == "quiz-kit-question-title-47815") {
+        var productDayName = $(this).find("input").val();
+        getItem["q7"]["scent"] = "NoFragrance";
+        //getItem["q7"]["product"] = {};
+        getItem["q7"]["product"]= { "name":parentCont.find("input").val()}; 
+      } else if(checkInputType == "quiz-kit-question-title-47816") {
+        var productNightName = $(this).find("input").val();
+        console.log("input2");
+        getItem["q7"]["nightCremeScent"] = "NoFragrance";
+        //getItem["q7"]["nightCremeProduct"] = {};
+        getItem["q7"]["nightCremeProduct"] = { "name":parentCont.find("input").val()};
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) );
+      if (checkInputType == "quiz-kit-question-title-47814") {
+        //var testData = {"main":false,"email":"francisco+231@aveandyou.com","firstName":"ereg","lastName":"","quiz":{"questionnaireId":"q7","answers":{"lastName":"","pigmentationType":"0","firstName":"ereg","age":"23","gender":"Male","skinSensitivity":"2","skinType":"normal","skinSituationMorning":"Normal","skinSituationEvening":"Normal","visibleVeins":"no","reddening":"1","shavingIrritations":"2","faceScan":null,"skincareRegime":["Cleanser","Toner","Serum"],"skinImprovement":["MehrFeuchtigkeit","WenigerPigmentflecken","Reddening"],"hautUnreinheiten":[],"unreinheitenZonen":[],"wrinkles":0,"lifestyleBegin":"1","urbanEnvironment":"4","smoking":"4","flyingFrequency":"4","weeklySports":["WaterSports","IndoorWorkout","OutdoorWorkout"],"stressLevel":"2","sunExposition":"3","bluelightExposition":"3","nutrition":["alcohol","junkfood","coffee"],"glassWaterIntake":"4","sleep":"8","skinAllergies":"no","allergyDisclaimerAck":"1","dermatologistTreatment":"no","dermatologistAck":"1","richness":"reichhaltiger","countryCode":"DE","zipcode":"10719","email":"francisco+231@aveandyou.com"},"utmParams":{},"locale":"en","isDirectPurchase":false},"isDirectPurchase":false,"creamVersion":"21"}
+        var quizData = {};
+        var getStorageData = JSON.parse(localStorage.getItem('quiz_answers3'));
+        quizData["main"] = false;
+        quizData["email"] = getStorageData["q7"]["email"];
+        quizData["firstName"] = getStorageData["q7"]["firstName"];
+        quizData["lastName"] = "";
+        quizData["quiz"] = {};
+        quizData["quiz"]["questionnaireId"] = "q7";
+        quizData["quiz"]["answers"] = getStorageData["q7"];
+        quizData["quiz"]["utmParams"] =  {};
+        quizData["quiz"]["locale"] =  "en";
+        quizData["quiz"]["isDirectPurchase"] =  false;
+        quizData["isDirectPurchase"] = false;
+        quizData["creamVersion"] = "21";
+        quizData["featureRecMS"] = true;
+        console.log(JSON.stringify(quizData));
+        console.log(quizData);
+        var tries = 0;
+        var saveData = $.ajax({
+          type: 'POST',
+          url: "https://europe-west1-metrics-production-1.cloudfunctions.net/saveAnswersNewMapping",
+          data: quizData,
+          dataType: "text",
+          // beforeSend: function() {
+          //   setTimeout( function(){
+          //     // Disable the next button while sending data
+          //     $( '#quiz-kit-question-next-button' ).prop( 'disabled', true );
+          //     $( '#quiz-kit-question-next-button span' ).html( '<img src="https://cdn.shopify.com/s/files/1/0057/5268/4611/files/Spin-1s-16px.gif?v=1673265860">' );
+          //   }, 3000 );
+          // },
+          success: function(resultData) { 
+            var restData = JSON.parse(resultData);
+            skinId =  restData.skinId;
+            accessToken =  restData.answerAccessToken;
+            console.log("tokens");
+            console.log(accessToken);
+            console.log(skinId)
+            // Enable the next button after successful sent
+            // $( '#quiz-kit-question-next-button' ).prop( 'disabled', false );
+            // $( '#quiz-kit-question-next-button span' ).html( 'NEXT' );
+            //  console.log(resultData)
+          },
+          error: function( data ) {
+            var ajax_ = this;
+            setTimeout( function() {
+              if( tries < 5 ) {
+                console.log( 'retrying...' );
+                tries ++;
+                $.ajax( ajax_ );
+              }
+            }, 500 );
+          }
+        });
+       //saveData.error(function() { alert("Something went wrong"); }); 
+      }
+      if (checkInputType == "quiz-kit-question-title-47816") {
+        console.log("tok");
+        var quizDataSaveRemaining = {};
+        var getStorageData = JSON.parse(localStorage.getItem('quiz_answers3'));
+        console.log(getStorageData);
+        quizDataSaveRemaining["skinId"] = skinId;
+        quizDataSaveRemaining["answerAccessToken"] = accessToken;
+        console.log("tokens1");
+        quizDataSaveRemaining["scent"] = getStorageData["q7"]["scent"];
+        quizDataSaveRemaining["nightCremeScent"] = getStorageData["q7"]["nightCremeScent"];
+        quizDataSaveRemaining["main"] = true;
+        quizDataSaveRemaining["DirectPurchasein"] = false;
+        quizDataSaveRemaining["answers"] = {};
+        console.log("tokens3");
+        quizDataSaveRemaining["answers"]["product"] = {"name":getStorageData["q7"]["product"]["name"]};
+        quizDataSaveRemaining["answers"]["nightCremeProduct"] = {"name":getStorageData["q7"]["nightCremeProduct"]["name"]};
+        quizDataSaveRemaining["creamVersion"] = 21;
+        console.log(quizDataSaveRemaining)
+        var saveDataRemaining = $.ajax({
+          type: 'POST',
+          url: "https://europe-west1-metrics-production-1.cloudfunctions.net/saveRemainingAnswersNewMapping",
+          data: quizDataSaveRemaining,
+          dataType: "text",
+          success: function(resultData) { 
+            console.log(resultData)
+            //var restData = JSON.parse(resultData);
+             accessToken =  resultData;
+          }
+        });
+      } 
+    }
+    // objTemp["q7"] = { "firstName" : "2" };
+  });
+    
+  //47790
+  $(document).on('click', '#quiz-kit-question-radio-box-47790', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var pregnancy = $(this).text();
+      var pregnancyVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(pregnancy.toLowerCase() === "yes." ) {
+        getItem["q7"]["pregnancy"] = "yes";
+      } else  {
+        getItem["q7"]["pregnancy"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+
+  $(document).on('click', '#quiz-kit-question-radio-box-47791', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var menopause = $(this).text();
+      var menopauseVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(menopause.toLowerCase() === "yes." ) {
+        getItem["q7"]["menopause"] = "yes";
+      } else  {
+        getItem["q7"]["menopause"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+
+  $(document).on('click', '#quiz-kit-question-radio-box-47784', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var visibleViens = $(this).text();
+      var visibleViensVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(visibleViens.toLowerCase() === "yes." ) {
+        getItem["q7"]["visibleVeins"] = "yes";
+      } else  {
+        getItem["q7"]["visibleVeins"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47808', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinAllergies = $(this).text();
+      var skinAllergiesVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if(skinAllergies.toLowerCase() === "yes." ) {
+        getItem["q7"]["skinAllergies"] = "yes";
+      } else  {
+        getItem["q7"]["skinAllergies"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47810', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var dermatologistTreatment = $(this).text();
+      var dermatologistTreatmentVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (dermatologistTreatment.toLowerCase() === "yes." ) {
+        getItem["q7"]["dermatologistTreatment"] = "yes";
+      } else  { 
+        getItem["q7"]["dermatologistTreatment"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+    
+  $(document).on('click', '#quiz-kit-question-radio-box-47788', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var genderType = $(this).text();
+      var genderVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (genderType.toLowerCase() === "male." ) {
+        getItem["q7"]["gender"] = "male";
+      } else if(genderType.toLowerCase() === "female.") {
+        getItem["q7"]["gender"] = "female";
+      } else  {
+        getItem["q7"]["gender"] = "Nonbinary";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  $(document).on('click', '#quiz-kit-question-text-box-47794', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var sensitiveType = $(this).find("h3").text();
+      var sensitiveVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (sensitiveType.toLowerCase() === "insensitive." ) {
+        getItem["q7"]["skinSensitivity"] = "0";
+      } else if(sensitiveType.toLowerCase() === "sensitive.") {
+        getItem["q7"]["skinSensitivity"] = "2";
+      } else  {
+        getItem["q7"]["skinSensitivity"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47793', function() {  
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinType = $(this).text();
+      var skinVal = "";  
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (skinType.toLowerCase() === "very dry" ) {
+        getItem["q7"]["skinType"] = "VeryDry";
+      } else if(skinType.toLowerCase() === "dry") {
+        getItem["q7"]["skinType"] = "Dry";
+      } else if(skinType.toLowerCase() === "combination (dry and oily)") {
+        getItem["q7"]["skinType"] = "Mischhaut";
+      } else if(skinType.toLowerCase() === "oily") {
+        getItem["q7"]["skinType"] = "Oily";
+      } else  {
+        getItem["q7"]["skinType"] = "normal";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47795', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinSituationMorning = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (skinSituationMorning.toLowerCase() === "dry and stressed." ) {
+        getItem["q7"]["skinSituationMorning"] = "TrockenUndSpannend";
+      } else if(skinSituationMorning.toLowerCase() === "dry in some areas.") {
+        getItem["q7"]["skinSituationMorning"] = "TrockenInBestimmtenZonen";
+      } else if(skinSituationMorning.toLowerCase() === "oily.") {
+        getItem["q7"]["skinSituationMorning"] = "Fettig";
+      } else if(skinSituationMorning.toLowerCase() === "oily in the t-zone (forehead, nose and chin).") {
+        getItem["q7"]["skinSituationMorning"] = "FettigTZone";
+      } else if(skinSituationMorning.toLowerCase() === "normal.") {
+        getItem["q7"]["skinSituationMorning"] = "Normal";
+      } else  {
+        getItem["q7"]["skinSituationMorning"] = "DontKnow";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+    }
+  })
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47796', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinSituationEvening = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (skinSituationEvening.toLowerCase() === "dry and stressed." ) {
+        getItem["q7"]["skinSituationEvening"] = "TrockenUndSpannend";
+      } else if(skinSituationEvening.toLowerCase() === "dry in some areas.") {
+        getItem["q7"]["skinSituationEvening"] = "TrockenInBestimmtenZonen";
+      } else if(skinSituationEvening.toLowerCase() === "oily.") {
+        getItem["q7"]["skinSituationEvening"] = "Fettig";
+      }else if(skinSituationEvening.toLowerCase() === "oily in the t-zone (forehead, nose and chin).") {
+        getItem["q7"]["skinSituationEvening"] = "FettigTZone";
+      }else if(skinSituationEvening.toLowerCase() === "normal.") {
+        getItem["q7"]["skinSituationEvening"] = "Normal";
+      } else  {
+        getItem["q7"]["skinSituationEvening"] = "DontKnow";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+    
+  //47568
+  $(document).on('click', '#quiz-kit-question-radio-box-47784', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var visibleVeins = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (visibleVeins.toLowerCase() === "yes." ) {
+        getItem["q7"]["visibleVeins"] = "yes";
+      } else  {
+        getItem["q7"]["visibleVeins"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47785', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var reddening = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (reddening.toLowerCase() === "never." ) {
+        getItem["q7"]["reddening"] = "0";
+      } else if(reddening.toLowerCase() === "sometimes." )  {
+        getItem["q7"]["reddening"] = "1";
+      } else {
+        getItem["q7"]["reddening"] = "2";
+      } 
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47789', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var shavingIrritations = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (shavingIrritations.toLowerCase() === "never." ) {
+        getItem["q7"]["shavingIrritations"] = "0";
+      } else if(shavingIrritations.toLowerCase() === "sometimes." )  {
+        getItem["q7"]["shavingIrritations"] = "1";
+      } else if(shavingIrritations.toLowerCase() === "often." )  {
+        getItem["q7"]["shavingIrritations"] = "2";
+      } else   {
+        getItem["q7"]["shavingIrritations"] = "3";
+      } 
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+  $(document).on('click', '#quiz-kit-question-image-box-47798', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var urbanEnvironment = $(this).find("h3").text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (urbanEnvironment.toLowerCase() === "the countryside." ) {
+        getItem["q7"]["urbanEnvironment"] = "0";
+      } else if(urbanEnvironment.toLowerCase() === "a little village." )  {
+        getItem["q7"]["urbanEnvironment"] = "1";
+      } else if(urbanEnvironment.toLowerCase() === "a small town." )  {
+        getItem["q7"]["urbanEnvironment"] = "2";
+      } else if (urbanEnvironment.toLowerCase() === "a city.")  {
+        getItem["q7"]["urbanEnvironment"] = "3";
+      } else {
+        getItem["q7"]["urbanEnvironment"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem)); 
+    }
+  })
+    
+  $(document).on('click', '#quiz-kit-question-radio-box-47799', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var smoking = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (smoking.toLowerCase() === "not at all." ) {
+        getItem["q7"]["smoking"] = "0";
+      } else if(smoking.toLowerCase() === "1-2 times per week.") {
+        getItem["q7"]["smoking"] = "1";
+      } else if(smoking.toLowerCase() === "1-2 times per day.") {
+        getItem["q7"]["smoking"] = "2";
+      } else if(smoking.toLowerCase() === "2-10 times per day.") {
+        getItem["q7"]["smoking"] = "3";
+      } else  {
+        getItem["q7"]["smoking"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47800', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var flyingFrequency = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (flyingFrequency.toLowerCase() === "never." ) {
+        getItem["q7"]["flyingFrequency"] = "0";
+      } else if(flyingFrequency.toLowerCase() === "1-2 times a year.") {
+        getItem["q7"]["flyingFrequency"] = "1";
+      } else if(flyingFrequency.toLowerCase() === "4-8 times a year.") {
+        getItem["q7"]["flyingFrequency"] = "2";
+      } else if(flyingFrequency.toLowerCase() === "every month.") {
+        getItem["q7"]["flyingFrequency"] = "3";
+      } else  {
+        getItem["q7"]["flyingFrequency"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+           
+  $(document).on('click', '#quiz-kit-question-radio-box-47805', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var stressLevel = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (stressLevel.toLowerCase() === "very relaxed." ) {
+        getItem["q7"]["stressLevel"] = "0";
+      } else if(stressLevel.toLowerCase() === "mostly relaxed.") {
+       getItem["q7"]["stressLevel"] = "1";
+      }else if(stressLevel.toLowerCase() === "doing fine.") {
+       getItem["q7"]["stressLevel"] = "2";
+      } else if(stressLevel.toLowerCase() === "sometimes stressed out.") {
+       getItem["q7"]["stressLevel"] = "3";
+      } else  {
+       getItem["q7"]["stressLevel"] = "4";
+      } 
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47801', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var sunExposition = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (sunExposition.toLowerCase() === "never." ) {
+        getItem["q7"]["sunExposition"] = "0";
+      } else if(sunExposition.toLowerCase() === "1-2 hours.") {
+        getItem["q7"]["sunExposition"] = "1";
+      } else if(sunExposition.toLowerCase() === "3-4 hours.") {
+        getItem["q7"]["sunExposition"] = "2";
+      } else if(sunExposition.toLowerCase() === "5-8 hours.") {
+        getItem["q7"]["sunExposition"] = "3";
+      } else  {
+        getItem["q7"]["sunExposition"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47806', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var bluelightExposition = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (bluelightExposition.toLowerCase() === "never." ) {
+        getItem["q7"]["bluelightExposition"] = "0";
+      } else if(bluelightExposition.toLowerCase() === "1-2 hours.") {
+        getItem["q7"]["bluelightExposition"] = "1";
+      } else if(bluelightExposition.toLowerCase() === "3-4 hours.") {
+        getItem["q7"]["bluelightExposition"] = "2";
+      } else if(bluelightExposition.toLowerCase() === "5-8 hours.") {
+        getItem["q7"]["bluelightExposition"] = "3";
+      } else  {
+        getItem["q7"]["bluelightExposition"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47802', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var glassWaterIntake = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (glassWaterIntake.toLowerCase() === "2 or less." ) {
+         getItem["q7"]["glassWaterIntake"] = "0";
+      } else if(glassWaterIntake.toLowerCase() === "3-4.") {
+         getItem["q7"]["glassWaterIntake"] = "1";
+      } else if(glassWaterIntake.toLowerCase() === "5-6.") {
+         getItem["q7"]["glassWaterIntake"] = "2";
+      } else if(glassWaterIntake.toLowerCase() === "7-8.") {
+         getItem["q7"]["glassWaterIntake"] = "3";
+      } else  {
+         getItem["q7"]["glassWaterIntake"] = "4";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+   
+  $(document).on('click', '#quiz-kit-question-radio-box-47807', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var sleep = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (sleep.toLowerCase() === "3-4 hours." ) {
+        getItem["q7"]["sleep"] = "4";
+      } else if(sleep.toLowerCase() === "5-6 hours.") {
+        getItem["q7"]["sleep"] = "6";
+      } else if(sleep.toLowerCase() === "7-8 hours.") {
+        getItem["q7"]["sleep"] = "8";
+      }  else  {
+        getItem["q7"]["sleep"] = "9+";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+  
+  
+  $(document).on('click', '#quiz-kit-question-radio-box-47808', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var skinAllergies = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (skinAllergies.toLowerCase() === "yes." ) {
+        getItem["q7"]["skinAllergies"] = "yes";
+      } else  {
+        getItem["q7"]["skinAllergies"] = "no";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+     
+  $(document).on('click', '#quiz-kit-question-radio-box-47812', function() {
+    if (localStorage.getItem("quiz_answers3") !== "") {
+      var richness = $(this).text();
+      var getItem = JSON.parse(localStorage.getItem("quiz_answers3"));
+      if (richness.toLowerCase() === "less rich." ) {
+        getItem["q7"]["richness"] = "weniger-reichhaltig";
+      } else if(richness.toLowerCase() === "normal." ) {
+        getItem["q7"]["richness"] = "normal";
+      } else {
+        getItem["q7"]["richness"] = "reichhaltiger";
+      }
+      localStorage.setItem('quiz_answers3',JSON.stringify(getItem) ); 
+    }
+  })
+ 
+  $(document).on('click', "#quiz-kit-question-radio-box-47804", function() {
+    if ($(this).text().toLowerCase() == "nothing.") {
+      $("#quiz-kit-question-radio-buttons-47804").find("button:eq(0)").removeClass("active-class");
+      $("#quiz-kit-question-radio-buttons-47804").find("button:eq(1)").removeClass("active-class");
+      $("#quiz-kit-question-radio-buttons-47804").find("button:eq(2)").removeClass("active-class");
+    } else{
+      $("#quiz-kit-question-radio-buttons-47804").find("button:eq(3)").removeClass("active-class");
+    }       
+  });
+    
+  $(document).on('click', "#quiz-kit-question-radio-box-47803", function() {
+    if ($(this).text().toLowerCase() == "i don't workout.") {
+      $("#quiz-kit-question-radio-buttons-47803").find("button:eq(0)").removeClass("active-class");
+      $("#quiz-kit-question-radio-buttons-47803").find("button:eq(1)").removeClass("active-class");
+      $("#quiz-kit-question-radio-buttons-47803").find("button:eq(2)").removeClass("active-class");
+    } else {
+      $("#quiz-kit-question-radio-buttons-47803").find("button:eq(3)").removeClass("active-class");
+    }
+  });
+ 
+  document.addEventListener('quizKitQuestionLoaded', function (e) {
+    setTimeout(function(){
+      $("#quiz-kit-question-wrapper-47815").find("picture").parent().css("position", "relative")
+      var input1 = $("#quiz-kit-question-wrapper-47815").find("input").val();
+      var inputVal = "";
+      if(input1 != ""){
+        inputVal = input1;
+      }
+        
+      $("#quiz-kit-question-wrapper-47815").find("picture").append('<div id="dayCreamName2" style="position:absolute; bottom: 77px; left: 134px;font-family:RunWild; font-size:26px;">'+inputVal+'</div>');   
+      $("#quiz-kit-question-wrapper-47815").find("input").attr({ maxLength : 8 });
+      $("#quiz-kit-question-wrapper-47815").find("input").on('input',function(e){
+        $("#quiz-kit-question-wrapper-47815").find("picture").find("#dayCreamName2").text($(this).val());
+      });
+      $("#quiz-kit-question-47814").append('<p id="noteEmail" style="position: absolute; font-size: 10px;line-height: 1.5; width: 100%;text-align: center;">*We also process special categories of personal data for the personalization and improvement of algorithms. Revocation for the future is possible at any time by email. <a style="text-decoration: underline !important;" href="https://de.aveandyou.com/pages/privacy-policy" target="_blank" rel="noopener noreferrer">Datenschutzerklärung</a></p>')
+      $("#quiz-kit-question-wrapper-47816").find("picture").parent().css("position", "relative")
+      var input2 = $("#quiz-kit-question-wrapper-47816").find("input").val();
+      var inputVal2 = "";
+      if (input2 != ""){
+        inputVal2 = input2;
+      }
+      $("#quiz-kit-question-wrapper-47787").find("input").attr({ maxLength : 2 });
+      $("#quiz-kit-question-wrapper-47816").find("picture").append('<div id="nightCreamName2" style="position:absolute; bottom: 77px; left: 134px;font-family:RunWild; font-size:26px;">'+inputVal2+'</div>');   
+      $("#quiz-kit-question-wrapper-47816").find("input").attr({ maxLength : 8 });
+      $("#quiz-kit-question-wrapper-47816").find("input").on('input',function(e){
+        $("#quiz-kit-question-wrapper-47816").find("picture").find("#nightCreamName2").text($(this).val());
+      });
+       
+      $("#quiz-kit-question-wrapper-47817").find("button").on("click", function () {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const params = Object.fromEntries(urlSearchParams.entries());
+        if (params.hasOwnProperty('skuBundle')) {
+          var skuBundle= params.skuBundle;
+          window.location.href = `${storeURL}/products/product-detail?skinid=${skinId}&token=${accessToken}&skuBundle=${skuBundle}`;
+        } else if (params.hasOwnProperty('compaign') && params.compaign.toLowerCase() == "new_funnel") {
+            window.location.href = "https://aveandyou.com/products/your-personalized-formulations-test?skinid="+skinId+"&token="+accessToken;
+        } else {
+          window.location.href = `${storeURL}/products/product-detail?skinid=${skinId}&token=${accessToken}`;
+        }
+      })
+  
+      $('input').on('keyup keypress', function(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode === 13) { 
+          e.preventDefault();
+          return false;
+        }
+      }); 
+    }, 500);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47815").find("#quiz-kit-container").css("opacity", "0");
+    }, 100);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47815").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+    }, 1000);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47816").find("#quiz-kit-container").css("opacity", "0");
+    }, 100);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47816").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+    }, 1000);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47817").find("#quiz-kit-container").css("opacity", "0");
+    }, 100);
+
+    setTimeout(function(){
+      $("#quiz-kit-question-47817").find("#quiz-kit-container").animate({opacity: 1}, {queue: false, duration: 5000});
+    }, 1000);
+  }, false);
+</script>

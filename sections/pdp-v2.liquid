@@ -5,8 +5,22 @@
 {{ 'pdp-v2.css' | asset_url | stylesheet_tag }}
 
 {% assign recommendations = collections[section.settings.recommendation_collection_source] %}
+{%- if
+   localization.country.iso_code == "AE"
+   or localization.country.iso_code == "BH"
+   or localization.country.iso_code == "EG"
+   or localization.country.iso_code == "JO"
+   or localization.country.iso_code == "OM"
+   or localization.country.iso_code == "KW"
+   or localization.country.iso_code == "QA"
+   or localization.country.iso_code == "SA"
+-%}
+  {% assign isArabicMarket = true %}
+{% else %}
+  {% assign isArabicMarket = false %}
+{% endif %}
 
-<div class="pdp-page_loading_indicator pdp-section__padded__all hidden">
+<div class="pdp-page_loading_indicator pdp-section__padded__all">
 	<?xml version="1.0" encoding="utf-8"?>
 	<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; display: block; shape-rendering: auto; width:30px; height:30px;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
 	<circle cx="50" cy="50" fill="none" stroke="#000" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
@@ -16,15 +30,21 @@
 	<p>ANALYZING YOUR DATA</p>
 </div>
 
-<div class="pdp-main_section" data-section-type="product-template" data-components="accordion">
+<div class="pdp-main_section hidden" data-section-type="product-template" data-components="accordion">
 	{% comment %} BANNER SECTION {% endcomment %}
 	<div class="pdp-section pdp-banner" data-locale="{{ localization.country.iso_code }}">
 		{% if section.settings.banner %}
-			{{ section.settings.banner | image_url: width: 1080 | image_tag: class: 'pdp-banner__desktop' }}
-		{% endif %}
-		{% if section.settings.banner_mobile %}
-			{{ section.settings.banner_mobile | image_url: width: 600 | image_tag: class: 'pdp-banner__mobile' }}
-		{% endif %}
+          {{ section.settings.banner | image_url: width: '2560x' | image_tag: class: 'pdp-banner__desktop pdp-banner__desktop__main hidden' }}
+        {% endif %}
+        {% if section.settings.banner_mobile %}
+            {{ section.settings.banner_mobile | image_url: width: 600 | image_tag: class: 'pdp-banner__mobile pdp-banner__mobile__main hidden' }}
+        {% endif %}
+        {% if section.settings.alternate_banner_desktop %}
+            {{ section.settings.alternate_banner_desktop | image_url: width: '2560x' | image_tag: class: 'pdp-banner__desktop pdp-banner__desktop__alternate hidden' }}
+        {% endif %}
+        {% if section.settings.alternate_banner_mobile %}
+            {{ section.settings.alternate_banner_mobile | image_url: width: 600 | image_tag: class: 'pdp-banner__mobile pdp-banner__mobile__alternate hidden' }}
+        {% endif %}
 	</div>
 
 	{% comment %} PDP HEADER SECTION {% endcomment %}
@@ -43,7 +63,7 @@
 			<p class="pdp-customer_info__name__label_name">Michael</p>
 		</div>
 		{% endcomment %}
-		<div class="pdp-customer_info__row pdp-customer_info__matchid">
+		<div class="pdp-customer_info__row pdp-customer_info__matchid hidden">
 			<div class="pdp-customer_info__header">
 				MATCH ID
 			</div>
@@ -255,7 +275,7 @@
     </div>
     {% endcomment %}
     <div class="pdp-cta__sticky hidden">
-  	<div class="pdp-cta__subscription-container">
+  	<div class="pdp-cta__subscription-container hidden">
         <div class="pdp-cta__subscription-checkbox">
     		<input id="recharge_subscription" name="recharge_subscription" type="checkbox" />
     		<label for="recharge_subscription">Purchase via subscription</label>
@@ -278,7 +298,9 @@
   	</div>
   	<div class="pdp-cta__action-container">
   		<button class="pdp-cta__checkout_btn__custom">{{ section.settings.checkout_button_text }}</button>
+        {% comment %}
   		<div class="pdp-cta__total"></div>
+        {% endcomment %}
   	</div>
       {% if localization.country.iso_code == "DE" %}
   		{% if cart.total_price > 50 %}
@@ -289,12 +311,15 @@
       {% endif %}
     </div>
 
+    {% comment %}
 	<div style="height:150px"></div>
+    {% endcomment %}
 </div>
 
 {%- render 'pdp-v2-js'
    , routes: routes,
    , cream_label_image: section.settings.label_image | image_url: width: 30
+   , alternate_cream_label_image: section.settings.alternate_label_image | image_url: width: 30
    , product: product
    , localization: localization
    , product_judgeme_badge: product.metafields.judgeme.badge
@@ -326,6 +351,11 @@
    , checkout_button_text: section.settings.checkout_button_text | string
    , checkout_subtext_above_de: section.settings.checkout_subtext_above_de | string
    , checkout_subtext_below_de: section.settings.checkout_subtext_below_de | string
+   , banner: section.settings.banner | image_url: width: 1080
+   , banner_mobile: section.settings.banner_mobile | image_url: width: 1080
+   , alternate_banner: section.settings.alternate_banner_desktop | image_url: width: 1080
+   , alternate_banner_mobile: section.settings.alternate_banner_mobile | image_url: width: 1080
+   . is_arabic_market: isArabicMarket
    
 -%}
 
@@ -465,6 +495,12 @@
 		},
 		{
 			"type": "image_picker",
+			"id": "alternate_label_image",
+			"label": "Alternate Cream Label Image",
+			"info": "Choose the alternate image to show beside the customer name as a cream label."
+		},
+		{
+			"type": "image_picker",
 			"id": "banner",
 			"label": "Banner (Desktop)",
 			"info": "Choose the banner image to show on top of PDP on desktop."
@@ -474,6 +510,18 @@
 			"id": "banner_mobile",
 			"label": "Banner (Mobile)",
 			"info": "Choose the banner image to show on top of PDP on mobile."
+		},
+		{
+			"type": "image_picker",
+			"id": "alternate_banner_desktop",
+			"label": "Alternate Banner (Desktop)",
+			"info": "Choose the alternate banner image to show on top of PDP on desktop."
+		},
+		{
+			"type": "image_picker",
+			"id": "alternate_banner_mobile",
+			"label": "Alternate Banner (Mobile)",
+			"info": "Choose the alternate banner image to show on top of PDP on mobile."
 		},
 		{
 			"type": "select",
@@ -535,6 +583,12 @@
             "type": "text",
             "id": "checkout_subtext_above_de",
             "label": "Checkout Subtext Above € (DE)"
+        },
+        {
+            "type": "text",
+            "id": "loading_header",
+            "label": "Loading Header",
+            "default": "We are analyzing your formulation..."
         }
 	]
 }
